@@ -1,29 +1,19 @@
 {
-  "extends": "astro/tsconfigs/strictest",
+  "extends": "astro/tsconfigs/strict",
   "exclude": [
     "dist"
   ],
   "compilerOptions": {
-    "baseUrl": "/home/user/repository/QuantumSecureVote/monorepo/voterApp",
+    "strictNullChecks": true,
+    "baseUrl": ".",
+    "allowJs": true,
     "paths": {
-      "@assets/*": [
-        "src/assets/*"
-      ],
-      "@components/*": [
-        "src/components/*"
-      ],
-      "@content/*": [
-        "src/content/*"
-      ],
-      "@images/*": [
-        "src/assets/images/*"
-      ],
-      "@layouts/*": [
-        "src/layouts/*"
-      ],
-      "@styles/*": [
-        "src/styles/*"
-      ]
+      "@assets/*": ["src/assets/*"],
+      "@components/*": ["src/components/*"],
+      "@content/*": ["src/content/*"],
+      "@images/*": ["src/assets/images/*"],
+      "@layouts/*": ["src/layouts/*"],
+      "@styles/*": ["src/styles/*"]
     },
     "jsx": "react-jsx",
     "jsxImportSource": "react"
