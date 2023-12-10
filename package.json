@@ -1,10 +1,12 @@
 {
-  "name": "voterapp",
+  "name": "voter-app",
   "type": "module",
+  "private": "true",
   "version": "0.0.1",
   "scripts": {
     "dev": "astro dev",
     "start": "astro dev",
+    "host": "astro dev --host",
     "build": "astro check && astro build",
     "preview": "astro preview",
     "astro": "astro"
