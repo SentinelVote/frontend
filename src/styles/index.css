@@ -1,0 +1,28 @@
+@layer reset, font, utility;
+
+  body {
+    height: 100svh;
+    margin: 0;
+    padding: 0;
+  }
+
+  :root {
+    /* https://xgkft.csb.app/ | 320, 1440, 1, 1.75, 16 */
+    font-size: clamp(1rem, 0.7857rem + 1.0714vw, 1.75rem);
+    font-family: sans-serif;
+  }
+  :root h1 { font-size: 1.25em;   }
+  :root h2 { font-size: 1.125em;  }
+  :root h3 { font-size: 1.0625em; }
+
+  /* Usage: <div class="visually-hidden"></div> */
+  /* Desc:  Accessibility-friendly pattern for hiding HTML tags. */
+  .visually-hidden:not(:focus):not(:active) {
+    position: absolute;
+    overflow: hidden;
+    clip: rect(0 0 0 0);
+    clip-path: inset(50%);
+    width: 1px;
+    height: 1px;
+    white-space: nowrap;
+  }
