@@ -14,7 +14,7 @@ export default function PemUploader() {
         <div className="flex w-full text-white">
           <div className="flex flex-col flex-1 justify-center">
             <div className="flex flex-col">
-              <h1 className="font-bold text-5xl">Upload your PEM</h1>
+              <h1 className="font-bold text-5xl">Upload your private key</h1>
               <p className="font-medium text-lg">
                 to continue to the Helios voting platform
               </p>
@@ -28,9 +28,15 @@ export default function PemUploader() {
                 justifyContent: "space-between",
               }}
             >
-              <h1 className="font-medium text-xl text-black text-center">
-                Upload PEM
-              </h1>
+              <div className="flex gap-2">
+                <h1 className="font-medium text-xl text-black text-center">
+                  Upload Private Key
+                  <span className="font-normal text-base text-slate-700">
+                    {" "}
+                    (.pem file)
+                  </span>
+                </h1>
+              </div>
               <div className="flex flex-col gap-2 p-10 w-full h-[330px] bg-indigo-100 rounded-md">
                 <input
                   className="border-2 border-slate-900 rounded-lg px-4 py-2 text-black"
