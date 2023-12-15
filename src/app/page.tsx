@@ -3,6 +3,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { useState } from "react";
 import singpassQrPng from "../../public/singpass_qr.png";
+
 enum LoginType {
   email = "email",
   singpass = "singpass",
@@ -10,6 +11,32 @@ enum LoginType {
 
 export default function Home() {
   const [loginType, setLoginType] = useState(LoginType.email);
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [loginError, setLoginError] = useState("");
+
+  const handleLogin = async (e: any) => {
+    e.preventDefault();
+    try {
+      const response = await fetch("http://localhost:3001/api/login", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ email, password }),
+      });
+      const data = await response.json();
+      if (data.success) {
+        console.log("Login successful");
+        window.location.href = "/pem-uploader";
+      } else {
+        setLoginError("Invalid email or password");
+      }
+    } catch (error) {
+      console.error("Login error:", error);
+      setLoginError("An error occurred during login");
+    }
+  };
   return (
     <>
       <main
@@ -55,31 +82,37 @@ export default function Home() {
               </div>
               {loginType === LoginType.email ? (
                 <>
-                  <div className="flex flex-col gap-2 pt-10 text-gray-500">
+                  <form
+                    onSubmit={handleLogin}
+                    className="flex flex-col gap-2 pt-10 text-gray-500"
+                  >
                     <input
                       className="border-2 border-slate-900 rounded-lg px-4 py-2"
                       type="text"
                       name="email"
                       id="email"
+                      value={email}
+                      onChange={(e) => setEmail(e.target.value)}
                     />
                     <input
                       className="border-2 border-slate-900 rounded-lg px-4 py-2"
                       type="password"
                       name="password"
                       id="password"
+                      value={password}
+                      onChange={(e) => setPassword(e.target.value)}
                     />
                     <p className="self-end">Forgot password?</p>
-                  </div>
-                  <Link href="/pem-uploader">
+                    {loginError && <p className="text-red-500">{loginError}</p>}
                     <button
-                      type="button"
+                      type="submit"
                       className="focus:outline-none text-white bg-red-700 hover:bg-red-800 focus:ring-4
-                 focus:ring-red-300 font-medium rounded-lg text-sm self-center px-5 py-2.5 w-full
-                 me-2 mb-2 dark:bg-red-600 dark:hover:bg-red-700 dark:focus:ring-red-900 mt-24"
+              focus:ring-red-300 font-medium rounded-lg text-sm self-center px-5 py-2.5 w-full
+              me-2 mb-2 dark:bg-red-600 dark:hover:bg-red-700 dark:focus:ring-red-900 mt-24"
                     >
                       Log In
                     </button>
-                  </Link>
+                  </form>
                 </>
               ) : (
                 <>
