@@ -18,16 +18,11 @@ export default function RootLayout({
     <html lang="en">
       <body className={inter.className}>
         <div className="text-white h-[10vh]">
-          <div className="flex  items-center h-full px-24">
-            <h1
-              className="text-2xl pr-5 font-bold"
-              style={{
-                borderRight: "5px solid white",
-              }}
-            >
+          <div className="flex justify-center md:justify-normal items-center h-full px-10 md:px-24">
+            <h1 className="text-2xl pr-2 md:pr-5 font-bold border-r-[3px] md:border-r-[5px] border-white">
               QuantumSecure
             </h1>
-            <h1 className="text-2xl pl-5">Voter </h1>
+            <h1 className="text-2xl pl-2 md:pl-5">Voter </h1>
           </div>
         </div>
         {children}
