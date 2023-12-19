@@ -33,6 +33,15 @@ type ConfirmationModalProps = {
   onConfirm: () => void;
 };
 
+function getCookie(name: string) {
+  if (document === undefined) return null;
+  else {
+    const cookieArray = document?.cookie.split("; ");
+    const cookie = cookieArray.find((row) => row.startsWith(name + "="));
+    return cookie ? cookie.split("=")[1] : null;
+  }
+}
+
 const ConfirmationModal: React.FC<ConfirmationModalProps> = ({
   isOpen,
   candidateName,
@@ -40,6 +49,24 @@ const ConfirmationModal: React.FC<ConfirmationModalProps> = ({
   onConfirm,
 }) => {
   if (!isOpen) return null;
+
+  const privateKey = getCookie("privateKey");
+  console.log("privateKey", privateKey);
+
+  const handleConfirm = () => {
+    try {
+      const response = fetch("http://localhost:3001/api/store-vote", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ vote: candidateName, signature: privateKey }),
+      });
+      console.log("response", response);
+    } catch (error) {
+      console.error(error);
+    }
+  };
 
   return (
     <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center">
@@ -73,7 +100,10 @@ const ConfirmationModal: React.FC<ConfirmationModalProps> = ({
           </button>
           <Link href="/voter/success">
             <button
-              onClick={onConfirm}
+              onClick={() => {
+                onConfirm();
+                handleConfirm();
+              }}
               className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700"
             >
               Confirm
