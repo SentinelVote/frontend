@@ -27,7 +27,8 @@ exports.seed = function (knex) {
         {
           userEmail: "user2@email.com",
           hashedPassword: bcrypt.hashSync("password", saltRounds),
-          publicKey: "",
+          publicKey: 
+              "-----BEGIN PUBLIC KEY-----\nMFkwEwYHKoZIzj0CAQYIKoZIzj0DAQcDQgAEBfKErOt6wsinf7Poy6PpYZ7UVXSC\nMmGFV51CkMkC4qg987bGjbAFxOJFXpFMcFlR7BQJ3GvMOqotvECd6YweLA==\n-----END PUBLIC KEY-----",
           firstName: "Bob",
           lastName: "Dylan",
           region: "Marine Parade",
@@ -36,7 +37,8 @@ exports.seed = function (knex) {
         {
           userEmail: "user3@email.com",
           hashedPassword: bcrypt.hashSync("password", saltRounds),
-          publicKey: "",
+          publicKey: 
+              "-----BEGIN PUBLIC KEY-----\nMFkwEwYHKoZIzj0CAQYIKoZIzj0DAQcDQgAEIN8Q67zFSoh3k8o2Q6JL2zcIkvjk\nz1ifQ55A9+OR+bBHIcsY8wrT7T8O7IpHfYQ/2qJVsoGCxTHF+0moC/8Jdg==\n-----END PUBLIC KEY-----",
           firstName: "Charlie",
           lastName: "Sheen",
           region: "Bishan-Toa Payoh",

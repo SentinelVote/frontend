@@ -363,35 +363,17 @@ app.post("/api/store-vote", async (req, res) => {
       foldedPublicKeysFromDatabase[0]?.foldedPublicKeys
     );
 
-    // Decode the %20 to \n for "signature".
-    const signature_Decoded_URL = decodeURIComponent(signature);
-
-    // Create the signature via a call to the LRS API.
-    // TODO: Fix JSON parsing errors.
-    responseLRS_Body = JSON.stringify({
-      foldedPublicKeys: foldedPublicKeysFromDatabase[0]?.foldedPublicKeys,
-      privateKeyContent: signature_Decoded_URL,
-      message: vote,
-      format: "PEM",
-    });
-
-    // TODO: Remove this mock data.
-    mockData = JSON.stringify({
-      foldedPublicKeys:
-        "-----BEGIN FOLDED PUBLIC KEYS-----\nCurveName: prime256v1\nCurveOID: 1.2.840.10045.3.1.7\nDigest: a6:83:44:b8:28:18:b1:5a:18:4c:f1:4f:0e:a4:e8:35:0d:39:b3:b5:95:d9:ea:b5:1e:5d:68:08:21:f8:73:73\nHasherName: sha3-256\nHasherOID: 2.16.840.1.101.3.4.2.8\nNumberOfKeys: 3\nOrigin: github.com/zbohm/lirisi\n\nMIHHEyNnaXRodWIuY29tL3pib2htL2xpcmlzaSBQdWJsaWMga2V5cwYIKoZIzj0D\nAQcGCWCGSAFlAwQCCAQgpoNEuCgYsVoYTPFPDqToNQ05s7WV2eq1Hl1oCCH4c3Mw\naQQhAiDfEOu8xUqId5PKNkOiS9s3CJL45M9Yn0OeQPfjkfmwBCECuAVrt8Zwva6R\nf7TtnvRY48KP/5zVEC7Xi15UQfUZZKEEIQIF8oSs63rCyKd/s+jLo+lhntRVdIIy\nYYVXnUKQyQLiqA==\n-----END FOLDED PUBLIC KEYS-----",
-      privateKeyContent:
-        "-----BEGIN EC PRIVATE KEY-----\nMHcCAQEEIAzliz/u7BsC2ALKZAzj7r8My+pO3Z3/jSdQlma4u0y9oAoGCCqGSM49\nAwEHoUQDQgAEIN8Q67zFSoh3k8o2Q6JL2zcIkvjkz1ifQ55A9+OR+bBHIcsY8wrT\n7T8O7IpHfYQ/2qJVsoGCxTHF+0moC/8Jdg==\n-----END EC PRIVATE KEY-----",
-      message: "Tharman Shanmugaratnam", // Replace with the message to be signed
-      format: "PEM", // This is optional, default is "PEM"
-    });
-
-    console.log(`responseLRS_Body:\n\n\n${responseLRS_Body}\n\n\n`);
     const responseLRS = await fetch(`${LRS_API_URL}/sign`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
       },
-      body: mockData,
+      body: JSON.stringify({
+        foldedPublicKeys: foldedPublicKeysFromDatabase[0]?.foldedPublicKeys,
+        privateKeyContent: decodeURIComponent(signature),
+        message: vote,
+        format: "PEM",
+      })
     });
     const signatureJSON = await responseLRS.json();
     console.log(`signatureJSON:\n${signatureJSON}\n`);
