@@ -1,6 +1,22 @@
+"use client";
 import Link from "next/link";
 
 export default function PemUploader() {
+  const handleUpload = () => {
+    const fileInput = document.getElementById("pem") as any;
+    if (fileInput.files.length > 0) {
+      const reader = new FileReader();
+      reader.onload = function (e: any) {
+        const privateKey = e.target.result || "";
+        // Store the file content in a cookie
+        document.cookie = `privateKey=${encodeURIComponent(
+          privateKey
+        )}; path=/`;
+      };
+      reader.readAsText(fileInput.files[0]);
+    }
+  };
+
   return (
     <>
       <main
@@ -48,9 +64,8 @@ export default function PemUploader() {
               <Link href="/voter/candidate-selection">
                 <button
                   type="button"
-                  className="focus:outline-none text-white bg-purple-700 hover:bg-purple-800
-                  focus:ring-4 focus:ring-purple-300 font-medium rounded-lg text-sm px-5 py-2.5 w-full
-                  mb-2 dark:bg-purple-600 dark:hover:bg-purple-700 dark:focus:ring-purple-900mt-24"
+                  onClick={handleUpload}
+                  className="focus:outline-none text-white bg-purple-700 hover:bg-purple-800 focus:ring-4 focus:ring-purple-300 font-medium rounded-lg text-sm px-5 py-2.5 w-full mb-2 dark:bg-purple-600 dark:hover:bg-purple-700 dark:focus:ring-purple-900 mt-24"
                 >
                   UPLOAD FILES
                 </button>
