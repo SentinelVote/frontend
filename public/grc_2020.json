@@ -1,0 +1,120 @@
+{
+  "Constituency": [
+    {
+      "Name": "Aljunied",
+      "Type": "GRC"
+    },
+    {
+      "Name": "Ang Mo Kio",
+      "Type": "GRC"
+    },
+    {
+      "Name": "Bishan-Toa Payoh",
+      "Type": "GRC"
+    },
+    {
+      "Name": "Bukit Batok",
+      "Type": "SMC"
+    },
+    {
+      "Name": "Bukit Panjang",
+      "Type": "SMC"
+    },
+    {
+      "Name": "Chua Chu Kang",
+      "Type": "GRC"
+    },
+    {
+      "Name": "East Coast",
+      "Type": "GRC"
+    },
+    {
+      "Name": "Holland-Bukit Timah",
+      "Type": "GRC"
+    },
+    {
+      "Name": "Hougang",
+      "Type": "SMC"
+    },
+    {
+      "Name": "Jalan Besar",
+      "Type": "GRC"
+    },
+    {
+      "Name": "Jurong",
+      "Type": "GRC"
+    },
+    {
+      "Name": "Kebun Baru",
+      "Type": "SMC"
+    },
+    {
+      "Name": "MacPherson",
+      "Type": "SMC"
+    },
+    {
+      "Name": "Marine Parade",
+      "Type": "GRC"
+    },
+    {
+      "Name": "Marsiling-Yew Tee",
+      "Type": "GRC"
+    },
+    {
+      "Name": "Mountbatten",
+      "Type": "SMC"
+    },
+    {
+      "Name": "Nee Soon",
+      "Type": "GRC"
+    },
+    {
+      "Name": "Pasir Ris-Punggol",
+      "Type": "GRC"
+    },
+    {
+      "Name": "Pioneer",
+      "Type": "SMC"
+    },
+    {
+      "Name": "Potong Pasir",
+      "Type": "SMC"
+    },
+    {
+      "Name": "Punggol West",
+      "Type": "SMC"
+    },
+    {
+      "Name": "Radin Mas",
+      "Type": "SMC"
+    },
+    {
+      "Name": "Sembawang",
+      "Type": "GRC"
+    },
+    {
+      "Name": "Sengkang",
+      "Type": "GRC"
+    },
+    {
+      "Name": "Tampines",
+      "Type": "GRC"
+    },
+    {
+      "Name": "Tanjong Pagar",
+      "Type": "GRC"
+    },
+    {
+      "Name": "West Coast",
+      "Type": "GRC"
+    },
+    {
+      "Name": "Yio Chu Kang",
+      "Type": "SMC"
+    },
+    {
+      "Name": "Yuhua",
+      "Type": "SMC"
+    }
+  ]
+}
