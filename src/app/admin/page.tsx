@@ -15,10 +15,35 @@ export interface Voter {
 
 const ITEMS_PER_PAGE = 12;
 
+const checkVoteStart = async () => {
+  try {
+    const response = await fetch("http://localhost:3001/api/check-vote-start");
+    if (!response.ok) {
+      throw new Error("Network response was not ok");
+    }
+    const data = await response.json();
+    return data;
+  } catch (error) {
+    console.error(error);
+    return false;
+  }
+};
+const hasVoteStarted = checkVoteStart();
+
 export default function AdminPage() {
+  console.log(hasVoteStarted);
   const [voters, setVoters] = useState<Voter[]>([]);
   const [currentPage, setCurrentPage] = useState(1);
   const [deactivateFoldButton, setDeactivateFoldButton] = useState(false);
+
+  useEffect(() => {
+    const checkAndSetVoteStart = async () => {
+      const voteStart = await checkVoteStart();
+      setDeactivateFoldButton(voteStart);
+    };
+
+    checkAndSetVoteStart();
+  }, []);
   // Calculate the voters to show on the current page
   const indexOfLastVoter = currentPage * ITEMS_PER_PAGE;
   const indexOfFirstVoter = indexOfLastVoter - ITEMS_PER_PAGE;
@@ -124,9 +149,12 @@ export default function AdminPage() {
             </div>
 
             <p className="font-normal text-md text-slate-500 mt-4">
-              {`Select 'Fold Keys' to fold the public keys. Thus marking the start of the election. `}
+              {`Click on 'Fold Keys' to initiate the folding of public keys, signaling the commencement of the election.
+              `}
             </p>
-
+            <p className="font-normal text-md text-red-400 mt-2">
+              {`Be aware that once the election begins, the option to fold the keys will no longer be available.`}
+            </p>
             <button
               type="button"
               disabled={deactivateFoldButton}
