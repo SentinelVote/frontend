@@ -328,11 +328,12 @@ curl -fsSL --request POST --url http://localhost:8801/user/enroll --header 'Auth
 
 // /store-vote
 app.post("/api/store-vote", async (req, res) => {
-  console.log("Starting /api/store-vote");
+  console.log(`\nBEGIN API call: /api/store-vote\n`);
   const { body } = req;
   try {
-    // Generate an admin token.
-    const tokenReq = await fetch(`${FABRIC_API_URL}/user/enroll`, {
+    
+    // Generate an admin token for blockchain REST API authentication.
+    const responseFabricEnroll = await fetch(`${FABRIC_API_URL}/user/enroll`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -343,64 +344,41 @@ app.post("/api/store-vote", async (req, res) => {
         secret: "adminpw",
       }),
     });
-    const tokenJSON = await tokenReq.json();
-    const token = tokenJSON.token;
-
-    // Check values passed in.
-    const signature = body.signature;
-    const vote = body.vote;
-    console.log(`Signature:\n${signature}\n`);
-    console.log(`Vote:\n${vote}\n`);
-    let blockKey = body.signature;
-    const blockValue = body.vote;
+    if (!responseFabricEnroll.ok) {
+      throw new Error(`HTTP error! Status: ${responseFabricEnroll.status}`);
+    }
+    const { token: token } = await responseFabricEnroll.json(); 
+    console.log(`token:\n${token}\n`);
 
     // Retrieve the folded public keys from the database.
-    const foldedPublicKeysFromDatabase = await knex("foldedPublicKeys")
+    const foldedPublicKeys = await knex("foldedPublicKeys")
       .select("*")
       .limit(1);
-    console.log(
-      `foldedPublicKeysFromDatabase:\n`,
-      foldedPublicKeysFromDatabase[0]?.foldedPublicKeys
-    );
+    console.log(`foldedPublicKeys:\n`, foldedPublicKeys[0]?.foldedPublicKeys);
 
-    // Decode the %20 to \n for "signature".
-    const signature_Decoded_URL = decodeURIComponent(signature);
-
-    // Create the signature via a call to the LRS API.
-    // TODO: Fix JSON parsing errors.
-    responseLRS_Body = JSON.stringify({
-      foldedPublicKeys: foldedPublicKeysFromDatabase[0]?.foldedPublicKeys,
-      privateKeyContent: signature_Decoded_URL,
-      message: vote,
-      format: "PEM",
-    });
-
-    // TODO: Remove this mock data.
-    mockData = JSON.stringify({
-      foldedPublicKeys:
-        "-----BEGIN FOLDED PUBLIC KEYS-----\nCurveName: prime256v1\nCurveOID: 1.2.840.10045.3.1.7\nDigest: a6:83:44:b8:28:18:b1:5a:18:4c:f1:4f:0e:a4:e8:35:0d:39:b3:b5:95:d9:ea:b5:1e:5d:68:08:21:f8:73:73\nHasherName: sha3-256\nHasherOID: 2.16.840.1.101.3.4.2.8\nNumberOfKeys: 3\nOrigin: github.com/zbohm/lirisi\n\nMIHHEyNnaXRodWIuY29tL3pib2htL2xpcmlzaSBQdWJsaWMga2V5cwYIKoZIzj0D\nAQcGCWCGSAFlAwQCCAQgpoNEuCgYsVoYTPFPDqToNQ05s7WV2eq1Hl1oCCH4c3Mw\naQQhAiDfEOu8xUqId5PKNkOiS9s3CJL45M9Yn0OeQPfjkfmwBCECuAVrt8Zwva6R\nf7TtnvRY48KP/5zVEC7Xi15UQfUZZKEEIQIF8oSs63rCyKd/s+jLo+lhntRVdIIy\nYYVXnUKQyQLiqA==\n-----END FOLDED PUBLIC KEYS-----",
-      privateKeyContent:
-        "-----BEGIN EC PRIVATE KEY-----\nMHcCAQEEIAzliz/u7BsC2ALKZAzj7r8My+pO3Z3/jSdQlma4u0y9oAoGCCqGSM49\nAwEHoUQDQgAEIN8Q67zFSoh3k8o2Q6JL2zcIkvjkz1ifQ55A9+OR+bBHIcsY8wrT\n7T8O7IpHfYQ/2qJVsoGCxTHF+0moC/8Jdg==\n-----END EC PRIVATE KEY-----",
-      message: "Tharman Shanmugaratnam", // Replace with the message to be signed
-      format: "PEM", // This is optional, default is "PEM"
-    });
-
-    console.log(`responseLRS_Body:\n\n\n${responseLRS_Body}\n\n\n`);
+    // Sign the vote with the folded public keys and user's private key.
     const responseLRS = await fetch(`${LRS_API_URL}/sign`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
       },
-      body: mockData,
+      body: JSON.stringify({
+        foldedPublicKeys: foldedPublicKeys[0]?.foldedPublicKeys,
+        privateKeyContent: body.privateKey,
+        message: body.vote,
+        format: "PEM",
+      })
     });
-    const signatureJSON = await responseLRS.json();
-    console.log(`signatureJSON:\n${signatureJSON}\n`);
-    // Get "signature field from the JSON response.
-    const signatureFromLRS = signatureJSON.signature;
-    console.log(`signatureFromLRS:\n${signatureFromLRS}\n`);
+    if (!responseLRS.ok) {
+      throw new Error(`HTTP error! Status: ${responseLRS.status}`);
+    }
+    const { signature: ringSignature } = await responseLRS.json();
+    console.log(`linkableRingSignature:\n${ringSignature}\n`);
 
     // Store the signature and vote in the blockchain.
-    const response = await fetch(
+    const blockKey = ringSignature;
+    const blockValue = body.vote;
+    const responseFabricChaincode = await fetch(
       `${FABRIC_API_URL}/invoke/vote-channel/chaincode_vote`,
       {
         method: "POST",
@@ -410,18 +388,19 @@ app.post("/api/store-vote", async (req, res) => {
         },
         body: JSON.stringify({
           method: "KVContractGo:put",
-          // args: [blockKey, blockValue],
-          args: [signatureFromLRS, blockValue],
+          args: [blockKey, blockValue],
         }),
       }
     );
-
-    if (!response.ok) {
-      throw new Error(`HTTP error! Status: ${response.status}`);
+    if (!responseFabricChaincode.ok) {
+      throw new Error(`HTTP error! Status: ${responseFabricChaincode.status}`);
     }
-    const responseReturn = await response.json();
-    console.log(`${responseReturn}`);
-    res.json(responseReturn);
+    const { response: response } = await responseFabricChaincode.json();
+    console.log(`response:\n${response}\n`);
+    
+    res.json(response); // Return the response.
+    console.log(`\nEND API call: /api/store-vote\n`);
+    
   } catch (error) {
     console.error(
       "Error during the request inside /invoke/vote-channel/chaincode_vote:\n",
