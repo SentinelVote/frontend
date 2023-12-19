@@ -17,7 +17,8 @@ exports.seed = function (knex) {
         {
           userEmail: "user1@email.com",
           hashedPassword: bcrypt.hashSync("password", saltRounds),
-          publicKey: "",
+          publicKey:
+            "-----BEGIN PUBLIC KEY-----\nMFkwEwYHKoZIzj0CAQYIKoZIzj0DAQcDQgAEuAVrt8Zwva6Rf7TtnvRY48KP/5zV\nEC7Xi15UQfUZZKHt/WfSfRufGFAN9WP4+SBqn2pn2K8zOdAGK55A4mbQAA==\n-----END PUBLIC KEY-----\n",
           firstName: "Alice",
           lastName: "Cooper",
           region: "West Coast", // Based on registered home address GRC in Singapore.

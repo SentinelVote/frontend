@@ -10,16 +10,13 @@ exports.up = function (knex) {
       table.string("region").notNullable();
       table.string("role").notNullable().defaultTo("voter");
     })
-    .then(
-      // This table has only one row, and one field.
-      knex.schema.createTable("foldedPublicKeys", (table) => {
-        table.string("foldedPublicKeys").defaultTo("").primary();
-      })
-    );
-
-  // table
+    .createTable("foldedPublicKeys", (table) => {
+      table.increments("id").primary();
+      table.string("foldedPublicKeys").notNullable();
+      table.integer("singleton").notNullable().defaultTo(1).unique(); // Can only be one row in this table.
+    });
 };
 
 exports.down = function (knex) {
-  return knex.schema.dropTable("users");
+  return knex.schema.dropTable("users").dropTable("foldedPublicKeys");
 };
