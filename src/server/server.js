@@ -77,6 +77,7 @@ app.post("/api/login", async (req, res) => {
   }
 });
 
+// Endpoint to stor
 app.post("/api/store-pubkey", async (req, res) => {
   const { publicKey, userEmailCookie } = req.body;
   try {
@@ -100,6 +101,22 @@ app.post("/api/store-pubkey", async (req, res) => {
     }
   } catch (error) {
     console.error("Login error:", error);
+    res.status(500).send("Server error");
+  }
+});
+
+// Endpoint to get all public keys
+app.get("/api/get-public-keys", async (req, res) => {
+  console.log(`"/api/get-public-keys" is called.`);
+  try {
+    const users = await knex("users").select("*");
+    const publicKeys = users
+      .filter((user) => user.publicKey !== "")
+      .map((user) => user.publicKey);
+    console.log(`publicKeys: ${publicKeys}`);
+    res.json(publicKeys);
+  } catch (error) {
+    console.error(error);
     res.status(500).send("Server error");
   }
 });
@@ -153,6 +170,42 @@ app.get("/api/generate-keys", async (req, res) => {
 });
 
 // /fold-public-keys
+
+app.get("/api/fold-public-keys", async (res) => {
+  console.log(`"/api/fold-public-keys" is called.`);
+  console.log(`Calling database`);
+  const responsePKA = await fetch("http://localhost:3001/api/get-public-keys");
+  const publicKeyArray = await responsePKA.json();
+  const publicKeyArrayFiltered = publicKeyArray.filter((x) => x !== ""); // HACK find out why it works.
+
+  // PART ONE: Get the folded public keys from the LRS API.
+  try {
+    const response = await fetch(`${LRS_API_URL}/fold-public-keys`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        publicKeys: publicKeyArrayFiltered,
+        hashName: "sha3-256", // no change needed.
+        format: "PEM", // no change needed.
+        order: "hashes", // no change needed.
+      }),
+    });
+    if (!response.ok) {
+      throw new Error(`HTTP error! Status: ${response.status}`);
+    }
+    const keys = await response.json();
+    console.log(`${keys.foldedPublicKeys}`);
+    res.json(keys.foldedPublicKeys);
+  } catch (error) {
+    console.error("Error during the request:", error);
+  }
+
+  // TODO PART TWO: Store it in the database.
+
+  // TODO PART THREE: Store it in the blockchain (Fabric, a.k.a port 8801).
+});
 
 // /sign
 
