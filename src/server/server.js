@@ -328,11 +328,12 @@ curl -fsSL --request POST --url http://localhost:8801/user/enroll --header 'Auth
 
 // /store-vote
 app.post("/api/store-vote", async (req, res) => {
-  console.log("Starting /api/store-vote");
+  console.log(`\nBEGIN API call: /api/store-vote\n`);
   const { body } = req;
   try {
-    // Generate an admin token.
-    const tokenReq = await fetch(`${FABRIC_API_URL}/user/enroll`, {
+    
+    // Generate an admin token for blockchain REST API authentication.
+    const responseFabricEnroll = await fetch(`${FABRIC_API_URL}/user/enroll`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -343,46 +344,41 @@ app.post("/api/store-vote", async (req, res) => {
         secret: "adminpw",
       }),
     });
-    const tokenJSON = await tokenReq.json();
-    const token = tokenJSON.token;
-
-    // Check values passed in.
-    const signature = body.signature;
-    const vote = body.vote;
-    console.log(`Signature:\n${signature}\n`);
-    console.log(`Vote:\n${vote}\n`);
-    let blockKey = body.signature;
-    const blockValue = body.vote;
+    if (!responseFabricEnroll.ok) {
+      throw new Error(`HTTP error! Status: ${responseFabricEnroll.status}`);
+    }
+    const { token: token } = await responseFabricEnroll.json(); 
+    console.log(`token:\n${token}\n`);
 
     // Retrieve the folded public keys from the database.
-    const foldedPublicKeysFromDatabase = await knex("foldedPublicKeys")
+    const foldedPublicKeys = await knex("foldedPublicKeys")
       .select("*")
       .limit(1);
-    console.log(
-      `foldedPublicKeysFromDatabase:\n`,
-      foldedPublicKeysFromDatabase[0]?.foldedPublicKeys
-    );
+    console.log(`foldedPublicKeys:\n`, foldedPublicKeys[0]?.foldedPublicKeys);
 
+    // Sign the vote with the folded public keys and user's private key.
     const responseLRS = await fetch(`${LRS_API_URL}/sign`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
       },
       body: JSON.stringify({
-        foldedPublicKeys: foldedPublicKeysFromDatabase[0]?.foldedPublicKeys,
-        privateKeyContent: decodeURIComponent(signature),
-        message: vote,
+        foldedPublicKeys: foldedPublicKeys[0]?.foldedPublicKeys,
+        privateKeyContent: body.privateKey,
+        message: body.vote,
         format: "PEM",
       })
     });
-    const signatureJSON = await responseLRS.json();
-    console.log(`signatureJSON:\n${signatureJSON}\n`);
-    // Get "signature field from the JSON response.
-    const signatureFromLRS = signatureJSON.signature;
-    console.log(`signatureFromLRS:\n${signatureFromLRS}\n`);
+    if (!responseLRS.ok) {
+      throw new Error(`HTTP error! Status: ${responseLRS.status}`);
+    }
+    const { signature: ringSignature } = await responseLRS.json();
+    console.log(`linkableRingSignature:\n${ringSignature}\n`);
 
     // Store the signature and vote in the blockchain.
-    const response = await fetch(
+    const blockKey = ringSignature;
+    const blockValue = body.vote;
+    const responseFabricChaincode = await fetch(
       `${FABRIC_API_URL}/invoke/vote-channel/chaincode_vote`,
       {
         method: "POST",
@@ -392,18 +388,19 @@ app.post("/api/store-vote", async (req, res) => {
         },
         body: JSON.stringify({
           method: "KVContractGo:put",
-          // args: [blockKey, blockValue],
-          args: [signatureFromLRS, blockValue],
+          args: [blockKey, blockValue],
         }),
       }
     );
-
-    if (!response.ok) {
-      throw new Error(`HTTP error! Status: ${response.status}`);
+    if (!responseFabricChaincode.ok) {
+      throw new Error(`HTTP error! Status: ${responseFabricChaincode.status}`);
     }
-    const responseReturn = await response.json();
-    console.log(`${responseReturn}`);
-    res.json(responseReturn);
+    const { response: response } = await responseFabricChaincode.json();
+    console.log(`response:\n${response}\n`);
+    
+    res.json(response); // Return the response.
+    console.log(`\nEND API call: /api/store-vote\n`);
+    
   } catch (error) {
     console.error(
       "Error during the request inside /invoke/vote-channel/chaincode_vote:\n",

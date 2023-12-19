@@ -50,8 +50,14 @@ const ConfirmationModal: React.FC<ConfirmationModalProps> = ({
 }) => {
   if (!isOpen) return null;
 
-  const privateKey = getCookie("privateKey");
-  console.log("privateKey", privateKey);
+  const privateKeyURI = getCookie("privateKey");
+  console.log("privateKeyURI:\n", privateKeyURI);
+  let privateKey = '';
+  if (!!privateKeyURI) {
+    privateKey = decodeURIComponent(privateKeyURI);
+  } else {
+    console.log("User has no private key.");
+  }
 
   const handleConfirm = () => {
     try {
@@ -60,7 +66,7 @@ const ConfirmationModal: React.FC<ConfirmationModalProps> = ({
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify({ vote: candidateName, signature: privateKey }),
+        body: JSON.stringify({ vote: candidateName, privateKey: privateKey }),
       });
       console.log("response", response);
     } catch (error) {
