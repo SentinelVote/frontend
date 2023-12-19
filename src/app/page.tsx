@@ -25,10 +25,10 @@ export default function Home() {
   };
 
   getUsers();
-  const checkAllUsersHaveKey = async () => {
+  const checkVoteStart = async () => {
     try {
       const response = await fetch(
-        "http://localhost:3001/api/check-voter-keys"
+        "http://localhost:3001/api/check-vote-start"
       );
       if (!response.ok) {
         throw new Error("Network response was not ok");
@@ -68,9 +68,10 @@ export default function Home() {
           window.location.href = "/admin"; // TODO: change to admin page.
         } else {
           // Handle voter redirection.
-          const allUsersHaveKey = await checkAllUsersHaveKey();
-          console.log("allUsersHaveKey", allUsersHaveKey);
-          if (allUsersHaveKey) {
+          const hasVoteStart = await checkVoteStart();
+          console.log("hasVoteStarted? ", hasVoteStart);
+
+          if (hasVoteStart) {
             // Election day.
             window.location.href = "/voter/pem-uploader";
           } else if (data.user.publicKey === "") {
