@@ -11,8 +11,9 @@ app.use(express.json());
 
 // CORS Configuration
 const whitelist = ["http://localhost:3000"];
-
-const BLOCKCHAIN_API_URL = "http://localhost:3002";
+const BACKEND_API_URL = "http://localhost:3001";
+const PORT = 3001;
+const FABRIC_API_URL = "http://localhost:8801";
 const LRS_API_URL = "http://localhost:8088";
 
 const corsOptions = {
@@ -27,16 +28,18 @@ const corsOptions = {
 
 app.use(cors(corsOptions));
 
-// Endpoint to check if all users have a public key
-app.get("/api/check-voter-keys", async (req, res) => {
+// Endpoint to check if vote is open
+app.get("/api/check-vote-start", async (req, res) => {
   try {
-    const users = await knex("users").select("*").where({ role: "voter" });
-    const usersWithPublicKey = users.filter((user) => user.publicKey !== "");
-    const isFull = usersWithPublicKey.length === users.length;
-    console.log(`usersWithPublicKey.length: ${usersWithPublicKey.length}`);
-    console.log(`users.length: ${users.length}`);
-    console.log(`isFull: ${isFull}`);
-    res.json(isFull);
+    // Count the number of rows in the foldedPublicKeys table
+    const result = await knex("foldedPublicKeys").count("* as count");
+    const foldedKeysCount = parseInt(result[0].count, 10);
+
+    const voteStart = foldedKeysCount > 0;
+    console.log(`foldedKeysCount: ${foldedKeysCount}`);
+    console.log(`voteStart: ${voteStart}`);
+
+    res.json(voteStart);
   } catch (error) {
     console.error(error);
     res.status(500).send("Server error");
@@ -165,13 +168,12 @@ app.get("/api/generate-keys", async (req, res) => {
     // res.json(keys); // Send keys to the client
     // TODO: Save keys in the database for that user.
   } catch (error) {
-    console.error("Error during the request:", error);
+    console.error("Error during the request inside /api/generate-keys:", error);
   }
 });
 
 // /fold-public-keys
-
-app.get("/api/fold-public-keys", async (res) => {
+app.get("/api/fold-public-keys", async (req, res) => {
   console.log(`"/api/fold-public-keys" is called.`);
   console.log(`Calling database`);
   const responsePKA = await fetch("http://localhost:3001/api/get-public-keys");
@@ -196,23 +198,238 @@ app.get("/api/fold-public-keys", async (res) => {
       throw new Error(`HTTP error! Status: ${response.status}`);
     }
     const keys = await response.json();
+
     console.log(`${keys.foldedPublicKeys}`);
+    // res.json(keys.foldedPublicKeys);
+
+    // PART TWO: Store it in the database.
+    // Actual implementation.
+    const keyExists = await knex("foldedPublicKeys")
+      .where({ foldedPublicKeys: keys.foldedPublicKeys })
+      .first();
+    console.log(`keyExists type : ${typeof keyExists}`);
+    console.log(`keyExists : ${keyExists}\n\n`);
+
+    if (!keyExists) {
+      await knex("foldedPublicKeys")
+        .insert({
+          foldedPublicKeys: keys.foldedPublicKeys,
+        })
+        .then(() => console.log("Data inserted"))
+        .catch((error) => console.log(error));
+    }
+
+    //TODO: Eventually add function
+    // await knex("foldedPublicKeys")
+    //   .where({ id: 1 })
+    //   .update({ foldedPublicKeys: keys.foldedPublicKeys })
+    //   .then(() => console.log("Data updated"))
+    //   .catch((error) => console.log(error));
+
+    // Test that it works.
+    const foldedPublicKeysFromDatabase = await knex("foldedPublicKeys")
+      .select("*")
+      .limit(1);
+    console.log(
+      `After insert foldedPublicKeysFromDatabase:\n`,
+      foldedPublicKeysFromDatabase[0]?.foldedPublicKeys
+    );
+
+    // TODO PART THREE: Store it in the blockchain (Fabric, a.k.a port 8801).
+    console.log("\n\nStarting Part 3\n\n");
+    try {
+      const response = await fetch(
+        `${BACKEND_API_URL}/api/store-folded-public-keys`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            id: foldedPublicKeysFromDatabase[0]?.foldedPublicKeys,
+          }),
+        }
+      );
+      return response.json();
+    } catch (error) {
+      console.error(
+        "Error during the request of storing in blockchain:",
+        error
+      );
+    }
+
     res.json(keys.foldedPublicKeys);
+    console.log("End of server call.");
+    // res.json(foldedPublicKeysFromDatabase);
   } catch (error) {
-    console.error("Error during the request:", error);
+    console.error("Error during the request of /api/fold-public-keys:", error);
   }
-
-  // TODO PART TWO: Store it in the database.
-
-  // TODO PART THREE: Store it in the blockchain (Fabric, a.k.a port 8801).
 });
 
 // /sign
-
 // ----------------------------------------------------------------------------
 // Endpoint for Fabric
+app.post("/api/store-folded-public-keys", async (req, res) => {
+  const { body } = req;
+  try {
+    /*
+curl -fsSL --request POST --url http://localhost:8801/invoke/vote-channel/chaincode_vote --header "Authorization: Bearer ${token}" --header 'Content-Type: application/json' --data "{\"method\": \"KVContractGo:put\", \"args\": [\"${uuid}\", ${message}]}"
+curl -fsSL --request POST --url http://localhost:8801/user/enroll --header 'Authorization: Bearer' --data "{\"id\": \"admin\", \"secret\": \"adminpw\"}"
+*/
 
-const PORT = 3001;
+    // Generate an admin token.
+    const tokenReq = await fetch(`${FABRIC_API_URL}/user/enroll`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: "Bearer",
+      },
+      body: JSON.stringify({
+        id: "admin",
+        secret: "adminpw",
+      }),
+    });
+    const tokenJSON = await tokenReq.json();
+    const token = tokenJSON.token;
+    console.log(`token: ${token}`);
+    console.log(`\n\n`);
+    console.log(`req_body:\n${body.id}\n`);
+    console.log(`Storing now...\n`);
+
+    // Store the folded public keys in the blockchain.
+    const response = await fetch(
+      `${FABRIC_API_URL}/invoke/vote-channel/chaincode_public_keys`,
+      {
+        method: "POST",
+        headers: {
+          Authorization: `Bearer ${token}`,
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          method: "KVContractGo:put",
+          args: ["0", body.id],
+        }),
+      }
+    );
+
+    if (!response.ok) {
+      throw new Error(`HTTP error! Status: ${response.status}`);
+    }
+    const keys = await response.json();
+    console.log(`${keys}`);
+    res.json(keys);
+  } catch (error) {
+    console.error(
+      "Error during the request inside /invoke/vote-channel/chaincode_pu:",
+      error
+    );
+  }
+});
+
+// /store-vote
+app.post("/api/store-vote", async (req, res) => {
+  console.log("Starting /api/store-vote");
+  const { body } = req;
+  try {
+    // Generate an admin token.
+    const tokenReq = await fetch(`${FABRIC_API_URL}/user/enroll`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: "Bearer",
+      },
+      body: JSON.stringify({
+        id: "admin",
+        secret: "adminpw",
+      }),
+    });
+    const tokenJSON = await tokenReq.json();
+    const token = tokenJSON.token;
+
+    // Check values passed in.
+    const signature = body.signature;
+    const vote = body.vote;
+    console.log(`Signature:\n${signature}\n`);
+    console.log(`Vote:\n${vote}\n`);
+    let blockKey = body.signature;
+    const blockValue = body.vote;
+
+    // Retrieve the folded public keys from the database.
+    const foldedPublicKeysFromDatabase = await knex("foldedPublicKeys")
+      .select("*")
+      .limit(1);
+    console.log(
+      `foldedPublicKeysFromDatabase:\n`,
+      foldedPublicKeysFromDatabase[0]?.foldedPublicKeys
+    );
+
+    // Decode the %20 to \n for "signature".
+    const signature_Decoded_URL = decodeURIComponent(signature);
+
+    // Create the signature via a call to the LRS API.
+    // TODO: Fix JSON parsing errors.
+    responseLRS_Body = JSON.stringify({
+      foldedPublicKeys: foldedPublicKeysFromDatabase[0]?.foldedPublicKeys,
+      privateKeyContent: signature_Decoded_URL,
+      message: vote,
+      format: "PEM",
+    });
+
+    // TODO: Remove this mock data.
+    mockData = JSON.stringify({
+      foldedPublicKeys:
+        "-----BEGIN FOLDED PUBLIC KEYS-----\nCurveName: prime256v1\nCurveOID: 1.2.840.10045.3.1.7\nDigest: a6:83:44:b8:28:18:b1:5a:18:4c:f1:4f:0e:a4:e8:35:0d:39:b3:b5:95:d9:ea:b5:1e:5d:68:08:21:f8:73:73\nHasherName: sha3-256\nHasherOID: 2.16.840.1.101.3.4.2.8\nNumberOfKeys: 3\nOrigin: github.com/zbohm/lirisi\n\nMIHHEyNnaXRodWIuY29tL3pib2htL2xpcmlzaSBQdWJsaWMga2V5cwYIKoZIzj0D\nAQcGCWCGSAFlAwQCCAQgpoNEuCgYsVoYTPFPDqToNQ05s7WV2eq1Hl1oCCH4c3Mw\naQQhAiDfEOu8xUqId5PKNkOiS9s3CJL45M9Yn0OeQPfjkfmwBCECuAVrt8Zwva6R\nf7TtnvRY48KP/5zVEC7Xi15UQfUZZKEEIQIF8oSs63rCyKd/s+jLo+lhntRVdIIy\nYYVXnUKQyQLiqA==\n-----END FOLDED PUBLIC KEYS-----",
+      privateKeyContent:
+        "-----BEGIN EC PRIVATE KEY-----\nMHcCAQEEIAzliz/u7BsC2ALKZAzj7r8My+pO3Z3/jSdQlma4u0y9oAoGCCqGSM49\nAwEHoUQDQgAEIN8Q67zFSoh3k8o2Q6JL2zcIkvjkz1ifQ55A9+OR+bBHIcsY8wrT\n7T8O7IpHfYQ/2qJVsoGCxTHF+0moC/8Jdg==\n-----END EC PRIVATE KEY-----",
+      message: "Tharman Shanmugaratnam", // Replace with the message to be signed
+      format: "PEM", // This is optional, default is "PEM"
+    });
+
+    console.log(`responseLRS_Body:\n\n\n${responseLRS_Body}\n\n\n`);
+    const responseLRS = await fetch(`${LRS_API_URL}/sign`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: mockData,
+    });
+    const signatureJSON = await responseLRS.json();
+    console.log(`signatureJSON:\n${signatureJSON}\n`);
+    // Get "signature field from the JSON response.
+    const signatureFromLRS = signatureJSON.signature;
+    console.log(`signatureFromLRS:\n${signatureFromLRS}\n`);
+
+    // Store the signature and vote in the blockchain.
+    const response = await fetch(
+      `${FABRIC_API_URL}/invoke/vote-channel/chaincode_vote`,
+      {
+        method: "POST",
+        headers: {
+          Authorization: `Bearer ${token}`,
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          method: "KVContractGo:put",
+          // args: [blockKey, blockValue],
+          args: [signatureFromLRS, blockValue],
+        }),
+      }
+    );
+
+    if (!response.ok) {
+      throw new Error(`HTTP error! Status: ${response.status}`);
+    }
+    const responseReturn = await response.json();
+    console.log(`${responseReturn}`);
+    res.json(responseReturn);
+  } catch (error) {
+    console.error(
+      "Error during the request inside /invoke/vote-channel/chaincode_vote:\n",
+      error
+    );
+  }
+});
+
 app.listen(PORT, () => {
   console.log(`Server running on http://localhost:${PORT}`);
 });
