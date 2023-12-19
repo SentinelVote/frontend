@@ -16,7 +16,7 @@ export default function PemUploader() {
             <div className="flex flex-col">
               <h1 className="font-bold text-5xl">Upload your private key</h1>
               <p className="font-medium text-lg">
-                to continue to the Helios voting platform
+                to continue to the SecureVote Platform
               </p>
             </div>
           </div>
@@ -45,7 +45,7 @@ export default function PemUploader() {
                   id="pem"
                 />
               </div>
-              <Link href="/candidate-selection">
+              <Link href="/voter/candidate-selection">
                 <button
                   type="button"
                   className="focus:outline-none text-white bg-purple-700 hover:bg-purple-800

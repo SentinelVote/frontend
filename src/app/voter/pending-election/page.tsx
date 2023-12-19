@@ -1,7 +1,5 @@
 "use client";
-import Image from "next/image";
 import Link from "next/link";
-import successPng from "../../../public/success.png";
 export default function SuccessPage() {
   const handleExit = () => {
     window.close();
@@ -19,10 +17,15 @@ export default function SuccessPage() {
         <div className="flex  w-full text-white justify-center">
           <div className="flex flex-col">
             <div className="flex flex-col align-center">
-              <Image src={successPng} alt="success" height={90} width={90} />
-              <h1 className="font-bold text-5xl">Thank you for voting!</h1>
-              <p className="font-medium text-lg">
-                Your vote has been successfully submitted.
+              <h1 className="font-bold text-5xl">
+                All Set for the Upcoming Election - Just Hang Tight!
+              </h1>
+              <p className="font-medium text-lg mt-2">
+                {`Thank you for completing your setup for the upcoming election.
+                You're all ready to go! The anticipation is building, and we're
+                just as excited as you are to get started. While we're counting
+                down to the big day, please sit tight. We will notify you the
+                moment the election kicks off. `}
               </p>
             </div>
             <Link href="/" className="self-center">

@@ -2,19 +2,28 @@
 import Image from "next/image";
 import Link from "next/link";
 import React, { useState } from "react";
-import exitIconSvg from "../../../public/exit_icon.svg";
-import warningIconSvg from "../../../public/warning_icon.svg";
+import candidateNKS from "../../../../public/candidate_nks.jpg";
+import candidateTKL from "../../../../public/candidate_tkl.jpg";
+import candidateTS from "../../../../public/candidate_ts.jpg";
+import exitIconSvg from "../../../../public/exit_icon.svg";
+import warningIconSvg from "../../../../public/warning_icon.svg";
 
 type Candidate = {
   id: string;
   name: string;
   independent: boolean;
+  image: any;
 };
 
 const candidates: Candidate[] = [
-  { id: "1", name: "Tharman Shanmugaratnam", independent: true },
-  { id: "2", name: "Ng Kok Song", independent: true },
-  { id: "3", name: "Tan Kin Lian", independent: true },
+  {
+    id: "1",
+    name: "Tharman Shanmugaratnam",
+    independent: true,
+    image: candidateTS,
+  },
+  { id: "2", name: "Ng Kok Song", independent: true, image: candidateNKS },
+  { id: "3", name: "Tan Kin Lian", independent: true, image: candidateTKL },
 ];
 
 type ConfirmationModalProps = {
@@ -62,7 +71,7 @@ const ConfirmationModal: React.FC<ConfirmationModalProps> = ({
           >
             Cancel
           </button>
-          <Link href="/success">
+          <Link href="/voter/success">
             <button
               onClick={onConfirm}
               className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700"
@@ -122,10 +131,18 @@ const CandidateSelection: React.FC = () => {
           {candidates.map((candidate) => (
             <div
               key={candidate.id}
-              className="bg-white h-[400px] w-[320px] rounded-lg text-center"
+              className="bg-white h-[500px] w-[280px] rounded-lg text-center"
             >
-              <div className="bg-slate-500 bg-center bg-contain bg-no-repeat h-[80%] w-full rounded-t-lg mb-2"></div>
-              <div className="flex px-6 gap-2">
+              <div className="bg-center bg-contain bg-no-repeat h-[80%] w-full rounded-t-lg mb-2">
+                <Image
+                  src={candidate.image}
+                  alt={candidate.name}
+                  // objectFit="contain"
+
+                  className="rounded-t-lg"
+                />
+              </div>
+              <div className="flex px-5 gap-2 bg-white z-50">
                 <input
                   type="checkbox"
                   checked={selectedCandidateId === candidate.id}
@@ -133,7 +150,7 @@ const CandidateSelection: React.FC = () => {
                   className="form-checkbox text-blue-600 rounded focus:ring-blue-500"
                 />
                 <div className="flex flex-col text-left">
-                  <h3 className="text-lg font-semibold mt-2 text-slate-900">
+                  <h3 className="text-font-semibold mt-2 text-slate-900">
                     {candidate.name}
                   </h3>
                   {candidate.independent && (

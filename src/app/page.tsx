@@ -63,22 +63,22 @@ export default function Home() {
 
         // Check if every voter in the database has a public key:
 
-        if (data.role === "admin") {
+        if (data.user.role === "admin") {
           // Handle admin redirection.
-          window.location.href = "/"; // TODO: change to admin page.
+          window.location.href = "/admin"; // TODO: change to admin page.
         } else {
           // Handle voter redirection.
           const allUsersHaveKey = await checkAllUsersHaveKey();
           console.log("allUsersHaveKey", allUsersHaveKey);
           if (allUsersHaveKey) {
             // Election day.
-            window.location.href = "/pem-uploader";
+            window.location.href = "/voter/pem-uploader";
           } else if (data.user.publicKey === "") {
             // This user has not generated their key yet.
-            window.location.href = "/pem-generate";
+            window.location.href = "/voter/pem-generate";
           } else {
             // This user has generated their key, but not everyone has.
-            window.location.href = "/pending-election";
+            window.location.href = "/voter/pending-election";
           }
         }
       } else {
@@ -92,6 +92,14 @@ export default function Home() {
 
   return (
     <>
+      <div className="text-white h-[10vh]">
+        <div className="flex justify-center md:justify-normal items-center h-full px-10 md:px-24">
+          <h1 className="text-2xl pr-2 md:pr-5 font-bold border-r-[3px] md:border-r-[5px] border-white">
+            SentinelVote
+          </h1>
+          <h1 className="text-2xl pl-2 md:pl-5">Login</h1>
+        </div>
+      </div>
       <main
         className="flex flex-col items-center justify-between p-8 lg:p-24 bg-gradient-to-r from-slate-900 to-slate-700 text-slate-900"
         style={{
@@ -105,7 +113,7 @@ export default function Home() {
             <div className="flex flex-col">
               <h1 className="font-bold text-5xl">Enter your login details</h1>
               <p className="font-medium text-lg">
-                to continue to the Helios voting platform
+                to continue to the SentinelVote Platform
               </p>
             </div>
           </div>

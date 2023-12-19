@@ -6,6 +6,7 @@ export default function PemUploader() {
   const [privateKey, setPrivateKey] = useState("");
 
   function getCookie(name: string) {
+    //TODO: fix document is undefined
     if (document === undefined) return null;
     else {
       const cookieArray = document?.cookie.split("; ");
@@ -103,9 +104,11 @@ export default function PemUploader() {
       URL.revokeObjectURL(blobUrl);
       // After download success, store the public key in the database
       storeGeneratedPubKey();
-      //TODO: call fold public keys from LRS API and update the database
     } catch (error) {
-      console.error("Error generating zip file:", error);
+      console.error(
+        `Error from /pem-generate : Fail to store into the database the new fold-public-keys`,
+        error
+      );
     }
   };
 
