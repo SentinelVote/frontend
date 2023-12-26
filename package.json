@@ -8,8 +8,7 @@
     "start": "next start",
     "lint": "next lint",
     "seed": "npx knex seed:run --env development",
-    "dev50kBuggy": "concurrently \"next dev -p 53000\" \"node src/server/server.js\"",
-    "reset": "test -f dev.sqlite3 && rm -fv dev.sqlite3 ; knex migrate:latest && npm run seed && npm run dev"
+    "reset": "rm -v dev.sqlite3 ; knex migrate:latest ; npm run seed ; npm run dev"
   },
   "dependencies": {
     "bcrypt": "^5.1.1",
