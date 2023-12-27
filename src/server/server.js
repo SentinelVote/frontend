@@ -14,7 +14,9 @@ const whitelist = ["http://localhost:3000"];
 const BACKEND_API_URL = "http://localhost:3001";
 const PORT = 3001;
 const FABRIC_API_URL = "http://localhost:8801";
-const LRS_API_URL = "http://localhost:8088";
+const FABRIC_API_USERNAME = "admin";
+const FABRIC_API_PASSWORD = "adminpw";
+const LRS_API_URL = "http://localhost:8080";
 
 const corsOptions = {
   origin: function (origin, callback) {
@@ -127,10 +129,6 @@ app.get("/api/get-public-keys", async (req, res) => {
 // ----------------------------------------------------------------------------
 // Endpoint for LRS
 
-/**
- * @param {string} req
- * @param {string} res
- */
 app.get("/api/ping", async (req, res) => {
   try {
     const response = await fetch(`${LRS_API_URL}/ping`);
@@ -141,38 +139,25 @@ app.get("/api/ping", async (req, res) => {
   }
 });
 
-// /generate-keys
-const dataGenerateKeys = {
-  curveName: "prime256v1",
-  format: "PEM",
-};
-
 app.get("/api/generate-keys", async (req, res) => {
   try {
     const response = await fetch(`${LRS_API_URL}/generate-keys`, {
       method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify(dataGenerateKeys),
     });
 
     if (!response.ok) {
       throw new Error(`HTTP error! Status: ${response.status}`);
     }
 
-    const keys = await response.json(); // Keys has been received
+    const keys = await response.json();
     console.log(`keys: ${keys.privateKey}`);
     console.log(`keys: ${keys.publicKey}`);
-    res.json(keys); // Send keys to the client
-    // res.json(keys); // Send keys to the client
-    // TODO: Save keys in the database for that user.
+    res.json(keys);
   } catch (error) {
     console.error("Error during the request inside /api/generate-keys:", error);
   }
 });
 
-// /fold-public-keys
 app.get("/api/fold-public-keys", async (req, res) => {
   console.log(`"/api/fold-public-keys" is called.`);
   console.log(`Calling database`);
@@ -180,7 +165,7 @@ app.get("/api/fold-public-keys", async (req, res) => {
   const publicKeyArray = await responsePKA.json();
   const publicKeyArrayFiltered = publicKeyArray.filter((x) => x !== ""); // HACK find out why it works.
 
-  // PART ONE: Get the folded public keys from the LRS API.
+  console.log('1: Retrieving folded public keys from LRS API...\n');
   try {
     const response = await fetch(`${LRS_API_URL}/fold-public-keys`, {
       method: "POST",
@@ -188,22 +173,16 @@ app.get("/api/fold-public-keys", async (req, res) => {
         "Content-Type": "application/json",
       },
       body: JSON.stringify({
-        publicKeys: publicKeyArrayFiltered,
-        hashName: "sha3-256", // no change needed.
-        format: "PEM", // no change needed.
-        order: "hashes", // no change needed.
+        publicKeys: publicKeyArrayFiltered
       }),
     });
     if (!response.ok) {
       throw new Error(`HTTP error! Status: ${response.status}`);
     }
     const keys = await response.json();
-
     console.log(`${keys.foldedPublicKeys}`);
-    // res.json(keys.foldedPublicKeys);
 
-    // PART TWO: Store it in the database.
-    // Actual implementation.
+    console.log('2: Storing keys in database...\n');
     const keyExists = await knex("foldedPublicKeys")
       .where({ foldedPublicKeys: keys.foldedPublicKeys })
       .first();
@@ -219,13 +198,6 @@ app.get("/api/fold-public-keys", async (req, res) => {
         .catch((error) => console.log(error));
     }
 
-    //TODO: Eventually add function
-    // await knex("foldedPublicKeys")
-    //   .where({ id: 1 })
-    //   .update({ foldedPublicKeys: keys.foldedPublicKeys })
-    //   .then(() => console.log("Data updated"))
-    //   .catch((error) => console.log(error));
-
     // Test that it works.
     const foldedPublicKeysFromDatabase = await knex("foldedPublicKeys")
       .select("*")
@@ -235,8 +207,7 @@ app.get("/api/fold-public-keys", async (req, res) => {
       foldedPublicKeysFromDatabase[0]?.foldedPublicKeys
     );
 
-    // TODO PART THREE: Store it in the blockchain (Fabric, a.k.a port 8801).
-    console.log("\n\nStarting Part 3\n\n");
+    console.log('3: Storing keys in blockchain...\n');
     try {
       const response = await fetch(
         `${BACKEND_API_URL}/api/store-folded-public-keys`,
@@ -260,7 +231,6 @@ app.get("/api/fold-public-keys", async (req, res) => {
 
     res.json(keys.foldedPublicKeys);
     console.log("End of server call.");
-    // res.json(foldedPublicKeysFromDatabase);
   } catch (error) {
     console.error("Error during the request of /api/fold-public-keys:", error);
   }
@@ -271,30 +241,23 @@ app.get("/api/fold-public-keys", async (req, res) => {
 // Endpoint for Fabric
 app.post("/api/store-folded-public-keys", async (req, res) => {
   const { body } = req;
+  const { id: foldedPublicKeys } = body;
   try {
-    /*
-curl -fsSL --request POST --url http://localhost:8801/invoke/vote-channel/chaincode_vote --header "Authorization: Bearer ${token}" --header 'Content-Type: application/json' --data "{\"method\": \"KVContractGo:put\", \"args\": [\"${uuid}\", ${message}]}"
-curl -fsSL --request POST --url http://localhost:8801/user/enroll --header 'Authorization: Bearer' --data "{\"id\": \"admin\", \"secret\": \"adminpw\"}"
-*/
-
     // Generate an admin token.
     const tokenReq = await fetch(`${FABRIC_API_URL}/user/enroll`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
-        Authorization: "Bearer",
+        "Authorization": "Bearer",
       },
       body: JSON.stringify({
-        id: "admin",
-        secret: "adminpw",
+        id: FABRIC_API_USERNAME,
+        secret: FABRIC_API_PASSWORD,
       }),
     });
-    const tokenJSON = await tokenReq.json();
-    const token = tokenJSON.token;
-    console.log(`token: ${token}`);
-    console.log(`\n\n`);
-    console.log(`req_body:\n${body.id}\n`);
-    console.log(`Storing now...\n`);
+    const { token: token } = await tokenReq.json();
+    console.log(`token:\n${token}`);
+    console.log(`foldedPublicKeys:\n${foldedPublicKeys}\n`);
 
     // Store the folded public keys in the blockchain.
     const response = await fetch(
@@ -307,7 +270,7 @@ curl -fsSL --request POST --url http://localhost:8801/user/enroll --header 'Auth
         },
         body: JSON.stringify({
           method: "KVContractGo:put",
-          args: ["0", body.id],
+          args: ["0", foldedPublicKeys],
         }),
       }
     );
@@ -337,11 +300,11 @@ app.post("/api/store-vote", async (req, res) => {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
-        Authorization: "Bearer",
+        "Authorization": "Bearer",
       },
       body: JSON.stringify({
-        id: "admin",
-        secret: "adminpw",
+        id: FABRIC_API_USERNAME,
+        secret: FABRIC_API_PASSWORD
       }),
     });
     if (!responseFabricEnroll.ok) {
@@ -366,7 +329,6 @@ app.post("/api/store-vote", async (req, res) => {
         foldedPublicKeys: foldedPublicKeys[0]?.foldedPublicKeys,
         privateKeyContent: body.privateKey,
         message: body.vote,
-        format: "PEM",
       })
     });
     if (!responseLRS.ok) {
@@ -377,13 +339,13 @@ app.post("/api/store-vote", async (req, res) => {
 
     // Store the signature and vote in the blockchain.
     const blockKey = ringSignature;
-    const blockValue = body.vote;
+    const blockValue = body.vote; // TODO: Convert into JSON with voter's region.
     const responseFabricChaincode = await fetch(
       `${FABRIC_API_URL}/invoke/vote-channel/chaincode_vote`,
       {
         method: "POST",
         headers: {
-          Authorization: `Bearer ${token}`,
+          "Authorization": `Bearer ${token}`,
           "Content-Type": "application/json",
         },
         body: JSON.stringify({
