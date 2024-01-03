@@ -216,7 +216,7 @@ export default function AdminPage() {
                   </div>
                 </div>
 
-                <Table>
+                <TableContainer>
                   <thead>
                     <TableRow isHeader>
                       <TableCell isHeader>First Name</TableCell>
@@ -248,7 +248,7 @@ export default function AdminPage() {
                       </TableRow>
                     ))}
                   </tbody>
-                </Table>
+                </TableContainer>
               </div>
               <div className="flex mt-2 justify-between">
                 <h1 className="justify-center text-slate-500">
@@ -281,7 +281,7 @@ interface TableProps {
   children: ReactNode;
 }
 
-export const Table: React.FC<TableProps> = ({ children }) => (
+const TableContainer: React.FC<TableProps> = ({ children }) => (
   <div className="overflow-x-auto">
     <table className="min-w-full min-h-full bg-white">{children}</table>
   </div>
@@ -292,10 +292,7 @@ interface TableRowProps {
   isHeader?: boolean;
 }
 
-export const TableRow: React.FC<TableRowProps> = ({
-  children,
-  isHeader = false,
-}) => (
+const TableRow: React.FC<TableRowProps> = ({ children, isHeader = false }) => (
   <tr
     className={`border-b-[0.2px]  ${
       isHeader

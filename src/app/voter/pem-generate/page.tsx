@@ -4,19 +4,27 @@ import { useEffect, useState } from "react";
 export default function PemUploader() {
   const [publicKey, setPublicKey] = useState("");
   const [privateKey, setPrivateKey] = useState("");
-
-  function getCookie(name: string) {
-    //TODO: fix document is undefined
-    if (document === undefined) return null;
-    else {
-      const cookieArray = document?.cookie.split("; ");
-      const cookie = cookieArray.find((row) => row.startsWith(name + "="));
-      return cookie ? cookie.split("=")[1] : null;
-    }
+  const [userEmailCookie, setUserEmailCookie] = useState("");
+  function getCookie(name: string): string | null {
+    // Since document.cookie is not available on the server side,
+    // we delay this code to run on the client side in the useEffect hook
+    const cookieArray = document.cookie.split("; ");
+    const cookie = cookieArray.find((row) => row.startsWith(`${name}=`));
+    return cookie ? decodeURIComponent(cookie.split("=")[1]) : null;
   }
+
   // const roleCookie = getCookie("role");
-  const userEmailCookie = getCookie("user_email");
-  console.log("userEmailCookie", userEmailCookie);
+  useEffect(() => {
+    // Now this runs on the client side, so document is defined
+    const emailCookie = getCookie("user_email");
+    setUserEmailCookie(emailCookie || "");
+    console.log("userEmailCookie", userEmailCookie);
+
+    // Fetch users and generate key on component mount
+    getUsers();
+    handleGenerateKey();
+  }, []);
+
   const handleGenerateKey = async () => {
     try {
       const response = await fetch("http://localhost:3001/api/generate-keys");
