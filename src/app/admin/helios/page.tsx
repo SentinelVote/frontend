@@ -1,18 +1,11 @@
 "use client";
+import VoteCountBarChart from "@/app/components/VoteCountBarChart";
+import VoteCountBarChartPerHour from "@/app/components/VoteCountPerHour";
+import VotePieChart from "@/app/components/VotePieChart";
+import { Nominee } from "@/types/nominee";
 import * as d3 from "d3";
 import Image from "next/image";
 import React, { useEffect, useRef, useState } from "react";
-import {
-  Bar,
-  BarChart,
-  CartesianGrid,
-  Cell,
-  Pie,
-  PieChart,
-  Tooltip,
-  XAxis,
-  YAxis,
-} from "recharts";
 // import SingaporeJSON from "./data/singapore-planning-areas-topojson.json";
 export interface Voter {
   firstName: string;
@@ -21,13 +14,27 @@ export interface Voter {
   region: string;
   publicKey: string;
 }
-type Nominee = {
-  id: number;
-  name: string;
-  party: string;
-  voteCount: number;
-  color: string;
-};
+
+interface Data {
+  Hour: string;
+  Count: number;
+}
+// Dummy data for the bar chart
+const data: Data[] = [
+  { Hour: "1am", Count: 10 },
+  { Hour: "3am", Count: 20 },
+  { Hour: "5am", Count: 5 },
+  { Hour: "7am", Count: 30 },
+  { Hour: "9am", Count: 25 },
+  { Hour: "11am", Count: 40 },
+  { Hour: "1pm", Count: 15 },
+  { Hour: "3pm", Count: 35 },
+  { Hour: "5pm", Count: 45 },
+  { Hour: "7pm", Count: 10 },
+  { Hour: "9pm", Count: 50 },
+  { Hour: "11pm", Count: 5 },
+  { Hour: "12am", Count: 10 },
+];
 
 const nominees: Nominee[] = [
   {
@@ -133,7 +140,7 @@ export default function AdminPage() {
             <h1 className="font-medium text-5x text-slate-900">
               Vote Count Per Hour
             </h1>
-            <VoteCountBarChartPerHour />
+            <VoteCountBarChartPerHour data={data} />
             <h1 className="font-medium text-5x text-slate-900">Map View</h1>
             {/* <SingaporeMap /> */}
             <div
@@ -213,8 +220,6 @@ export default function AdminPage() {
               ))}
             </div>
           </div>
-
-          {/* <MyD3Component /> */}
           <div className="flex gap-2 mt-[10px]">
             <div className="border border-gray-300 rounded-lg p-4">
               <h1 className="font-medium text-base text-slate-900 ">
@@ -230,7 +235,7 @@ export default function AdminPage() {
                   alignItems: "center",
                 }}
               >
-                <PieChartComponent />
+                <VotePieChart nominees={nominees} />
                 <div className="flex flex-col gap-2">
                   {nominees.map((nominee, index) => {
                     return (
@@ -268,7 +273,7 @@ export default function AdminPage() {
                 <h1 className="font-normal text-2xl text-slate-900 ">
                   {totalVotes.toLocaleString()}
                 </h1>
-                <VoteCountBarChart />
+                <VoteCountBarChart nominees={nominees} />
                 <div className="flex flex-col gap-2">
                   {nominees.map((nominee, index) => {
                     return (
@@ -298,104 +303,6 @@ export default function AdminPage() {
     </main>
   );
 }
-
-interface Data {
-  Hour: string;
-  Count: number;
-}
-// Dummy data for the bar chart
-const data: Data[] = [
-  { Hour: "1am", Count: 10 },
-  { Hour: "3am", Count: 20 },
-  { Hour: "5am", Count: 5 },
-  { Hour: "7am", Count: 30 },
-  { Hour: "9am", Count: 25 },
-  { Hour: "11am", Count: 40 },
-  { Hour: "1pm", Count: 15 },
-  { Hour: "3pm", Count: 35 },
-  { Hour: "5pm", Count: 45 },
-  { Hour: "7pm", Count: 10 },
-  { Hour: "9pm", Count: 50 },
-  { Hour: "11pm", Count: 5 },
-  { Hour: "12am", Count: 10 },
-];
-
-const VoteCountBarChartPerHour: React.FC = () => {
-  useEffect(() => {
-    d3.select("#my_dataviz").selectAll("*").remove();
-
-    const margin = { top: 20, right: 20, bottom: 70, left: 40 },
-      width = 660 - margin.left - margin.right, // Increased width
-      height = 270 - margin.top - margin.bottom;
-
-    const svg = d3
-      .select("#my_dataviz")
-      .append("svg")
-      .attr("width", width + margin.left + margin.right)
-      .attr("height", height + margin.top + margin.bottom)
-      .append("g")
-      .attr("transform", `translate(${margin.left},${margin.top})`);
-
-    // Set up the X-axis scale
-    const x = d3
-      .scaleBand()
-      .range([0, width])
-      .domain(data.map((d) => d.Hour))
-      .padding(0.2);
-    // Append X-axis to the SVG
-    svg
-      .append("g")
-      .attr("transform", `translate(0,${height})`)
-      .call(d3.axisBottom(x))
-      //   .selectAll("text")
-      //   .attr("transform", "translate(10,0)")
-      //   .style("text-anchor", "end")
-      .style("color", "#000");
-
-    // Set up the scales with proper type assertions
-    const maxYValue = d3.max(data, (d) => d.Count) ?? 0;
-
-    // Set up the Y-axis scale
-    const y = d3.scaleLinear().domain([0, maxYValue]).range([height, 0]);
-
-    svg
-      .append("g")
-      .attr("class", "grid")
-      .call(
-        d3
-          .axisLeft(y)
-          .tickSize(-width)
-          .tickFormat("" as any)
-      )
-      .selectAll("line")
-      .style("stroke", "#e8e8e8")
-      .style("stroke-opacity", "0.7")
-      .style("shape-rendering", "crispEdges");
-
-    // Append Y-axis to the SVG
-    svg.append("g").call(d3.axisLeft(y)).style("color", "#000");
-
-    const colorScale = d3.scaleSequential((d) =>
-      d3.interpolateBlues(d / maxYValue)
-    );
-    // Draw the bars
-    svg
-      .selectAll(".bar")
-      .data(data)
-      .enter()
-      .append("rect")
-      .attr("class", "bar")
-      .attr("x", (d) => x(d.Hour)!)
-      .attr("y", (d) => y(d.Count))
-      .attr("width", x.bandwidth())
-      .attr("height", (d) => height - y(d.Count))
-      .attr("fill", (d) => colorScale(d.Count))
-      .attr("border-radius", "10px");
-    // Use the color scale for fill
-  }, [data]);
-
-  return <div id="my_dataviz" />;
-};
 
 const SingaporeMap: React.FC = () => {
   d3.select("#map").selectAll("*").remove();
@@ -439,55 +346,4 @@ const SingaporeMap: React.FC = () => {
   }, []);
 
   return <div ref={mapContainerRef} id="map" />;
-};
-
-const PieChartComponent: React.FC = () => {
-  const COLORS = ["#2563EB", "#FB923C", "#C084FC"];
-
-  return (
-    <PieChart width={200} height={200}>
-      <Pie
-        data={nominees}
-        innerRadius={50}
-        outerRadius={80}
-        fill="#8884d8"
-        paddingAngle={1}
-        dataKey="voteCount"
-      >
-        {nominees.map((entry, index) => (
-          <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
-        ))}
-      </Pie>
-    </PieChart>
-  );
-};
-
-const VoteCountBarChart: React.FC = () => {
-  return (
-    <BarChart
-      width={270}
-      height={170}
-      data={nominees}
-      margin={{
-        top: 10,
-        right: 30,
-        left: 20,
-        bottom: 0,
-      }}
-    >
-      <CartesianGrid strokeDasharray="3 3" />
-      <XAxis dataKey="id" fontSize="12px" />
-      <YAxis fontSize="10px" />
-      <Tooltip />
-
-      <Bar
-        dataKey="voteCount"
-        // activeBar=
-      >
-        {nominees.map((nominee, index) => (
-          <Cell key={`cell-${index}`} fill={nominee.color} />
-        ))}
-      </Bar>
-    </BarChart>
-  );
 };
