@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import { Inter } from "next/font/google";
 // import "./globals.css";
-
+import Image from "next/image";
 const inter = Inter({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
@@ -19,7 +19,13 @@ export default function RootLayout({
       <body className={inter.className}>
         <div className="text-white h-[10vh]">
           <div className="flex justify-center md:justify-normal items-center h-full px-10 md:px-24">
-            <h1 className="text-2xl pr-2 md:pr-5 font-bold border-r-[3px] md:border-r-[5px] border-white">
+            <Image
+              src="/SentinelVote.ico"
+              width={36}
+              height={36}
+              alt="SentinelVote Logo"
+            />
+            <h1 className="text-2xl p-2 md:px-5 font-bold border-r-[3px] md:border-r-[5px] border-white">
               SentinelVote
             </h1>
             <h1 className="text-2xl pl-2 md:pl-5">Admin</h1>
