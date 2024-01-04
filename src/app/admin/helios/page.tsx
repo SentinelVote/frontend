@@ -3,17 +3,11 @@ import VoteCountBarChart from "@/app/components/VoteCountBarChart";
 import VoteCountBarChartPerHour from "@/app/components/VoteCountPerHour";
 import VotePieChart from "@/app/components/VotePieChart";
 import { Nominee } from "@/types/nominee";
+import { Voter } from "@/types/voter";
 import * as d3 from "d3";
 import Image from "next/image";
 import React, { useEffect, useRef, useState } from "react";
 // import SingaporeJSON from "./data/singapore-planning-areas-topojson.json";
-export interface Voter {
-  firstName: string;
-  lastName: string;
-  userEmail: string;
-  region: string;
-  publicKey: string;
-}
 
 interface Data {
   Hour: string;

@@ -4,14 +4,7 @@ import Link from "next/link";
 import { ReactNode, useEffect, useState } from "react";
 import registeredVoter from "../../../public/registered_voter.svg";
 import voted from "../../../public/voted.svg";
-
-export interface Voter {
-  firstName: string;
-  lastName: string;
-  userEmail: string;
-  region: string;
-  publicKey: string;
-}
+import { Voter } from "../../types/voter";
 
 const ITEMS_PER_PAGE = 12;
 
@@ -28,7 +21,50 @@ const checkVoteStart = async () => {
     return false;
   }
 };
+
 const hasVoteStarted = checkVoteStart();
+
+const TableContainer: React.FC<TableProps> = ({ children }) => (
+  <div className="overflow-x-auto">
+    <table className="min-w-full min-h-full bg-white">{children}</table>
+  </div>
+);
+
+interface TableProps {
+  children: ReactNode;
+}
+
+interface TableRowProps {
+  children: ReactNode;
+  isHeader?: boolean;
+}
+interface TableCellProps {
+  children: ReactNode;
+  isHeader?: boolean;
+}
+const TableRow: React.FC<TableRowProps> = ({ children, isHeader = false }) => (
+  <tr
+    className={`border-b-[0.2px]  ${
+      isHeader
+        ? "text-neutral-400 border-slate-900"
+        : "bg-white hover:bg-slate-100"
+    }`}
+  >
+    {children}
+  </tr>
+);
+
+const TableCell: React.FC<TableCellProps> = ({
+  children,
+  isHeader = false,
+}) => {
+  const baseStyle = "px-4 py-2";
+  return (
+    <td className={`${baseStyle} ${isHeader ? "text-left font-medium" : ""}`}>
+      {children}
+    </td>
+  );
+};
 
 export default function AdminPage() {
   console.log(hasVoteStarted);
@@ -44,6 +80,7 @@ export default function AdminPage() {
 
     checkAndSetVoteStart();
   }, []);
+
   // Calculate the voters to show on the current page
   const indexOfLastVoter = currentPage * ITEMS_PER_PAGE;
   const indexOfFirstVoter = indexOfLastVoter - ITEMS_PER_PAGE;
@@ -172,7 +209,6 @@ export default function AdminPage() {
             <Link href="/admin/helios">
               <button
                 type="button"
-                // onClick={handleExit}
                 className=" bg-white border border-gray-300 w-full self-center
       focus:outline-none hover:bg-gray-100 focus:ring-4 focus:ring-gray-200 font-medium rounded-lg
       text-sm px-5 py-2.5 me-2 dark:bg-gray-800 dark:text-white dark:border-gray-600
@@ -184,7 +220,6 @@ export default function AdminPage() {
             <Link href="/">
               <button
                 type="button"
-                // onClick={handleExit}
                 className=" bg-white border border-gray-300 w-full self-center
       focus:outline-none hover:bg-gray-100 focus:ring-4 focus:ring-gray-200 font-medium rounded-lg
       text-sm px-5 py-2.5 me-2 mb-2 dark:bg-gray-800 dark:text-white dark:border-gray-600
@@ -276,47 +311,3 @@ export default function AdminPage() {
     </main>
   );
 }
-
-interface TableProps {
-  children: ReactNode;
-}
-
-const TableContainer: React.FC<TableProps> = ({ children }) => (
-  <div className="overflow-x-auto">
-    <table className="min-w-full min-h-full bg-white">{children}</table>
-  </div>
-);
-
-interface TableRowProps {
-  children: ReactNode;
-  isHeader?: boolean;
-}
-
-const TableRow: React.FC<TableRowProps> = ({ children, isHeader = false }) => (
-  <tr
-    className={`border-b-[0.2px]  ${
-      isHeader
-        ? "text-neutral-400 border-slate-900"
-        : "bg-white hover:bg-slate-100"
-    }`}
-  >
-    {children}
-  </tr>
-);
-
-interface TableCellProps {
-  children: ReactNode;
-  isHeader?: boolean;
-}
-
-const TableCell: React.FC<TableCellProps> = ({
-  children,
-  isHeader = false,
-}) => {
-  const baseStyle = "px-4 py-2";
-  return (
-    <td className={`${baseStyle} ${isHeader ? "text-left font-medium" : ""}`}>
-      {children}
-    </td>
-  );
-};
