@@ -1,6 +1,17 @@
 "use client";
 import * as d3 from "d3";
 import React, { useEffect, useRef, useState } from "react";
+import {
+  Bar,
+  BarChart,
+  CartesianGrid,
+  Cell,
+  Pie,
+  PieChart,
+  Tooltip,
+  XAxis,
+  YAxis,
+} from "recharts";
 // import SingaporeJSON from "./data/singapore-planning-areas-topojson.json";
 export interface Voter {
   firstName: string;
@@ -9,6 +20,37 @@ export interface Voter {
   region: string;
   publicKey: string;
 }
+type Nominee = {
+  id: number;
+  name: string;
+  party: string;
+  voteCount: number;
+  color: string;
+};
+
+const nominees: Nominee[] = [
+  {
+    id: 1,
+    name: "Tharman Shanmugaratnam",
+    party: "Independent",
+    voteCount: 600000,
+    color: "#2563EB",
+  },
+  {
+    id: 2,
+    name: "Tan Kin Lian",
+    party: "Independent",
+    voteCount: 220000,
+    color: "#FB923C",
+  },
+  {
+    id: 3,
+    name: "Ng Kok Song",
+    party: "Independent",
+    voteCount: 180000,
+    color: "#C084FC",
+  },
+];
 
 const ITEMS_PER_PAGE = 12;
 
@@ -53,23 +95,6 @@ export default function AdminPage() {
   for (let i = 1; i <= Math.ceil(voters.length / ITEMS_PER_PAGE); i++) {
     pageNumbers.push(i);
   }
-  type Nominee = {
-    id: number;
-    name: string;
-    party: string;
-    totalVotes: number;
-  };
-
-  const nominees: Nominee[] = [
-    {
-      id: 1,
-      name: "Tharman Shanmugaratnam",
-      party: "Independent",
-      totalVotes: 600000,
-    },
-    { id: 2, name: "Tan Kin Lian", party: "Independent", totalVotes: 220000 },
-    { id: 3, name: "Ng Kok Song", party: "Independent", totalVotes: 180000 },
-  ];
 
   useEffect(() => {
     const fetchUsers = async () => {
@@ -87,13 +112,16 @@ export default function AdminPage() {
 
     fetchUsers();
   }, []);
+  const totalVotes = nominees.reduce((acc, nominee) => {
+    return acc + nominee.voteCount;
+  }, 0);
+  console.log(totalVotes);
 
   return (
     <main
       className="flex flex-col items-center justify-between px-6 py-6 bg-white
-        to-slate-700 text-slate-900"
+        to-slate-700 text-slate-900 h-80vh"
       style={{
-        minHeight: "90vh",
         overflow: "hidden",
         justifyContent: "center",
       }}
@@ -104,7 +132,7 @@ export default function AdminPage() {
             <h1 className="font-medium text-5x text-slate-900">
               Vote Count Per Hour
             </h1>
-            <VoteCountBarChart />
+            <VoteCountBarChartPerHour />
             <h1 className="font-medium text-5x text-slate-900">Map View</h1>
             {/* <SingaporeMap /> */}
             <div
@@ -170,7 +198,7 @@ export default function AdminPage() {
                   </div>
                   <span className="text-sm">{nominee.party}</span>
                   <span className="text-sm">
-                    {nominee.totalVotes.toLocaleString()}
+                    {nominee.voteCount.toLocaleString()}
                   </span>
                 </div>
               ))}
@@ -188,24 +216,72 @@ export default function AdminPage() {
                   width: "270px",
                   height: "270px",
                   borderRadius: "10px",
-                  backgroundColor: "gray",
-                  opacity: "0.2",
+                  display: "flex",
+                  flexDirection: "column",
+                  alignItems: "center",
                 }}
-              ></div>
+              >
+                <PieChartComponent />
+                <div className="flex flex-col gap-2">
+                  {nominees.map((nominee, index) => {
+                    return (
+                      <div
+                        className="flex justify-between text-slate-900"
+                        key={index}
+                      >
+                        <div className="flex">
+                          <div
+                            className="w-4 h-4 rounded-full mr-2"
+                            style={{ backgroundColor: nominee.color }}
+                          ></div>
+                          <span className="text-xs">{nominee.name}</span>
+                        </div>
+                        <span className="text-xs ml-2">
+                          {(nominee.voteCount / totalVotes) * 100}%
+                        </span>
+                      </div>
+                    );
+                  })}
+                </div>
+              </div>
             </div>
             <div className="border border-gray-300 rounded-lg p-4">
               <h1 className="font-medium text-5x text-slate-900 ">
                 Vote Count
-              </h1>{" "}
+              </h1>
               <div
                 style={{
                   width: "270px",
                   height: "270px",
                   borderRadius: "10px",
-                  backgroundColor: "gray",
-                  opacity: "0.2",
                 }}
-              ></div>
+              >
+                <h1 className="font-normal text-2xl text-slate-900 ">
+                  {totalVotes.toLocaleString()}
+                </h1>
+                <VoteCountBarChart />
+                <div className="flex flex-col gap-2">
+                  {nominees.map((nominee, index) => {
+                    return (
+                      <div
+                        className="flex justify-between text-slate-900"
+                        key={index}
+                      >
+                        <div className="flex">
+                          <div
+                            className="w-4 h-4 rounded-full mr-2"
+                            style={{ backgroundColor: nominee.color }}
+                          ></div>
+                          <span className="text-xs">{nominee.name}</span>
+                        </div>
+                        <span className="text-xs ml-2">
+                          {(nominee.voteCount / totalVotes) * 100}%
+                        </span>
+                      </div>
+                    );
+                  })}
+                </div>
+              </div>
             </div>
           </div>
         </div>
@@ -235,7 +311,7 @@ const data: Data[] = [
   { Hour: "12am", Count: 10 },
 ];
 
-const VoteCountBarChart: React.FC = () => {
+const VoteCountBarChartPerHour: React.FC = () => {
   useEffect(() => {
     d3.select("#my_dataviz").selectAll("*").remove();
 
@@ -354,4 +430,55 @@ const SingaporeMap: React.FC = () => {
   }, []);
 
   return <div ref={mapContainerRef} id="map" />;
+};
+
+const PieChartComponent: React.FC = () => {
+  const COLORS = ["#2563EB", "#FB923C", "#C084FC"];
+
+  return (
+    <PieChart width={200} height={200}>
+      <Pie
+        data={nominees}
+        innerRadius={50}
+        outerRadius={80}
+        fill="#8884d8"
+        paddingAngle={1}
+        dataKey="voteCount"
+      >
+        {nominees.map((entry, index) => (
+          <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
+        ))}
+      </Pie>
+    </PieChart>
+  );
+};
+
+const VoteCountBarChart: React.FC = () => {
+  return (
+    <BarChart
+      width={270}
+      height={170}
+      data={nominees}
+      margin={{
+        top: 10,
+        right: 30,
+        left: 20,
+        bottom: 0,
+      }}
+    >
+      <CartesianGrid strokeDasharray="3 3" />
+      <XAxis dataKey="id" fontSize="12px" />
+      <YAxis fontSize="10px" />
+      <Tooltip />
+
+      <Bar
+        dataKey="voteCount"
+        // activeBar=
+      >
+        {nominees.map((nominee, index) => (
+          <Cell key={`cell-${index}`} fill={nominee.color} />
+        ))}
+      </Bar>
+    </BarChart>
+  );
 };
