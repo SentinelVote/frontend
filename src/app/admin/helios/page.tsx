@@ -1,5 +1,6 @@
 "use client";
 import * as d3 from "d3";
+import Image from "next/image";
 import React, { useEffect, useRef, useState } from "react";
 import {
   Bar,
@@ -126,7 +127,7 @@ export default function AdminPage() {
         justifyContent: "center",
       }}
     >
-      <div className="flex w-full text-white">
+      <div className="flex w-full text-white align-middle justify-center">
         <div className="flex flex-col border border-gray-300 rounded-lg p-4 mr-2">
           <div className="flex flex-col gap-2">
             <h1 className="font-medium text-5x text-slate-900">
@@ -185,12 +186,20 @@ export default function AdminPage() {
                   </span>
 
                   <div className="flex items-center w-[180px] font-normal">
-                    <div className="flex-shrink-0 h-12 w-12 overflow-hidden rounded-full border mr-4">
-                      {/* <img
-                        src="/path-to-your-image.jpg"
+                    <div
+                      className="flex-shrink-0 h-12 w-12 overflow-hidden rounded-full border border-black mr-4 "
+                      style={{
+                        opacity: "0.9",
+                        backgroundColor: nominee.color,
+                      }}
+                    >
+                      <Image
+                        src="/user.svg"
                         alt="profile"
-                        className="h-full w-full object-cover"
-                      /> */}
+                        width="10"
+                        height="10"
+                        className="h-full w-full"
+                      />
                     </div>
                     <div>
                       <span className="text-sm">{nominee.name}</span>
