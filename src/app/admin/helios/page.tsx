@@ -5,10 +5,12 @@ import VotePieChart from "@/app/components/VotePieChart";
 import { Nominee } from "@/types/nominee";
 import { Voter } from "@/types/voter";
 import * as d3 from "d3";
+import * as GeoJSON from "geojson";
 import Image from "next/image";
 import React, { useEffect, useRef, useState } from "react";
-// import SingaporeJSON from "./data/singapore-planning-areas-topojson.json";
-
+import SingaporeAreasGeoJson from "./data/singapore-planning-areas-topojson.json";
+import "./styles.scss";
+const singaporeAreas = SingaporeAreasGeoJson as GeoJSON.FeatureCollection;
 interface Data {
   Hour: string;
   Count: number;
@@ -136,16 +138,8 @@ export default function AdminPage() {
             </h1>
             <VoteCountBarChartPerHour data={data} />
             <h1 className="font-medium text-5x text-slate-900">Map View</h1>
-            {/* <SingaporeMap /> */}
-            <div
-              style={{
-                width: "660px",
-                height: "270px",
-                borderRadius: "10px",
-                backgroundColor: "gray",
-                opacity: "0.2",
-              }}
-            ></div>
+            <SingaporeMap />
+
             {/* <Link href="/">
               <button
                 type="button"
@@ -297,47 +291,141 @@ export default function AdminPage() {
     </main>
   );
 }
+interface CountsByAreaByHr {
+  [key: string]: number;
+}
 
+const countsByAreaByHr: CountsByAreaByHr = {
+  OUTRAM: 1000,
+  "BUKIT MERAH": 500,
+  "DOWNTOWN CORE": 200,
+  "MARINA SOUTH": 100,
+  "SINGAPORE RIVER": 1500,
+  QUEENSTOWN: 100,
+  "MARINA EAST": 200,
+  "RIVER VALLEY": 300,
+  "WESTERN ISLANDS": 0,
+  "SOUTHERN ISLANDS": 0,
+  "STRAITS VIEW": 600,
+  "MARINE PARADE": 700,
+  ROCHOR: 800,
+  KALLANG: 900,
+  ORCHARD: 1000,
+  NEWTON: 1100,
+  PIONEER: 1200,
+  TANGLIN: 1300,
+  CLEMENTI: 1400,
+  TUAS: 100,
+  BEDOK: 200,
+  MUSEUM: 300,
+  "JURONG EAST": 400,
+  GEYLANG: 500,
+  "BOON LAY": 600,
+  "BUKIT TIMAH": 700,
+  NOVENA: 800,
+  TAMPINES: 900,
+  "BUKIT BATOK": 1000,
+  "JURONG WEST": 1100,
+  SERANGOON: 1200,
+  HOUGANG: 1300,
+  "PAYA LEBAR": 1400,
+  BISHAN: 100,
+  "TOA PAYOH": 200,
+  "BUKIT PANJANG": 300,
+  "CHANGI BAY": 400,
+  "ANG MO KIO": 500,
+  "PASIR RIS": 600,
+  TENGAH: 50,
+  "CHOA CHU KANG": 100,
+  SENGKANG: 2000,
+  CHANGI: 300,
+  PUNNGOL: 400,
+  "SUNGEI KADUT": 500,
+  YISHUN: 600,
+  MANDAI: 700,
+  SELETAR: 800,
+  WOODLANDS: 900,
+  "WESTERN WATER CATCHMENT": 10,
+  "NORTH-EASTERN ISLANDS": 0,
+  SIMPANG: 30,
+  SEMBAWANG: 40,
+  "CENTRAL WATER CATCHMENT": 0,
+  "LIM CHU KANG": 50,
+};
+const maxCount = Math.max(...Object.values(countsByAreaByHr));
+const colorScale = d3.scaleSequential([0, maxCount], d3.interpolateBlues);
+
+const maxVotesPerArea = Math.max(...Object.values(countsByAreaByHr));
+const maxVotesPerAreaName = Object.keys(countsByAreaByHr).find(
+  (key) => countsByAreaByHr[key] === maxVotesPerArea
+);
 const SingaporeMap: React.FC = () => {
-  d3.select("#map").selectAll("*").remove();
   const mapContainerRef = useRef<HTMLDivElement>(null);
-
+  const addComma = (num: number) => {
+    return num.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+  };
   useEffect(() => {
-    const width = 800; // or use the container's width if dynamic sizing is required
-    const height = 600; // or use the container's height if dynamic sizing is required
     d3.select("#map").selectAll("*").remove();
-    // Fetch the GeoJSON data using the public URL path
-    fetch(
-      "https://raw.githubusercontent.com/hvo/datasets/master/nyc_zip.geojson"
-    )
-      .then((response) => response.json())
-      .then((data: any) => {
-        if (mapContainerRef.current && data.features) {
-          // Now we have a valid GeoJSON object
-          const projection = d3.geoMercator().fitSize([width, height], data);
-          const pathGenerator = d3.geoPath().projection(projection);
+    const width = 500;
+    const height = 300;
+    const tooltip = d3
+      .select("body")
+      .append("div")
+      .attr("class", "tooltip")
+      .style("opacity", 0);
+    if (mapContainerRef.current) {
+      const projection = d3
+        .geoMercator()
+        .fitSize([width, height], singaporeAreas as any);
+      const pathGenerator = d3.geoPath().projection(projection);
 
-          const svg = d3
-            .select(mapContainerRef.current)
-            .append("svg")
-            .attr("width", width)
-            .attr("height", height);
+      const svg = d3
+        .select(mapContainerRef.current)
+        .append("svg")
+        .attr("width", width)
+        .attr("height", height);
 
-          svg
-            .selectAll(".area")
-            .data(data.features)
-            .enter()
-            .append("path")
-            .attr("class", "area")
-            // Type assertion here to inform TypeScript about the type
-            .attr("d", (d: any) => pathGenerator(d as d3.GeoPermissibleObjects))
-            .attr("fill", "#69b3a2");
-        }
-      })
-      .catch((error) => {
-        console.error("Error fetching the GeoJSON data: ", error);
-      });
+      svg
+        .selectAll(".area")
+        .data(SingaporeAreasGeoJson.features)
+        .enter()
+        .append("path")
+        .attr("class", "area")
+        .attr("d", pathGenerator as any)
+        .attr("fill", (d) => {
+          const count = countsByAreaByHr[d.properties.PLN_AREA_N] || 0;
+          return colorScale(count);
+        })
+        .style("stroke", "#000")
+        .style("stroke-width", 0.5)
+        .on("mouseover", (event, d) => {
+          const areaName = d.properties.PLN_AREA_N;
+          const countValue = countsByAreaByHr[areaName] || 0;
+
+          tooltip.transition().duration(200).style("opacity", 0.9);
+          tooltip
+            .html(`${areaName}:<br/>${addComma(countValue)} votes`)
+            .style("left", event.pageX + "px")
+            .style("top", event.pageY - 28 + "px");
+        })
+        .on("mousemove", (event) => {
+          tooltip
+            .style("left", event.pageX + 10 + "px")
+            .style("top", event.pageY - 10 + "px");
+        })
+        .on("mouseout", () => {
+          tooltip.transition().duration(500).style("opacity", 0);
+        });
+    }
   }, []);
 
-  return <div ref={mapContainerRef} id="map" />;
+  return (
+    <div className="flex flex-col relative justify-center w-full">
+      <div ref={mapContainerRef} id="map" className="self-center" />
+      <div className="absolute bottom-0 right-0 text-xs text-slate-900">
+        <h1>Highest: {addComma(maxVotesPerArea)} votes</h1>
+        <h1 className="capitalize">Location: {maxVotesPerAreaName}</h1>
+      </div>
+    </div>
+  );
 };
