@@ -206,6 +206,17 @@ export default function AdminPage() {
             >
               Fold Keys
             </button>
+            <Link href="/admin/simulation">
+              <button
+                type="button"
+                className=" bg-white border border-gray-300 w-full self-center
+      focus:outline-none hover:bg-gray-100 focus:ring-4 focus:ring-gray-200 font-medium rounded-lg
+      text-sm px-5 py-2.5 me-2 dark:bg-gray-800 dark:text-white dark:border-gray-600
+      dark:hover:bg-gray-700 dark:hover:border-gray-600 dark:focus:ring-gray-700"
+              >
+                Simulation Page
+              </button>
+            </Link>
             <Link href="/admin/helios">
               <button
                 type="button"
@@ -214,16 +225,16 @@ export default function AdminPage() {
       text-sm px-5 py-2.5 me-2 dark:bg-gray-800 dark:text-white dark:border-gray-600
       dark:hover:bg-gray-700 dark:hover:border-gray-600 dark:focus:ring-gray-700"
               >
-                Go to Helios Platform
+                Helios Platform
               </button>
             </Link>
             <Link href="/">
               <button
                 type="button"
-                className=" bg-white border border-gray-300 w-full self-center
-      focus:outline-none hover:bg-gray-100 focus:ring-4 focus:ring-gray-200 font-medium rounded-lg
-      text-sm px-5 py-2.5 me-2 mb-2 dark:bg-gray-800 dark:text-white dark:border-gray-600
-      dark:hover:bg-gray-700 dark:hover:border-gray-600 dark:focus:ring-gray-700"
+                className=" bg-white border border-red-300 w-full self-center
+      focus:outline-none hover:bg-red-100 focus:ring-4 focus:ring-red-200 font-medium rounded-lg
+      text-sm px-5 py-2.5 me-2 mb-2 dark:bg-red-800 dark:text-white dark:border-red-600
+      dark:hover:bg-red-700 dark:hover:border-red-600 dark:focus:ring-red-700"
               >
                 Log out
               </button>

@@ -7,6 +7,7 @@ import { Voter } from "@/types/voter";
 import * as d3 from "d3";
 import * as GeoJSON from "geojson";
 import Image from "next/image";
+import Link from "next/link";
 import React, { useEffect, useRef, useState } from "react";
 import SingaporeAreasGeoJson from "./data/singapore-planning-areas-topojson.json";
 import "./styles.scss";
@@ -123,24 +124,31 @@ export default function AdminPage() {
 
   return (
     <main
-      className="flex flex-col items-center justify-between px-6 py-6 bg-white
+      className="flex flex-col items-center justify-between px-6 py-1 bg-white
         to-slate-700 text-slate-900 h-80vh"
       style={{
         overflow: "hidden",
         justifyContent: "center",
       }}
     >
-      <div className="flex w-full text-white align-middle justify-center">
-        <div className="flex flex-col border border-gray-300 rounded-lg p-4 mr-2">
-          <div className="flex flex-col gap-2">
-            <h1 className="font-medium text-5x text-slate-900">
-              Vote Count Per Hour
-            </h1>
-            <VoteCountBarChartPerHour data={data} />
-            <h1 className="font-medium text-5x text-slate-900">Map View</h1>
-            <SingaporeMap />
+      <div className="flex flex-col">
+        <div className="self-start ">
+          <Link href="/admin">
+            <span className="underline text-blue-600">admin</span>
+          </Link>
+          {" / helios"}
+        </div>
+        <div className="flex w-full text-white align-middle justify-center">
+          <div className="flex flex-col border border-gray-300 rounded-lg p-4 mr-2">
+            <div className="flex flex-col gap-2">
+              <h1 className="font-medium text-5x text-slate-900">
+                Vote Count Per Hour
+              </h1>
+              <VoteCountBarChartPerHour data={data} />
+              <h1 className="font-medium text-5x text-slate-900">Map View</h1>
+              <SingaporeMap />
 
-            {/* <Link href="/">
+              {/* <Link href="/">
               <button
                 type="button"
                 className=" bg-white border border-gray-300 w-full self-center
@@ -151,137 +159,138 @@ export default function AdminPage() {
                 Log out
               </button>
             </Link> */}
+            </div>
           </div>
-        </div>
-        <div className="flex flex-col">
-          <div className="border border-gray-300 rounded-lg p-4">
-            <h1 className="font-medium text-5x text-slate-900 mb-2">
-              Current Vote Leader
-            </h1>
-            <div
-              style={{
-                width: "580px",
-                minHeight: "270px",
-                borderRadius: "10px",
-              }}
-            >
-              <div className="flex justify-between p-2 font-normal text-gray-500">
-                <span className="text-sm ">No.</span>
-                <span className="text-sm">Nominee</span>
-                <span className="text-sm ml-16">Party</span>
-                <span className="text-sm">Total Count</span>
-              </div>
-              {nominees.map((nominee) => (
-                <div
-                  key={nominee.id}
-                  className="flex items-center justify-between my-2 p-2 border rounded-md text-slate-900 shadow-md"
-                >
-                  <span className="text-md text-gray-500 ml-2">
-                    {nominee.id}
-                  </span>
+          <div className="flex flex-col">
+            <div className="border border-gray-300 rounded-lg p-4">
+              <h1 className="font-medium text-5x text-slate-900 mb-2">
+                Current Vote Leader
+              </h1>
+              <div
+                style={{
+                  width: "580px",
+                  minHeight: "270px",
+                  borderRadius: "10px",
+                }}
+              >
+                <div className="flex justify-between p-2 font-normal text-gray-500">
+                  <span className="text-sm ">No.</span>
+                  <span className="text-sm">Nominee</span>
+                  <span className="text-sm ml-16">Party</span>
+                  <span className="text-sm">Total Count</span>
+                </div>
+                {nominees.map((nominee) => (
+                  <div
+                    key={nominee.id}
+                    className="flex items-center justify-between my-2 p-2 border rounded-md text-slate-900 shadow-md"
+                  >
+                    <span className="text-md text-gray-500 ml-2">
+                      {nominee.id}
+                    </span>
 
-                  <div className="flex items-center w-[180px] font-normal">
-                    <div
-                      className="flex-shrink-0 h-12 w-12 overflow-hidden rounded-full border border-black mr-4 "
-                      style={{
-                        opacity: "0.9",
-                        backgroundColor: nominee.color,
-                      }}
-                    >
-                      <Image
-                        src="/user.svg"
-                        alt="profile"
-                        width="10"
-                        height="10"
-                        className="h-full w-full"
-                      />
-                    </div>
-                    <div>
-                      <span className="text-sm">{nominee.name}</span>
-                    </div>
-                  </div>
-                  <span className="text-sm">{nominee.party}</span>
-                  <span className="text-sm">
-                    {nominee.voteCount.toLocaleString()}
-                  </span>
-                </div>
-              ))}
-            </div>
-          </div>
-          <div className="flex gap-2 mt-[10px]">
-            <div className="border border-gray-300 rounded-lg p-4">
-              <h1 className="font-medium text-base text-slate-900 ">
-                Vote Percentage
-              </h1>
-              <div
-                style={{
-                  width: "270px",
-                  height: "270px",
-                  borderRadius: "10px",
-                  display: "flex",
-                  flexDirection: "column",
-                  alignItems: "center",
-                }}
-              >
-                <VotePieChart nominees={nominees} />
-                <div className="flex flex-col gap-2">
-                  {nominees.map((nominee, index) => {
-                    return (
+                    <div className="flex items-center w-[180px] font-normal">
                       <div
-                        className="flex justify-between text-slate-900"
-                        key={index}
+                        className="flex-shrink-0 h-12 w-12 overflow-hidden rounded-full border border-black mr-4 "
+                        style={{
+                          opacity: "0.9",
+                          backgroundColor: nominee.color,
+                        }}
                       >
-                        <div className="flex">
-                          <div
-                            className="w-4 h-4 rounded-full mr-2"
-                            style={{ backgroundColor: nominee.color }}
-                          ></div>
-                          <span className="text-xs">{nominee.name}</span>
-                        </div>
-                        <span className="text-xs ml-2">
-                          {(nominee.voteCount / totalVotes) * 100}%
-                        </span>
+                        <Image
+                          src="/user.svg"
+                          alt="profile"
+                          width="10"
+                          height="10"
+                          className="h-full w-full"
+                        />
                       </div>
-                    );
-                  })}
-                </div>
+                      <div>
+                        <span className="text-sm">{nominee.name}</span>
+                      </div>
+                    </div>
+                    <span className="text-sm">{nominee.party}</span>
+                    <span className="text-sm">
+                      {nominee.voteCount.toLocaleString()}
+                    </span>
+                  </div>
+                ))}
               </div>
             </div>
-            <div className="border border-gray-300 rounded-lg p-4">
-              <h1 className="font-medium text-5x text-slate-900 ">
-                Vote Count
-              </h1>
-              <div
-                style={{
-                  width: "270px",
-                  height: "270px",
-                  borderRadius: "10px",
-                }}
-              >
-                <h1 className="font-normal text-2xl text-slate-900 ">
-                  {totalVotes.toLocaleString()}
+            <div className="flex gap-2 mt-[10px]">
+              <div className="border border-gray-300 rounded-lg p-4">
+                <h1 className="font-medium text-base text-slate-900 ">
+                  Vote Percentage
                 </h1>
-                <VoteCountBarChart nominees={nominees} />
-                <div className="flex flex-col gap-2">
-                  {nominees.map((nominee, index) => {
-                    return (
-                      <div
-                        className="flex justify-between text-slate-900"
-                        key={index}
-                      >
-                        <div className="flex">
-                          <div
-                            className="w-4 h-4 rounded-full mr-2"
-                            style={{ backgroundColor: nominee.color }}
-                          ></div>
-                          <span className="text-xs">{nominee.name}</span>
+                <div
+                  style={{
+                    width: "270px",
+                    height: "270px",
+                    borderRadius: "10px",
+                    display: "flex",
+                    flexDirection: "column",
+                    alignItems: "center",
+                  }}
+                >
+                  <VotePieChart nominees={nominees} />
+                  <div className="flex flex-col gap-2">
+                    {nominees.map((nominee, index) => {
+                      return (
+                        <div
+                          className="flex justify-between text-slate-900"
+                          key={index}
+                        >
+                          <div className="flex">
+                            <div
+                              className="w-4 h-4 rounded-full mr-2"
+                              style={{ backgroundColor: nominee.color }}
+                            ></div>
+                            <span className="text-xs">{nominee.name}</span>
+                          </div>
+                          <span className="text-xs ml-2">
+                            {(nominee.voteCount / totalVotes) * 100}%
+                          </span>
                         </div>
-                        <span className="text-xs ml-2">
-                          {(nominee.voteCount / totalVotes) * 100}%
-                        </span>
-                      </div>
-                    );
-                  })}
+                      );
+                    })}
+                  </div>
+                </div>
+              </div>
+              <div className="border border-gray-300 rounded-lg p-4">
+                <h1 className="font-medium text-5x text-slate-900 ">
+                  Vote Count
+                </h1>
+                <div
+                  style={{
+                    width: "270px",
+                    height: "270px",
+                    borderRadius: "10px",
+                  }}
+                >
+                  <h1 className="font-normal text-2xl text-slate-900 ">
+                    {totalVotes.toLocaleString()}
+                  </h1>
+                  <VoteCountBarChart nominees={nominees} />
+                  <div className="flex flex-col gap-2">
+                    {nominees.map((nominee, index) => {
+                      return (
+                        <div
+                          className="flex justify-between text-slate-900"
+                          key={index}
+                        >
+                          <div className="flex">
+                            <div
+                              className="w-4 h-4 rounded-full mr-2"
+                              style={{ backgroundColor: nominee.color }}
+                            ></div>
+                            <span className="text-xs">{nominee.name}</span>
+                          </div>
+                          <span className="text-xs ml-2">
+                            {(nominee.voteCount / totalVotes) * 100}%
+                          </span>
+                        </div>
+                      );
+                    })}
+                  </div>
                 </div>
               </div>
             </div>
