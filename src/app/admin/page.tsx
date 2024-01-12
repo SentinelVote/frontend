@@ -119,7 +119,7 @@ export default function AdminPage() {
   useEffect(() => {
     const fetchUsers = async () => {
       try {
-        const response = await fetch("http://localhost:3001/api/users");
+        const response = await fetch("http://localhost:8080/users");
         if (!response.ok) {
           throw new Error("Network response was not ok");
         }
@@ -268,17 +268,17 @@ export default function AdminPage() {
                       <TableCell isHeader>First Name</TableCell>
                       <TableCell isHeader>Last Name</TableCell>
                       <TableCell isHeader>Email</TableCell>
-                      <TableCell isHeader>City</TableCell>
-                      <TableCell isHeader>HasPubKey</TableCell>
+                      <TableCell isHeader>Constituency</TableCell>
+                      <TableCell isHeader>Has Public Key?</TableCell>
                     </TableRow>
                   </thead>
                   <tbody>
                     {currentVoters.map((voter) => (
-                      <TableRow key={voter.userEmail}>
+                      <TableRow key={voter.email}>
                         <TableCell>{voter.firstName}</TableCell>
                         <TableCell>{voter.lastName}</TableCell>
-                        <TableCell>{voter.userEmail}</TableCell>
-                        <TableCell>{voter.region}</TableCell>
+                        <TableCell>{voter.email}</TableCell>
+                        <TableCell>{voter.constituency}</TableCell>
 
                         <TableCell>
                           <span

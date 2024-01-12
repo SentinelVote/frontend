@@ -1,7 +1,7 @@
 export interface Voter {
   firstName: string;
   lastName: string;
-  userEmail: string;
-  region: string;
+  email: string;
+  constituency: string;
   publicKey: string;
 }
