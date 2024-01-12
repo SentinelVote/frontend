@@ -70,7 +70,7 @@ app.post("/api/login", async (req, res) => {
   try {
     const user = await knex("users").where({ userEmail: email }).first();
     console.log("User found:", user); // Log found user
-    if (user && bcrypt.compareSync(password, user.hashedPassword)) {
+    if (user && bcrypt.compareSync(password, user.password)) {
       res.json({ success: true, message: "Login successful", user: user });
       // TODO: set a cookie with the user email, role
     } else {
