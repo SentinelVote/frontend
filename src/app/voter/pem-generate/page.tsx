@@ -19,7 +19,6 @@ export default function PemUploader() {
     const emailCookie = getCookie("user_email");
     setUserEmailCookie(emailCookie || "");
     console.log("userEmailCookie", userEmailCookie);
-
     // Fetch users and generate key on component mount
     getUsers();
     handleGenerateKey();
@@ -27,7 +26,7 @@ export default function PemUploader() {
 
   const handleGenerateKey = async () => {
     try {
-      const response = await fetch("http://localhost:3001/api/generate-keys");
+      const response = await fetch("http://localhost:8080/lrs/generate-keys");
       const data = await response.json();
       if (!!data) {
         console.log("PEM generated");
@@ -47,7 +46,7 @@ export default function PemUploader() {
 
   const getUsers = async () => {
     try {
-      const response = await fetch("http://localhost:3001/api/users");
+      const response = await fetch("http://localhost:8080/users");
       const data = await response.json();
       console.log({ data });
     } catch (error) {
@@ -56,13 +55,16 @@ export default function PemUploader() {
   };
 
   const storeGeneratedPubKey = async () => {
+    console.log("userEmailCookie:")
+    console.log(userEmailCookie)
     try {
-      const response = await fetch("http://localhost:3001/api/store-pubkey", {
+      const response = await fetch("http://localhost:8080/keys/store", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify({ userEmailCookie, publicKey }),
+        // Private Keys are only stored for simulation purposes.
+        body: JSON.stringify({ email: userEmailCookie, publicKey: publicKey, privateKey: privateKey }),
       });
       const data = await response.json();
       if (!!data) {
@@ -74,11 +76,6 @@ export default function PemUploader() {
       console.error(error);
     }
   };
-
-  useEffect(() => {
-    getUsers();
-    handleGenerateKey();
-  }, []);
 
   const handleZipDownload = async () => {
     try {
@@ -95,7 +92,6 @@ export default function PemUploader() {
           type: "text/plain",
         })
       );
-
       const content = await zip.generateAsync({ type: "blob" });
       // Create a blob URL
       const blobUrl = URL.createObjectURL(content);

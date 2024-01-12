@@ -16,7 +16,7 @@ export default function Home() {
   const [loginError, setLoginError] = useState("");
   const getUsers = async () => {
     try {
-      const response = await fetch("http://localhost:3001/api/users");
+      const response = await fetch("http://localhost:8080/api/users");
       const data = await response.json();
       console.log({ data });
     } catch (error) {
@@ -28,7 +28,7 @@ export default function Home() {
   const checkVoteStart = async () => {
     try {
       const response = await fetch(
-        "http://localhost:3001/api/check-vote-start"
+        "http://localhost:8080/api/check-vote-start"
       );
       if (!response.ok) {
         throw new Error("Network response was not ok");
@@ -44,43 +44,72 @@ export default function Home() {
   const handleLogin = async (e: any) => {
     e.preventDefault();
     try {
-      const response = await fetch("http://localhost:3001/api/login", {
+      const response = await fetch("http://localhost:8080/login", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
         },
         body: JSON.stringify({ email, password }),
       });
-      const data = await response.json();
+      const data = await response.json(); // isCentralAuthority
+      console.log(
+        "Data from login:",
+        data,
+      )
+      
+      
+      const {success, isCentralAuthority, hasFoldedPublicKeys, hasPublicKey} = data;
 
-      if (data.success) {
+      // Check that the received email is the same as the sent email:
+      console.log("Req Email: ", email)
+      console.log("Res Email: ", data.email)
+
+      console.log(isCentralAuthority)
+      if (success) {
         console.log("Login successful");
-        console.log(data.user);
+        console.log(email);
         //Add cookie to browser
-        document.cookie = `user_email=${data.user.userEmail}`;
-        document.cookie = `role=${data.user.role}`;
+        document.cookie = `user_email=${email}`;
+        document.cookie = `is_central_authority=${isCentralAuthority}`;
+        document.cookie = `success=${success}`;
         console.log(document.cookie);
 
         // Check if every voter in the database has a public key:
 
-        if (data.user.role === "admin") {
+        if (!!isCentralAuthority) {
+          // Email: admin@sentinelvote.tech, user1@sentinelvote.tech, user2@sentinelvote.tech
+          // Pw: Password1!
+  
+          // Everyone else e.g. user3@sentinelvote.tech
+          // Default: password
+          
           // Handle admin redirection.
           window.location.href = "/admin"; // TODO: change to admin page.
         } else {
-          // Handle voter redirection.
-          const hasVoteStart = await checkVoteStart();
-          console.log("hasVoteStarted? ", hasVoteStart);
 
-          if (hasVoteStart) {
-            // Election day.
+          // user1@sentinelvote.tech
+          // Password1!
+          //
+          // user3@sentinelvote.tech
+          // password
+          const now = Date.now()
+          window.alert(JSON.stringify({
+            now,
+            data
+          }))
+
+          // UPDATED LOGIC:
+          if (hasFoldedPublicKeys) {
+            window.alert(data)
             window.location.href = "/voter/pem-uploader";
-          } else if (data.user.publicKey === "") {
-            // This user has not generated their key yet.
-            window.location.href = "/voter/pem-generate";
-          } else {
-            // This user has generated their key, but not everyone has.
+          } else if (hasPublicKey) {    
+            window.alert(data)
             window.location.href = "/voter/pending-election";
+          } else {    
+            window.alert(data)
+            window.location.href = "/voter/pem-generate";
           }
+
         }
       } else {
         setLoginError("Invalid email or password");
