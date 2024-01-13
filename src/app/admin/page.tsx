@@ -10,12 +10,12 @@ const ITEMS_PER_PAGE = 12;
 
 const checkVoteStart = async () => {
   try {
-    const response = await fetch("http://localhost:3001/api/check-vote-start");
+    const response = await fetch("http://localhost:8080/keys/public/folded/exists");
     if (!response.ok) {
       throw new Error("Network response was not ok");
     }
-    const data = await response.json();
-    return data;
+    const { exists } = await response.json();
+    return exists;
   } catch (error) {
     console.error(error);
     return false;
@@ -98,7 +98,9 @@ export default function AdminPage() {
     console.log("button was called.");
     try {
       const response = await fetch(
-        "http://localhost:3001/api/fold-public-keys"
+        "http://localhost:8080/keys/public/folded", {
+          method: "PUT"
+        }
       );
       if (!response.ok) {
         throw new Error("Network response was not ok");
