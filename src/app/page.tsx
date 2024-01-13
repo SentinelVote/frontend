@@ -25,21 +25,6 @@ export default function Home() {
   };
 
   getUsers();
-  const checkVoteStart = async () => {
-    try {
-      const response = await fetch(
-        "http://localhost:8080/api/check-vote-start"
-      );
-      if (!response.ok) {
-        throw new Error("Network response was not ok");
-      }
-      const data = await response.json();
-      return data;
-    } catch (error) {
-      console.error(error);
-      return false;
-    }
-  };
 
   const handleLogin = async (e: any) => {
     e.preventDefault();
