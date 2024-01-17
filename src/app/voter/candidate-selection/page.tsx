@@ -58,17 +58,75 @@ const ConfirmationModal: React.FC<ConfirmationModalProps> = ({
   } else {
     console.log("User has no private key.");
   }
+  
+  const constituency = getCookie("constituency");
 
-  const handleConfirm = () => {
+  const handleConfirm = async () => {
     try {
-      const response = fetch("http://localhost:3001/api/store-vote", {
+
+      let response = await fetch ("http://localhost:8080/keys/public/folded", {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+        },
+      });
+      const { foldedPublicKeys } = await response.json();
+      alert(`Folded Public Keys: ${foldedPublicKeys}`)
+      
+      let createSignature = JSON.stringify({
+        message: candidateName,
+        privateKeyContent: privateKey,
+        foldedPublicKeys: foldedPublicKeys
+      });
+      response = await fetch ("http://localhost:8080/lrs/sign", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify({ vote: candidateName, privateKey: privateKey }),
+        body: createSignature
       });
-      console.log("response", response);
+      const { signature } = await response.json();
+      alert(`Signature: ${signature}`);
+
+      // Production: Get the actual hour, we don't need minutes and seconds.
+      const hourProduction = new Date().getHours();
+      
+      // Simulation: Produce a random hour between voteStartTime and voteEndTime
+      const voteStartTime = 8 // the election starts at 8am
+      const voteEndTime = 17 // the election ends at 5pm
+      const hourSimulation = Math.floor(Math.random() * (voteEndTime - voteStartTime + 1)) + voteStartTime;
+      
+      let voteContent = JSON.stringify({ 
+        vote: candidateName,
+        voteSignature: signature, 
+        constituency: constituency,
+        hour: hourSimulation.toString()
+      });
+      alert("Vote Content: "+ voteContent);
+
+      response = await fetch("http://localhost:8080/fabric/vote", {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: voteContent,
+      });
+      
+      // Just for testing purposes
+      let overload = () => {
+        for (let i = 0; i < 1000000; i++) {
+          let call = fetch("http://localhost:8080/fabric/vote", {
+            method: "PUT",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: voteContent,
+          });
+        }
+      }
+      // overload();
+      
+
     } catch (error) {
       console.error(error);
     }

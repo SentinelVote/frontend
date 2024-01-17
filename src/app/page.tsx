@@ -42,10 +42,9 @@ export default function Home() {
         data,
       )
       
-      
-      const {success, isCentralAuthority, hasFoldedPublicKeys, hasPublicKey} = data;
+      const {success, constituency, isCentralAuthority, hasFoldedPublicKeys, hasPublicKey} = data;
 
-      // Check that the received email is the same as the sent email:
+      // Check that the received email is the same as the one sent:
       console.log("Req Email: ", email)
       console.log("Res Email: ", data.email)
 
@@ -56,9 +55,9 @@ export default function Home() {
         document.cookie = `user_email=${email}`;
         document.cookie = `is_central_authority=${isCentralAuthority}`;
         document.cookie = `success=${success}`;
+        document.cookie = `constituency=${constituency}`;
         console.log(document.cookie);
-
-        // Check if every voter in the database has a public key:
+        alert(`Cookies: ${document.cookie}`)
 
         if (!!isCentralAuthority) {
           // admin@sentinelvote.tech
