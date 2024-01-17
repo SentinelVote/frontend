@@ -51,8 +51,7 @@ export default function Home() {
 
       console.log(isCentralAuthority)
       if (success) {
-        console.log("Login successful");
-        console.log(email);
+        console.log(`Login successful: ${email}`);
         //Add cookie to browser
         document.cookie = `user_email=${email}`;
         document.cookie = `is_central_authority=${isCentralAuthority}`;
@@ -62,36 +61,25 @@ export default function Home() {
         // Check if every voter in the database has a public key:
 
         if (!!isCentralAuthority) {
-          // Email: admin@sentinelvote.tech, user1@sentinelvote.tech, user2@sentinelvote.tech
-          // Pw: Password1!
-  
-          // Everyone else e.g. user3@sentinelvote.tech
-          // Default: password
+          // admin@sentinelvote.tech
+          // Password1!
           
-          // Handle admin redirection.
           window.location.href = "/admin"; // TODO: change to admin page.
         } else {
-
-          // user1@sentinelvote.tech
+          // user1@sentinelvote.tech, user2@sentinelvote.tech
           // Password1!
-          //
-          // user3@sentinelvote.tech
+          // user3@sentinelvote.tech, ...
           // password
+          
           const now = Date.now()
-          window.alert(JSON.stringify({
-            now,
-            data
-          }))
+          window.alert(JSON.stringify({now, data}))
 
           // UPDATED LOGIC:
           if (hasFoldedPublicKeys) {
-            window.alert(data)
             window.location.href = "/voter/pem-uploader";
           } else if (hasPublicKey) {    
-            window.alert(data)
             window.location.href = "/voter/pending-election";
           } else {    
-            window.alert(data)
             window.location.href = "/voter/pem-generate";
           }
 
