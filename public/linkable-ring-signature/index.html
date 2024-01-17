@@ -6,12 +6,33 @@
 </head>
 <body>
 <button id=button>button</button>
-<pre id=p style="border: 1px solid #000">paragraph</pre>
+<pre id=pk style="border: 1px solid #000">public key will appear here</pre>
+<pre id=sk style="border: 1px solid #000">secret key will appear here</pre>
 </body>
 <script>
+const pk = document.getElementById("pk");
+const sk = document.getElementById("sk");
+let pkString = "";
+let skString = "";
+
 const go = new Go();
+document.getElementById("button").addEventListener("click", () => {
 WebAssembly.instantiateStreaming(fetch("main.wasm"), go.importObject).then((result) => {
-go.run(result.instance);
+    go.run(result.instance);
+    pkString = pk.textContent;
+    skString = sk.textContent;
+
+    // Wait 5 seconds, then clear the keys.
+    sleep(5000).then(() => {
+      pk.textContent = "public key will appear here";
+      sk.textContent = "secret key will appear here";
+    });
 });
+});
+
+// Unrelated code:
+function sleep(ms) {
+return new Promise(resolve => setTimeout(resolve, ms));
+}
 </script>
 </html>
