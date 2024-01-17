@@ -1,0 +1,17 @@
+<html lang="en">
+<head>
+<title>title</title>
+<meta charset="utf-8"/>
+<script src="./wasm_exec.js"></script>
+</head>
+<body>
+<button id=button>button</button>
+<pre id=p style="border: 1px solid #000">paragraph</pre>
+</body>
+<script>
+const go = new Go();
+WebAssembly.instantiateStreaming(fetch("main.wasm"), go.importObject).then((result) => {
+go.run(result.instance);
+});
+</script>
+</html>
