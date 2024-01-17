@@ -2,11 +2,11 @@
 import Image from "next/image";
 import Link from "next/link";
 import React, { useState } from "react";
-import candidateNKS from "../../../../public/candidate_nks.jpg";
-import candidateTKL from "../../../../public/candidate_tkl.jpg";
-import candidateTS from "../../../../public/candidate_ts.jpg";
-import exitIconSvg from "../../../../public/exit_icon.svg";
-import warningIconSvg from "../../../../public/warning_icon.svg";
+import candidateNKS from "@public/candidate_nks.jpg";
+import candidateTKL from "@public/candidate_tkl.jpg";
+import candidateTS from "@public/candidate_ts.jpg";
+import exitIconSvg from "@public/exit_icon.svg";
+import warningIconSvg from "@public/warning_icon.svg";
 
 type Candidate = {
   id: string;
