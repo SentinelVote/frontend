@@ -1,4 +1,4 @@
-module linkable_ring_signature
+module generate_keys
 
 go 1.21.5
 
