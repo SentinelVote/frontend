@@ -59,56 +59,7 @@ app.get("/api/users", async (req, res) => {
   }
 });
 
-// Endpoint for Login
-app.post("/api/login", async (req, res) => {
-  const { email, password } = req.body;
-  console.log("Login Attempt:", email, password);
-  if (!email || !password) {
-    return res.status(400).send("Email and password are required");
-  }
 
-  try {
-    const user = await knex("users").where({ userEmail: email }).first();
-    console.log("User found:", user); // Log found user
-    if (user && bcrypt.compareSync(password, user.password)) {
-      res.json({ success: true, message: "Login successful", user: user });
-      // TODO: set a cookie with the user email, role
-    } else {
-      res.status(401).json({ success: false, message: "Invalid credentials" });
-    }
-  } catch (error) {
-    console.error("Login error:", error);
-    res.status(500).send("Server error");
-  }
-});
-
-// Endpoint to stor
-app.post("/api/store-pubkey", async (req, res) => {
-  const { publicKey, userEmailCookie } = req.body;
-  try {
-    console.log("Finding user: ", userEmailCookie);
-    console.log("Public key: ", publicKey);
-    const user = await knex("users")
-      .where({ userEmail: userEmailCookie })
-      .first();
-    console.log("User found: ", user);
-    if (user) {
-      console.log("Attempting to store keys");
-      await knex("users")
-        .where({ userEmail: userEmailCookie })
-        .update({ publicKey: publicKey });
-      res.json({
-        success: true,
-        message: "Keys stored successfully",
-        user: user,
-      });
-      console.log("Keys stored successfully");
-    }
-  } catch (error) {
-    console.error("Login error:", error);
-    res.status(500).send("Server error");
-  }
-});
 
 // Endpoint to get all public keys
 app.get("/api/get-public-keys", async (req, res) => {
@@ -129,112 +80,8 @@ app.get("/api/get-public-keys", async (req, res) => {
 // ----------------------------------------------------------------------------
 // Endpoint for LRS
 
-app.get("/api/ping", async (req, res) => {
-  try {
-    const response = await fetch(`${LRS_API_URL}/ping`);
-    res.json(response);
-  } catch (error) {
-    console.error(error);
-    res.status(500).send("Server error");
-  }
-});
 
-app.get("/api/generate-keys", async (req, res) => {
-  try {
-    const response = await fetch(`${LRS_API_URL}/generate-keys`, {
-      method: "POST",
-    });
 
-    if (!response.ok) {
-      throw new Error(`HTTP error! Status: ${response.status}`);
-    }
-
-    const keys = await response.json();
-    console.log(`keys: ${keys.privateKey}`);
-    console.log(`keys: ${keys.publicKey}`);
-    res.json(keys);
-  } catch (error) {
-    console.error("Error during the request inside /api/generate-keys:", error);
-  }
-});
-
-app.get("/api/fold-public-keys", async (req, res) => {
-  console.log(`"/api/fold-public-keys" is called.`);
-  console.log(`Calling database`);
-  const responsePKA = await fetch("http://localhost:3001/api/get-public-keys");
-  const publicKeyArray = await responsePKA.json();
-  const publicKeyArrayFiltered = publicKeyArray.filter((x) => x !== ""); // HACK find out why it works.
-
-  console.log('1: Retrieving folded public keys from LRS API...\n');
-  try {
-    const response = await fetch(`${LRS_API_URL}/fold-public-keys`, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        publicKeys: publicKeyArrayFiltered
-      }),
-    });
-    if (!response.ok) {
-      throw new Error(`HTTP error! Status: ${response.status}`);
-    }
-    const keys = await response.json();
-    console.log(`${keys.foldedPublicKeys}`);
-
-    console.log('2: Storing keys in database...\n');
-    const keyExists = await knex("foldedPublicKeys")
-      .where({ foldedPublicKeys: keys.foldedPublicKeys })
-      .first();
-    console.log(`keyExists type : ${typeof keyExists}`);
-    console.log(`keyExists : ${keyExists}\n\n`);
-
-    if (!keyExists) {
-      await knex("foldedPublicKeys")
-        .insert({
-          foldedPublicKeys: keys.foldedPublicKeys,
-        })
-        .then(() => console.log("Data inserted"))
-        .catch((error) => console.log(error));
-    }
-
-    // Test that it works.
-    const foldedPublicKeysFromDatabase = await knex("foldedPublicKeys")
-      .select("*")
-      .limit(1);
-    console.log(
-      `After insert foldedPublicKeysFromDatabase:\n`,
-      foldedPublicKeysFromDatabase[0]?.foldedPublicKeys
-    );
-
-    console.log('3: Storing keys in blockchain...\n');
-    try {
-      const response = await fetch(
-        `${BACKEND_API_URL}/api/store-folded-public-keys`,
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({
-            id: foldedPublicKeysFromDatabase[0]?.foldedPublicKeys,
-          }),
-        }
-      );
-      return response.json();
-    } catch (error) {
-      console.error(
-        "Error during the request of storing in blockchain:",
-        error
-      );
-    }
-
-    res.json(keys.foldedPublicKeys);
-    console.log("End of server call.");
-  } catch (error) {
-    console.error("Error during the request of /api/fold-public-keys:", error);
-  }
-});
 
 // /sign
 // ----------------------------------------------------------------------------
