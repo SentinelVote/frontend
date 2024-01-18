@@ -9,7 +9,7 @@ interface Vote {
 export const revalidate = 0;
 export async function GET(request: NextRequest) {
     
-    let response = await fetch(`http://localhost:8801/user/enroll`, {
+    let response = await fetch(`${process.env.NEXT_PUBLIC_FABRIC_URL}/user/enroll`, {
         method: "POST",
         headers: {
             "Content-Type": "application/json",
@@ -29,7 +29,7 @@ export async function GET(request: NextRequest) {
         "method": "KVContractGo:GetVotes",
         "args":   [],
     });
-    response = await fetch(`http://localhost:8801/query/vote-channel/SentinelVote`, {
+    response = await fetch(`${process.env.NEXT_PUBLIC_FABRIC_URL}/query/vote-channel/SentinelVote`, {
         method: "POST",
         headers: {
             "Content-Type": "application/json",

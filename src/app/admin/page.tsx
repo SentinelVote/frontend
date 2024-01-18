@@ -11,7 +11,7 @@ const ITEMS_PER_PAGE = 12;
 
 const checkVoteStart = async () => {
   try {
-    const response = await fetch("http://localhost:8080/keys/public/folded/exists");
+    const response = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/keys/public/folded/exists`);
     if (!response.ok) {
       throw new Error("Network response was not ok");
     }
@@ -101,7 +101,7 @@ export default function AdminPage() {
     console.log("button was called.");
     try {
       const response = await fetch(
-        "http://localhost:8080/keys/public/folded", {
+        `${process.env.NEXT_PUBLIC_BACKEND_URL}/keys/public/folded`, {
           method: "PUT"
         }
       );
@@ -124,7 +124,7 @@ export default function AdminPage() {
   useEffect(() => {
     const fetchUsers = async () => {
       try {
-        const response = await fetch("http://localhost:8080/users");
+        const response = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/users`);
         if (!response.ok) {
           throw new Error("Network response was not ok");
         }

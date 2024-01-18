@@ -22,7 +22,7 @@ export default function PemGeneratePage() {
 
   const handleGenerateKey = async () => {
     try {
-      const response = await fetch("http://localhost:8080/lrs/generate-keys");
+      const response = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/lrs/generate-keys`);
       const data = await response.json();
       if (!!data) {
         console.log("PEM generated");
@@ -42,7 +42,7 @@ export default function PemGeneratePage() {
 
   const getUsers = async () => {
     try {
-      const response = await fetch("http://localhost:8080/users");
+      const response = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/users`);
       const data = await response.json();
       console.log({ data });
     } catch (error) {
@@ -54,7 +54,7 @@ export default function PemGeneratePage() {
     console.log("userEmailCookie:")
     console.log(userEmailCookie)
     try {
-      const response = await fetch("http://localhost:8080/keys/store", {
+      const response = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/store`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

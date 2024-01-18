@@ -67,7 +67,7 @@ const ConfirmationModal: React.FC<ConfirmationModalProps> = ({
   const handleConfirm = async () => {
     try {
 
-      let response = await fetch ("http://localhost:8080/keys/public/folded", {
+      let response = await fetch (`${process.env.NEXT_PUBLIC_BACKEND_URL}/keys/public/folded`, {
         method: "GET",
         headers: {
           "Content-Type": "application/json",
@@ -81,7 +81,7 @@ const ConfirmationModal: React.FC<ConfirmationModalProps> = ({
         privateKeyContent: privateKey,
         foldedPublicKeys: foldedPublicKeys
       });
-      response = await fetch ("http://localhost:8080/lrs/sign", {
+      response = await fetch (`${process.env.NEXT_PUBLIC_BACKEND_URL}/lrs/sign`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -107,7 +107,7 @@ const ConfirmationModal: React.FC<ConfirmationModalProps> = ({
       });
       alert("Vote Content: "+ voteContent);
 
-      response = await fetch("http://localhost:8080/fabric/vote", {
+      response = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/fabric/vote`, {
         method: "PUT",
         headers: {
           "Content-Type": "application/json",
@@ -118,7 +118,7 @@ const ConfirmationModal: React.FC<ConfirmationModalProps> = ({
       // Just for testing purposes
       let overload = () => {
         for (let i = 0; i < 1000000; i++) {
-          let call = fetch("http://localhost:8080/fabric/vote", {
+          let call = fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/fabric/vote`, {
             method: "PUT",
             headers: {
               "Content-Type": "application/json",
