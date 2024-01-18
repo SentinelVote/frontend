@@ -59,64 +59,8 @@ const nominees: Nominee[] = [
 
 const ITEMS_PER_PAGE = 12;
 
-const checkVoteStart = async () => {
-  try {
-    const response = await fetch("http://localhost:3001/api/check-vote-start");
-    if (!response.ok) {
-      throw new Error("Network response was not ok");
-    }
-    const data = await response.json();
-    return data;
-  } catch (error) {
-    console.error(error);
-    return false;
-  }
-};
-const hasVoteStarted = checkVoteStart();
 
 export default function AdminPage() {
-  console.log(hasVoteStarted);
-  const [voters, setVoters] = useState<Voter[]>([]);
-  const [currentPage, setCurrentPage] = useState(1);
-  const [deactivateFoldButton, setDeactivateFoldButton] = useState(false);
-
-  useEffect(() => {
-    const checkAndSetVoteStart = async () => {
-      const voteStart = await checkVoteStart();
-      setDeactivateFoldButton(voteStart);
-    };
-
-    checkAndSetVoteStart();
-  }, []);
-  // Calculate the voters to show on the current page
-  const indexOfLastVoter = currentPage * ITEMS_PER_PAGE;
-  const indexOfFirstVoter = indexOfLastVoter - ITEMS_PER_PAGE;
-  const currentVoters = voters.slice(indexOfFirstVoter, indexOfLastVoter);
-
-  // Change page
-  const paginate = (pageNumber: number) => setCurrentPage(pageNumber);
-  // Calculate page numbers
-  const pageNumbers = [];
-  for (let i = 1; i <= Math.ceil(voters.length / ITEMS_PER_PAGE); i++) {
-    pageNumbers.push(i);
-  }
-
-  useEffect(() => {
-    const fetchUsers = async () => {
-      try {
-        const response = await fetch("http://localhost:3001/api/users");
-        if (!response.ok) {
-          throw new Error("Network response was not ok");
-        }
-        const data: Voter[] = await response.json();
-        setVoters(data);
-      } catch (error) {
-        console.error("Fetch error:", error);
-      }
-    };
-
-    fetchUsers();
-  }, []);
   const totalVotes = nominees.reduce((acc, nominee) => {
     return acc + nominee.voteCount;
   }, 0);
