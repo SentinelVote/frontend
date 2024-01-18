@@ -208,12 +208,13 @@ export default function Home() {
                     <Image
                       className="self-center"
                       src={singpassQrPng}
-                      alt="Singpass Qr"
+                      alt="Singpass QR Code"
                       height={225}
                       width={225}
+                      title={"For demonstration only, do not scan."}
                     />
-                    <h1 className="text-black text-xl text-center pt-5 pb-2">
-                      SCAN WITH SINGPASS MOBILE APP TO LOG IN
+                    <h1 title={"For demonstration only, do not scan."} className="text-black text-xl text-center pt-5 pb-2">
+                      Scan with Singpass app to log in
                     </h1>
                     <h1 className="text-center">
                       {`Don't have Singpass mobile? `}
