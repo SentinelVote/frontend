@@ -2,7 +2,7 @@
 import Link from "next/link";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
-import { ClearCookies } from "@/app/page";
+import { ClearCookies } from "@/app/globals";
 
 export default function SimulationPage() {
   const [numOfVoters, setNumOfVoters] = useState("1");

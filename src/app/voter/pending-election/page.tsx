@@ -1,6 +1,6 @@
 "use client";
 import Link from "next/link";
-import { ClearCookies } from "@/app/page";
+import { ClearCookies } from "@/app/globals";
 
 export default function PendingElectionPage() {
   const handleExit = () => {

@@ -2,24 +2,17 @@
 import JSZip from "jszip";
 import { useEffect, useState } from "react";
 import Link from "next/link";
-import {ClearCookies} from "@/app/page";
+import { ClearCookies, GetCookie } from "@/app/globals";
 
 export default function PemGeneratePage() {
   const [publicKey, setPublicKey] = useState("");
   const [privateKey, setPrivateKey] = useState("");
   const [userEmailCookie, setUserEmailCookie] = useState("");
-  function getCookie(name: string): string | null {
-    // Since document.cookie is not available on the server side,
-    // we delay this code to run on the client side in the useEffect hook
-    const cookieArray = document.cookie.split("; ");
-    const cookie = cookieArray.find((row) => row.startsWith(`${name}=`));
-    return cookie ? decodeURIComponent(cookie.split("=")[1]) : null;
-  }
 
   // const roleCookie = getCookie("role");
   useEffect(() => {
     // Now this runs on the client side, so document is defined
-    const emailCookie = getCookie("user_email");
+    const emailCookie = GetCookie("user_email");
     setUserEmailCookie(emailCookie || "");
     console.log("userEmailCookie", userEmailCookie);
     // Fetch users and generate key on component mount

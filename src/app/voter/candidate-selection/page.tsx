@@ -7,6 +7,7 @@ import candidateTKL from "@public/candidate_tkl.jpg";
 import candidateTS from "@public/candidate_ts.jpg";
 import exitIconSvg from "@public/exit_icon.svg";
 import warningIconSvg from "@public/warning_icon.svg";
+import { GetCookie } from "@/app/globals";
 
 type Candidate = {
   id: string;
@@ -43,14 +44,6 @@ type ConfirmationModalProps = {
   onConfirm: () => void;
 };
 
-function getCookie(name: string) {
-  if (document === undefined) return null;
-  else {
-    const cookieArray = document?.cookie.split("; ");
-    const cookie = cookieArray.find((row) => row.startsWith(name + "="));
-    return cookie ? cookie.split("=")[1] : null;
-  }
-}
 
 const ConfirmationModal: React.FC<ConfirmationModalProps> = ({
   isOpen,
@@ -60,7 +53,7 @@ const ConfirmationModal: React.FC<ConfirmationModalProps> = ({
 }) => {
   if (!isOpen) return null;
 
-  const privateKeyURI = getCookie("privateKey");
+  const privateKeyURI = GetCookie("privateKey");
   console.log("privateKeyURI:\n", privateKeyURI);
   let privateKey = '';
   if (!!privateKeyURI) {
@@ -69,7 +62,7 @@ const ConfirmationModal: React.FC<ConfirmationModalProps> = ({
     console.log("User has no private key.");
   }
   
-  const constituency = getCookie("constituency");
+  const constituency = GetCookie("constituency");
 
   const handleConfirm = async () => {
     try {
