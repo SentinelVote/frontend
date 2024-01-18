@@ -102,11 +102,11 @@ export default function Home() {
             height={36}
             alt="SentinelVote Logo"
           />
-          <h1 className="text-2xl p-2 md:pl-2 md:pr-5 font-semibold  ">
-            sentinelvote
-          </h1>
-          <h1 className="text-lg pl-2 md:pl-5 border-l-[3px] md:border-l-[3px] border-white">
-            login
+          <h2 className="text-2xl p-2 md:pl-2 md:pr-5 font-semibold  ">
+            SentinelVote
+          </h2>
+          <h1 className="text-lg pl-2 md:pl-5 border-white">
+            Log In
           </h1>
         </div>
       </div>

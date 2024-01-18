@@ -26,10 +26,10 @@ export default function RootLayout({
               alt="SentinelVote Logo"
             />
             <h1 className="text-2xl p-2 md:pl-2 md:pr-5 font-semibold  ">
-              sentinelvote
+              SentinelVote
             </h1>
             <h1 className="text-lg pl-2 md:pl-5 border-l-[3px] md:border-l-[3px] border-white">
-              voter
+              Voter
             </h1>
           </div>
         </div>
