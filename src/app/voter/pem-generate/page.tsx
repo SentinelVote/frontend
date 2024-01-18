@@ -3,7 +3,8 @@ import JSZip from "jszip";
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import {ClearCookies} from "@/app/page";
-export default function PemUploader() {
+
+export default function PemGeneratePage() {
   const [publicKey, setPublicKey] = useState("");
   const [privateKey, setPrivateKey] = useState("");
   const [userEmailCookie, setUserEmailCookie] = useState("");
@@ -95,19 +96,21 @@ export default function PemUploader() {
         })
       );
       const content = await zip.generateAsync({ type: "blob" });
+
       // Create a blob URL
       const blobUrl = URL.createObjectURL(content);
+      
       // Create a temporary anchor element and trigger download
       const anchor = document.createElement("a");
       anchor.href = blobUrl;
       anchor.download = "keys.zip";
-      // Append to the document
       document.body.appendChild(anchor);
-      // Trigger the download
       anchor.click();
+
       // Clean up
       document.body.removeChild(anchor);
       URL.revokeObjectURL(blobUrl);
+
       // After download success, store the public key in the database
       storeGeneratedPubKey();
     } catch (error) {

@@ -39,10 +39,12 @@ interface TableRowProps {
   children: ReactNode;
   isHeader?: boolean;
 }
+
 interface TableCellProps {
   children: ReactNode;
   isHeader?: boolean;
 }
+
 const TableRow: React.FC<TableRowProps> = ({ children, isHeader = false }) => (
   <tr
     className={`border-b-[0.2px]  ${

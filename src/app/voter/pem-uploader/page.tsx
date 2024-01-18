@@ -1,7 +1,7 @@
 "use client";
 import Link from "next/link";
 
-export default function PemUploader() {
+export default function PemUploaderPage() {
   const handleUpload = () => {
     const fileInput = document.getElementById("pem") as any;
     if (fileInput.files.length > 0) {
@@ -74,8 +74,6 @@ export default function PemUploader() {
           </div>
         </div>
       </main>
-      {/* <Link href="/singpass-login">Singpass Login</Link>
-      <Link href="/candidate-selection">Candidate Selection</Link> */}
     </>
   );
 }

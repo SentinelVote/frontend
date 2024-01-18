@@ -9,7 +9,10 @@ enum LoginType {
   singpass = "singpass",
 }
 
-/** https://stackoverflow.com/a/33366171 */
+/**
+ * Clear all cookies.
+ * @see https://stackoverflow.com/a/33366171
+ */
 export function ClearCookies() {
   let cookies = document.cookie.split("; ");
   for (let c = 0; c < cookies.length; c++) {
@@ -26,22 +29,12 @@ export function ClearCookies() {
     }
   }
 }
+
 export default function Home() {
   const [loginType, setLoginType] = useState(LoginType.email);
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [loginError, setLoginError] = useState("");
-  const getUsers = async () => {
-    try {
-      const response = await fetch("http://localhost:8080/api/users");
-      const data = await response.json();
-      console.log({ data });
-    } catch (error) {
-      console.error(error);
-    }
-  };
-
-  getUsers();
 
   const handleLogin = async (e: any) => {
     e.preventDefault();
@@ -53,22 +46,20 @@ export default function Home() {
         },
         body: JSON.stringify({ email, password }),
       });
-      const data = await response.json(); // isCentralAuthority
-      console.log(
-        "Data from login:",
-        data,
-      )
+      const data = await response.json();
+      console.log(`Data from login:\n${data}`)
       
-      const {success, constituency, isCentralAuthority, hasFoldedPublicKeys, hasPublicKey} = data;
-
-      // Check that the received email is the same as the one sent:
-      console.log("Req Email: ", email)
-      console.log("Res Email: ", data.email)
+      const {
+        success, 
+        constituency, 
+        isCentralAuthority,
+        hasFoldedPublicKeys: electionHasStarted,
+        hasPublicKey: voterHasRegistered
+      } = data;
 
       console.log(isCentralAuthority)
       if (success) {
         console.log(`Login successful: ${email}`);
-        //Add cookie to browser
         document.cookie = `user_email=${email}`;
         document.cookie = `is_central_authority=${isCentralAuthority}`;
         document.cookie = `success=${success}`;
@@ -76,30 +67,28 @@ export default function Home() {
         console.log(document.cookie);
         alert(`Cookies: ${document.cookie}`)
 
-        if (!!isCentralAuthority) {
-          // admin@sentinelvote.tech
-          // Password1!
-          
-          window.location.href = "/admin"; // TODO: change to admin page.
-        } else {
-          // user1@sentinelvote.tech, user2@sentinelvote.tech
-          // Password1!
-          // user3@sentinelvote.tech, ...
-          // password
-          
-          const now = Date.now()
-          window.alert(JSON.stringify({now, data}))
+        // admin@sentinelvote.tech : Password1!
+        // user1@sentinelvote.tech : Password1!
+        // user2@sentinelvote.tech : Password1!
+        // user3@sentinelvote.tech : password
+        // ...                     : password
 
-          // UPDATED LOGIC:
-          if (hasFoldedPublicKeys) {
+        if (!!isCentralAuthority) {
+          window.location.href = "/admin";
+        } else if (electionHasStarted) {
+          if (!!voterHasRegistered) {
             window.location.href = "/voter/pem-uploader";
-          } else if (hasPublicKey) {    
+          } else {
+            window.location.href = "/"; // TODO: send voter to a failed to register page.
+          }
+        } else {
+          if (!!voterHasRegistered) {
             window.location.href = "/voter/pending-election";
-          } else {    
+          } else {
             window.location.href = "/voter/pem-generate";
           }
-
         }
+
       } else {
         setLoginError("Invalid email or password");
       }
@@ -111,7 +100,7 @@ export default function Home() {
 
   return (
     <>
-      <div className="text-white h-[10vh]">
+      <header className="text-white h-[10vh]">
         <div className="flex justify-center md:justify-normal items-center h-full px-10 md:px-24 bg-navbar-bg">
           <Image
             src="/SentinelVote.ico"
@@ -119,14 +108,10 @@ export default function Home() {
             height={36}
             alt="SentinelVote Logo"
           />
-          <h2 className="text-2xl p-2 md:pl-2 md:pr-5 font-semibold  ">
-            SentinelVote
-          </h2>
-          <h1 className="text-lg pl-2 md:pl-5 border-white">
-            Log In
-          </h1>
+          <h2 className="text-2xl p-2 md:pl-2 md:pr-5 font-semibold">SentinelVote</h2>
+          <h2 className="text-lg pl-2 md:pl-5 border-white">Log In</h2>
         </div>
-      </div>
+      </header>
       <main
         className="flex flex-col items-center justify-between p-8 lg:p-24 bg-gradient-to-r from-slate-900 to-slate-700 text-slate-900"
         style={{
@@ -165,7 +150,7 @@ export default function Home() {
                   } cursor-pointer`}
                   onClick={() => setLoginType(LoginType.singpass)}
                 >
-                  Sign in via SingPass
+                  Login via Singpass
                 </h1>
               </div>
               {loginType === LoginType.email ? (
@@ -179,6 +164,7 @@ export default function Home() {
                       type="text"
                       name="email"
                       id="email"
+                      placeholder={"Email"}
                       value={email}
                       onChange={(e) => setEmail(e.target.value)}
                     />
@@ -187,6 +173,7 @@ export default function Home() {
                       type="password"
                       name="password"
                       id="password"
+                      placeholder={"Password"}
                       value={password}
                       onChange={(e) => setPassword(e.target.value)}
                     />
@@ -216,15 +203,15 @@ export default function Home() {
                     <h1 title={"For demonstration only, do not scan."} className="text-black text-xl text-center pt-5 pb-2">
                       Scan with Singpass app to log in
                     </h1>
-                    <h1 className="text-center">
+                    <p className="text-center">
                       {`Don't have Singpass mobile? `}
                       <Link
                         href="https://www.singpass.gov.sg/home/ui/register/instructions"
                         target="_blank"
                       >
-                        <span className="text-blue-500">Find out more. </span>
+                        <span className="text-blue-500">Find out more.</span>
                       </Link>
-                    </h1>
+                    </p>
                   </div>
                 </>
               )}
@@ -232,8 +219,6 @@ export default function Home() {
           </div>
         </div>
       </main>
-      {/* <Link href="/singpass-login">Singpass Login</Link>
-      <Link href="/candidate-selection">Candidate Selection</Link> */}
     </>
   );
 }

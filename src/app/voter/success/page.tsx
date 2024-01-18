@@ -3,6 +3,7 @@ import Image from "next/image";
 import Link from "next/link";
 import successPng from "@public/success.png";
 import { ClearCookies } from "@/app/page";
+
 export default function SuccessPage() {
   const handleExit = () => {
     ClearCookies();

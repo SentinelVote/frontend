@@ -2,6 +2,7 @@
 import Image from "next/image";
 import Link from "next/link";
 import successPng from "@public/success.png";
+
 export default function SuccessPage() {
   const handleExit = () => {
     window.close();
@@ -42,8 +43,6 @@ export default function SuccessPage() {
           </div>
         </div>
       </main>
-      {/* <Link href="/singpass-login">Singpass Login</Link>
-      <Link href="/candidate-selection">Candidate Selection</Link> */}
     </>
   );
 }

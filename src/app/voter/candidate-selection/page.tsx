@@ -22,8 +22,18 @@ const candidates: Candidate[] = [
     independent: true,
     image: candidateTS,
   },
-  { id: "2", name: "Ng Kok Song", independent: true, image: candidateNKS },
-  { id: "3", name: "Tan Kin Lian", independent: true, image: candidateTKL },
+  { 
+    id: "2", 
+    name: "Ng Kok Song",
+    independent: true, 
+    image: candidateNKS 
+  },
+  { 
+    id: "3", 
+    name: "Tan Kin Lian", 
+    independent: true, 
+    image: candidateTKL 
+  },
 ];
 
 type ConfirmationModalProps = {
@@ -179,28 +189,33 @@ const ConfirmationModal: React.FC<ConfirmationModalProps> = ({
   );
 };
 
-const CandidateSelection: React.FC = () => {
+const CandidateSelectionPage: React.FC = () => {
+  
   const [selectedCandidateId, setSelectedCandidateId] = useState<string | null>(
     null
   );
+  
   const [showConfirmation, setShowConfirmation] = useState(false);
 
   const handleCheckboxChange = (id: string) => {
     setSelectedCandidateId(selectedCandidateId === id ? null : id);
   };
+  
   const getSelectedCandidateName = () => {
     return (
       candidates.find((candidate) => candidate.id === selectedCandidateId)
         ?.name || ""
     );
   };
+  
   const handleConfirmVote = () => {
     console.log("Confirmed vote for:", getSelectedCandidateName());
     // Handle the vote confirmation logic
     setShowConfirmation(false); // Close the modal after confirmation
   };
+  
   return (
-    <div
+    <main
       className="max-h-screen bg-gradient-to-r from-slate-900 to-slate-700 flex flex-col justify-center items-center p-4"
       style={{
         minHeight: "90vh",
@@ -217,9 +232,9 @@ const CandidateSelection: React.FC = () => {
       <h1 className="text-4xl font-bold mb-4 text-left text-white">
         Candidate Selection
       </h1>
-      <h2 className="text-lg font-normal text-left text-white">
+      <span className="text-lg font-normal text-left text-white">
         for Presidential Election
-      </h2>
+      </span>
       <div className="p-8 rounded-lg">
         <div className="grid grid-cols-3 gap-4">
           {candidates.map((candidate) => (
@@ -232,7 +247,6 @@ const CandidateSelection: React.FC = () => {
                   src={candidate.image}
                   alt={candidate.name}
                   // objectFit="contain"
-
                   className="rounded-t-lg"
                 />
               </div>
@@ -266,8 +280,8 @@ const CandidateSelection: React.FC = () => {
       >
         Submit Vote
       </button>
-    </div>
+    </main>
   );
 };
 
-export default CandidateSelection;
+export default CandidateSelectionPage;

@@ -1,7 +1,8 @@
 "use client";
 import Link from "next/link";
 import { ClearCookies } from "@/app/page";
-export default function SuccessPage() {
+
+export default function PendingElectionPage() {
   const handleExit = () => {
     ClearCookies();
     window.close();
@@ -16,18 +17,18 @@ export default function SuccessPage() {
           justifyContent: "center",
         }}
       >
-        <div className="flex  w-full text-white justify-center">
+        <div className="flex w-full text-white justify-center">
           <div className="flex flex-col">
             <div className="flex flex-col align-center">
               <h1 className="font-bold text-5xl">
                 All Set for the Upcoming Election - Just Hang Tight!
               </h1>
-              <p className="font-medium text-lg mt-2">
-                {`Thank you for completing your setup for the upcoming election.
-                You're all ready to go! The anticipation is building, and we're
-                just as excited as you are to get started. While we're counting
-                down to the big day, please sit tight. We will notify you the
-                moment the election kicks off. `}
+              <p className="font-medium text-2xl mt-5" style={{textWrap: "balance"}}>
+                {`Thank you for completing your setup for the upcoming election. You're all ready to go!`}
+              </p>
+              <p className="font-medium text-2xl mt-2" style={{textWrap: "balance"}}>
+                {`While we're counting down to the big day, please sit tight.
+                We will notify you the moment the election kicks off. `}
               </p>
             </div>
             <Link href="/" className="self-center">
