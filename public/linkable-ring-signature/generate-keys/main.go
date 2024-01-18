@@ -2,20 +2,18 @@ package main
 
 import (
 	"fmt"
+	"syscall/js"
+
 	"github.com/zbohm/lirisi/client"
 	"github.com/zbohm/lirisi/ring"
-	"syscall/js"
 )
 
 var document js.Value
 
-// main is the entry point for the WebAssembly module.
-//
-// It modifies two web page elements to the value of the keys.
 // Ideally, having main() return two strings would be better,
 // but doing so is complex, less efficient, and harder to understand.
 //
-// The point here is that a client can generate a key pair in the browser.
+// The point here is that the generation of keys can be done client-side.
 func main() {
 	document = js.Global().Get("document")
 
