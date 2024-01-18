@@ -2,7 +2,7 @@
 import Image from "next/image";
 import Link from "next/link";
 import { useState } from "react";
-import singpassQrPng from "../../public/singpass_qr.png";
+import singpassQrPng from "@public/singpass_qr.png";
 
 enum LoginType {
   email = "email",

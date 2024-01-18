@@ -2,9 +2,9 @@
 import Image from "next/image";
 import Link from "next/link";
 import { ReactNode, useEffect, useState } from "react";
-import registeredVoter from "../../../public/registered_voter.svg";
-import voted from "../../../public/voted.svg";
-import { Voter } from "../../types/voter";
+import registeredVoter from "@public/registered_voter.svg";
+import voted from "@public/voted.svg";
+import { Voter } from "@/types/voter";
 
 const ITEMS_PER_PAGE = 12;
 

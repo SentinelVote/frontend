@@ -1,7 +1,7 @@
 "use client";
 import Image from "next/image";
 import Link from "next/link";
-import successPng from "../../../public/success.png";
+import successPng from "@public/success.png";
 export default function SuccessPage() {
   const handleExit = () => {
     window.close();
