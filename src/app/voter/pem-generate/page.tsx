@@ -1,6 +1,8 @@
 "use client";
 import JSZip from "jszip";
 import { useEffect, useState } from "react";
+import Link from "next/link";
+import {ClearCookies} from "@/app/page";
 export default function PemUploader() {
   const [publicKey, setPublicKey] = useState("");
   const [privateKey, setPrivateKey] = useState("");
@@ -131,7 +133,10 @@ export default function PemUploader() {
             <div className="flex flex-col">
               <h1 className="font-bold text-5xl">Generate your PEM</h1>
               <p className="font-medium text-lg">
-                to generate your private key for the Helios voting platform
+                to generate your private key for the Helios voting platform.
+              </p>
+              <p className="font-medium text-lg text-gray-500">
+                Not ready to generate your PEM? Click Exit and log in again later.
               </p>
             </div>
           </div>
@@ -161,6 +166,18 @@ export default function PemUploader() {
               >
                 DOWNLOAD FILES
               </button>
+              <Link href="/" className="self-center">
+                <button
+                    type="button"
+                    onClick={ClearCookies}
+                    className="text-gray-900 bg-white border border-gray-300 mt-1 w-[150px]
+      focus:outline-none hover:bg-gray-100 focus:ring-4 focus:ring-gray-200 font-medium rounded-lg
+      text-sm px-5 py-2.5 me-2 mb-2 dark:bg-gray-800 dark:text-white dark:border-gray-600
+      dark:hover:bg-gray-700 dark:hover:border-gray-600 dark:focus:ring-gray-700"
+                >
+                  Exit
+                </button>
+              </Link>
             </div>
           </div>
         </div>

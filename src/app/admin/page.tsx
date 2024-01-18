@@ -5,6 +5,7 @@ import { ReactNode, useEffect, useState } from "react";
 import registeredVoter from "@public/registered_voter.svg";
 import voted from "@public/voted.svg";
 import { Voter } from "@/types/voter";
+import { ClearCookies } from "@/app/page";
 
 const ITEMS_PER_PAGE = 12;
 
@@ -233,6 +234,7 @@ export default function AdminPage() {
             <Link href="/">
               <button
                 type="button"
+                onClick={ClearCookies}
                 className=" bg-white border border-red-300 w-full self-center
       focus:outline-none hover:bg-red-100 focus:ring-4 focus:ring-red-200 font-medium rounded-lg
       text-sm px-5 py-2.5 me-2 mb-2 dark:bg-red-800 dark:text-white dark:border-red-600

@@ -2,6 +2,7 @@
 import Link from "next/link";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
+import { ClearCookies } from "@/app/page";
 
 export default function SimulationPage() {
   const [numOfVoters, setNumOfVoters] = useState("1");
@@ -93,6 +94,7 @@ export default function SimulationPage() {
         <Link href="/">
           <button
             type="button"
+            onClick={ClearCookies}
             className=" bg-white border border-red-300 w-52 focus:outline-none mt-2
             hover:bg-red-100 focus:ring-4 focus:ring-red-200 font-medium rounded-lg text-sm px-5
             py-2.5 me-2 mb-2 dark:bg-red-800 dark:text-white dark:border-red-600dark:hover:bg-red-700

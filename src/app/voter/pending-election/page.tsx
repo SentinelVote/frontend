@@ -1,7 +1,9 @@
 "use client";
 import Link from "next/link";
+import { ClearCookies } from "@/app/page";
 export default function SuccessPage() {
   const handleExit = () => {
+    ClearCookies();
     window.close();
   };
   return (
