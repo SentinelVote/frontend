@@ -3,68 +3,191 @@ import VoteCountBarChart from "@/app/components/VoteCountBarChart";
 import VoteCountBarChartPerHour from "@/app/components/VoteCountPerHour";
 import VotePieChart from "@/app/components/VotePieChart";
 import { Nominee } from "@/types/nominee";
-import { Voter } from "@/types/voter";
 import * as d3 from "d3";
 import * as GeoJSON from "geojson";
 import Image from "next/image";
 import Link from "next/link";
-import React, { useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import SingaporeAreasGeoJson from "./data/singapore-planning-areas-topojson.json";
 import "./styles.scss";
 const singaporeAreas = SingaporeAreasGeoJson as GeoJSON.FeatureCollection;
-interface Data {
-  Hour: string;
-  Count: number;
-}
-// Dummy data for the bar chart
-const data: Data[] = [
-  { Hour: "1am", Count: 10 },
-  { Hour: "3am", Count: 20 },
-  { Hour: "5am", Count: 5 },
-  { Hour: "7am", Count: 30 },
-  { Hour: "9am", Count: 25 },
-  { Hour: "11am", Count: 40 },
-  { Hour: "1pm", Count: 15 },
-  { Hour: "3pm", Count: 35 },
-  { Hour: "5pm", Count: 45 },
-  { Hour: "7pm", Count: 10 },
-  { Hour: "9pm", Count: 50 },
-  { Hour: "11pm", Count: 5 },
-  { Hour: "12am", Count: 10 },
-];
-
-const nominees: Nominee[] = [
-  {
-    id: 1,
-    name: "Tharman Shanmugaratnam",
-    party: "Independent",
-    voteCount: 600000,
-    color: "#2563EB",
-  },
-  {
-    id: 2,
-    name: "Tan Kin Lian",
-    party: "Independent",
-    voteCount: 220000,
-    color: "#FB923C",
-  },
-  {
-    id: 3,
-    name: "Ng Kok Song",
-    party: "Independent",
-    voteCount: 180000,
-    color: "#C084FC",
-  },
-];
 
 const ITEMS_PER_PAGE = 12;
+interface CountsByAreaByHr {
+  [key: string]: number;
+}
 
+type votingDetailsType = {
+  countCandidate: any;
+  countConstituency: any;
+  countHour: Number[];
+  countTotal: Number;
+};
 
 export default function AdminPage() {
+  const initialVotingDetails: votingDetailsType = {
+    countCandidate: 0,
+    countConstituency: {},
+    countHour: [],
+    countTotal: 0,
+  };
+
+  const [votingDetails, setVotingDetails] =
+    useState<votingDetailsType>(initialVotingDetails);
+
+  const getVotingDetails = async () => {
+    try {
+      const response = await fetch(
+        `${process.env.NEXT_PUBLIC_FRONTEND_URL}/api/fabric/vote`
+      );
+      const data = await response.json();
+      setVotingDetails(data);
+    } catch (error) {
+      return error;
+    }
+  };
+
+  useEffect(() => {
+    getVotingDetails();
+  }, []);
+
+  // const { countCandidate, countConstituency, countHour, countTotal } =
+  //   votingDetails;
+
+  console.log("Test:");
+  console.log(votingDetails?.countCandidate);
+
+  console.log("Tan Kin Lian: ", votingDetails?.countCandidate["Tan Kin Lian"]);
+  console.log(
+    "Tharman Shanmugaratnam: ",
+    votingDetails?.countCandidate["Tharman Shanmugaratnam"]
+  );
+  console.log("Ng Kok Song: ", votingDetails?.countCandidate["Ng Kok Song"]);
+
+  console.log("TOA PAYOH: ", votingDetails?.countConstituency["TOA PAYOH"]);
+  console.log(votingDetails?.countHour);
+  console.log(votingDetails?.countTotal);
+
+  const nominees: Nominee[] = [
+    {
+      id: 1,
+      name: "Tharman Shanmugaratnam",
+      party: "Independent",
+      voteCount: votingDetails?.countCandidate["Tharman Shanmugaratnam"] || 0,
+      color: "#2563EB",
+    },
+    {
+      id: 2,
+      name: "Tan Kin Lian",
+      party: "Independent",
+      voteCount: votingDetails?.countCandidate["Tan Kin Lian"] || 0,
+      color: "#FB923C",
+    },
+    {
+      id: 3,
+      name: "Ng Kok Song",
+      party: "Independent",
+      voteCount: votingDetails?.countCandidate["Ng Kok Song"] || 0,
+      color: "#C084FC",
+    },
+  ];
   const totalVotes = nominees.reduce((acc, nominee) => {
     return acc + nominee.voteCount;
   }, 0);
-  console.log(totalVotes);
+  interface Data {
+    Hour: string;
+    Count: Number;
+  }
+
+  // Dummy data for the bar chart
+  const data: Data[] = [
+    // { Hour: "1am", Count: votingDetails?.countHour[1] },
+    // { Hour: "2am", Count: votingDetails?.countHour[2] },
+    // { Hour: "3am", Count: votingDetails?.countHour[3] },
+    // { Hour: "4am", Count: votingDetails?.countHour[4] },
+    // { Hour: "5am", Count: votingDetails?.countHour[5] },
+    // { Hour: "6am", Count: votingDetails?.countHour[6] },
+    // { Hour: "7am", Count: votingDetails?.countHour[7] },
+    { Hour: "8am", Count: votingDetails?.countHour[8] },
+    { Hour: "9am", Count: votingDetails?.countHour[9] },
+    { Hour: "10am", Count: votingDetails?.countHour[10] },
+    { Hour: "11am", Count: votingDetails?.countHour[11] },
+    { Hour: "12pm", Count: votingDetails?.countHour[12] },
+    { Hour: "1pm", Count: votingDetails?.countHour[13] },
+    { Hour: "2pm", Count: votingDetails?.countHour[14] },
+    { Hour: "3pm", Count: votingDetails?.countHour[15] },
+    { Hour: "4pm", Count: votingDetails?.countHour[16] },
+    { Hour: "5pm", Count: votingDetails?.countHour[17] },
+    { Hour: "6pm", Count: votingDetails?.countHour[18] },
+    // { Hour: "7pm", Count: votingDetails?.countHour[19] },
+    // { Hour: "8pm", Count: votingDetails?.countHour[20] },
+    // { Hour: "9pm", Count: votingDetails?.countHour[21] },
+    // { Hour: "10pm", Count: votingDetails?.countHour[22] },
+    // { Hour: "11pm", Count: votingDetails?.countHour[23] },
+    // { Hour: "12am", Count: votingDetails?.countHour[0] },
+  ];
+
+  const countsByAreaByHr: CountsByAreaByHr = {
+    OUTRAM: votingDetails?.countConstituency["OUTRAM"] || 0,
+    "BUKIT MERAH": votingDetails?.countConstituency["BUKIT MERAH"] || 0,
+    "DOWNTOWN CORE": votingDetails?.countConstituency["DOWNTOWN CORE"] || 0,
+    "MARINA SOUTH": votingDetails?.countConstituency["MARINA SOUTH"] || 0,
+    "SINGAPORE RIVER": votingDetails?.countConstituency["SINGAPORE RIVER"] || 0,
+    QUEENSTOWN: votingDetails?.countConstituency["QUEENSTOWN"] || 0,
+    "MARINA EAST": votingDetails?.countConstituency["MARINA EAST"] || 0,
+    "RIVER VALLEY": votingDetails?.countConstituency["RIVER VALLEY"] || 0,
+    "WESTERN ISLANDS": votingDetails?.countConstituency["WESTERN ISLANDS"] || 0,
+    "SOUTHERN ISLANDS":
+      votingDetails?.countConstituency["SOUTHERN ISLANDS"] || 0,
+    "STRAITS VIEW": votingDetails?.countConstituency["STRAITS VIEW"] || 0,
+    "MARINE PARADE": votingDetails?.countConstituency["MARINE PARADE"] || 0,
+    ROCHOR: votingDetails?.countConstituency["ROCHOR"] || 0,
+    KALLANG: votingDetails?.countConstituency["KALLANG"] || 0,
+    ORCHARD: votingDetails?.countConstituency["ORCHARD"] || 0,
+    NEWTON: votingDetails?.countConstituency["NEWTON"] || 0,
+    PIONEER: votingDetails?.countConstituency["PIONEER"] || 0,
+    TANGLIN: votingDetails?.countConstituency["TANGLIN"] || 0,
+    CLEMENTI: votingDetails?.countConstituency["CLEMENTI"] || 0,
+    TUAS: votingDetails?.countConstituency["TUAS"] || 0,
+    BEDOK: votingDetails?.countConstituency["BEDOK"] || 0,
+    MUSEUM: votingDetails?.countConstituency["MUSEUM"] || 0,
+    "JURONG EAST": votingDetails?.countConstituency["JURONG EAST"] || 0,
+    GEYLANG: votingDetails?.countConstituency["GEYLANG"] || 0,
+    "BOON LAY": votingDetails?.countConstituency["BOON LAY"] || 0,
+    "BUKIT TIMAH": votingDetails?.countConstituency["BUKIT TIMAH"] || 0,
+    NOVENA: votingDetails?.countConstituency["NOVENA"] || 0,
+    TAMPINES: votingDetails?.countConstituency["TAMPINES"] || 0,
+    "BUKIT BATOK": votingDetails?.countConstituency["BUKIT BATOK"] || 0,
+    "JURONG WEST": votingDetails?.countConstituency["JURONG WEST"] || 0,
+    SERANGOON: votingDetails?.countConstituency["SERANGOON"] || 0,
+    HOUGANG: votingDetails?.countConstituency["HOUGANG"] || 0,
+    "PAYA LEBAR": votingDetails?.countConstituency["PAYA LEBAR"] || 0,
+    BISHAN: votingDetails?.countConstituency["BISHAN"] || 0,
+    "TOA PAYOH": votingDetails?.countConstituency["TOA PAYOH"] || 0,
+    "BUKIT PANJANG": votingDetails?.countConstituency["BUKIT PANJANG"] || 0,
+    "CHANGI BAY": votingDetails?.countConstituency["CHANGI BAY"] || 0,
+    "ANG MO KIO": votingDetails?.countConstituency["ANG MO KIO"] || 0,
+    "PASIR RIS": votingDetails?.countConstituency["PASIR RIS"] || 0,
+    TENGAH: votingDetails?.countConstituency["TENGAH"] || 0,
+    "CHOA CHU KANG": votingDetails?.countConstituency["CHOA CHU KANG"] || 0,
+    SENGKANG: votingDetails?.countConstituency["SENGKANG"] || 0,
+    CHANGI: votingDetails?.countConstituency["CHANGI"] || 0,
+    PUNGGOL: votingDetails?.countConstituency["PUNGGOL"] || 0,
+    "SUNGEI KADUT": votingDetails?.countConstituency["SUNGEI KADUT"] || 0,
+    YISHUN: votingDetails?.countConstituency["YISHUN"] || 0,
+    MANDAI: votingDetails?.countConstituency["MANDAI"] || 0,
+    SELETAR: votingDetails?.countConstituency["SELETAR"] || 0,
+    WOODLANDS: votingDetails?.countConstituency["WOODLANDS"] || 0,
+    "WESTERN WATER CATCHMENT":
+      votingDetails?.countConstituency["WESTERN WATER CATCHMENT"] || 0,
+    "NORTH-EASTERN ISLANDS":
+      votingDetails?.countConstituency["NORTH-EASTERN ISLANDS"] || 0,
+    SIMPANG: votingDetails?.countConstituency["SIMPANG"] || 0,
+    SEMBAWANG: votingDetails?.countConstituency["SEMBAWANG"] || 0,
+    "CENTRAL WATER CATCHMENT":
+      votingDetails?.countConstituency["CENTRAL WATER CATCHMENT"] || 0,
+    "LIM CHU KANG": votingDetails?.countConstituency["LIM CHU KANG"] || 0,
+  };
 
   return (
     <main
@@ -90,7 +213,7 @@ export default function AdminPage() {
               </h1>
               <VoteCountBarChartPerHour data={data} />
               <h1 className="font-medium text-5x text-slate-900">Map View</h1>
-              <SingaporeMap />
+              <SingaporeMap countsByAreaByHr={countsByAreaByHr} />
 
               {/* <Link href="/">
               <button
@@ -154,7 +277,7 @@ export default function AdminPage() {
                     </div>
                     <span className="text-sm">{nominee.party}</span>
                     <span className="text-sm">
-                      {nominee.voteCount.toLocaleString()}
+                      {nominee.voteCount.toLocaleString() || 0}
                     </span>
                   </div>
                 ))}
@@ -244,79 +367,22 @@ export default function AdminPage() {
     </main>
   );
 }
-interface CountsByAreaByHr {
-  [key: string]: number;
-}
-
-const countsByAreaByHr: CountsByAreaByHr = {
-  OUTRAM: 1000,
-  "BUKIT MERAH": 500,
-  "DOWNTOWN CORE": 200,
-  "MARINA SOUTH": 100,
-  "SINGAPORE RIVER": 1500,
-  QUEENSTOWN: 100,
-  "MARINA EAST": 200,
-  "RIVER VALLEY": 300,
-  "WESTERN ISLANDS": 0,
-  "SOUTHERN ISLANDS": 0,
-  "STRAITS VIEW": 600,
-  "MARINE PARADE": 700,
-  ROCHOR: 800,
-  KALLANG: 900,
-  ORCHARD: 1000,
-  NEWTON: 1100,
-  PIONEER: 1200,
-  TANGLIN: 1300,
-  CLEMENTI: 1400,
-  TUAS: 100,
-  BEDOK: 200,
-  MUSEUM: 300,
-  "JURONG EAST": 400,
-  GEYLANG: 500,
-  "BOON LAY": 600,
-  "BUKIT TIMAH": 700,
-  NOVENA: 800,
-  TAMPINES: 900,
-  "BUKIT BATOK": 1000,
-  "JURONG WEST": 1100,
-  SERANGOON: 1200,
-  HOUGANG: 1300,
-  "PAYA LEBAR": 1400,
-  BISHAN: 100,
-  "TOA PAYOH": 200,
-  "BUKIT PANJANG": 300,
-  "CHANGI BAY": 400,
-  "ANG MO KIO": 500,
-  "PASIR RIS": 600,
-  TENGAH: 50,
-  "CHOA CHU KANG": 100,
-  SENGKANG: 2000,
-  CHANGI: 300,
-  PUNNGOL: 400,
-  "SUNGEI KADUT": 500,
-  YISHUN: 600,
-  MANDAI: 700,
-  SELETAR: 800,
-  WOODLANDS: 900,
-  "WESTERN WATER CATCHMENT": 10,
-  "NORTH-EASTERN ISLANDS": 0,
-  SIMPANG: 30,
-  SEMBAWANG: 40,
-  "CENTRAL WATER CATCHMENT": 0,
-  "LIM CHU KANG": 50,
+type SingaporeMapParams = {
+  countsByAreaByHr: CountsByAreaByHr;
 };
-const maxCount = Math.max(...Object.values(countsByAreaByHr));
-const colorScale = d3.scaleSequential([0, maxCount], d3.interpolateBlues);
+const SingaporeMap = ({ countsByAreaByHr }: SingaporeMapParams) => {
+  const maxCount = Math.max(...Object.values(countsByAreaByHr));
+  const colorScale = d3.scaleSequential([0, maxCount], d3.interpolateBlues);
 
-const maxVotesPerArea = Math.max(...Object.values(countsByAreaByHr));
-const maxVotesPerAreaName = Object.keys(countsByAreaByHr).find(
-  (key) => countsByAreaByHr[key] === maxVotesPerArea
-);
-const SingaporeMap: React.FC = () => {
+  const maxVotesPerArea = Math.max(...Object.values(countsByAreaByHr));
+  const maxVotesPerAreaName = Object.keys(countsByAreaByHr).find(
+    (key) => countsByAreaByHr[key] === maxVotesPerArea
+  );
   const mapContainerRef = useRef<HTMLDivElement>(null);
   const addComma = (num: number) => {
     return num.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
   };
+
   useEffect(() => {
     d3.select("#map").selectAll("*").remove();
     const width = 500;
@@ -346,7 +412,7 @@ const SingaporeMap: React.FC = () => {
         .attr("class", "area")
         .attr("d", pathGenerator as any)
         .attr("fill", (d) => {
-          const count = countsByAreaByHr[d.properties.PLN_AREA_N] || 0;
+          const count = countsByAreaByHr[d.properties.PLN_AREA_N];
           return colorScale(count);
         })
         .style("stroke", "#000")
@@ -370,13 +436,16 @@ const SingaporeMap: React.FC = () => {
           tooltip.transition().duration(500).style("opacity", 0);
         });
     }
-  }, []);
+  }, [countsByAreaByHr]);
 
   return (
     <div className="flex flex-col relative justify-center w-full">
       <div ref={mapContainerRef} id="map" className="self-center" />
       <div className="absolute bottom-0 right-0 text-xs text-slate-900">
-        <h1>Highest: {addComma(maxVotesPerArea)} votes</h1>
+        <h1>
+          Highest: {addComma(maxVotesPerArea)}{" "}
+          {maxVotesPerArea === 1 ? "vote" : "votes"}
+        </h1>
         <h1 className="capitalize">Location: {maxVotesPerAreaName}</h1>
       </div>
     </div>

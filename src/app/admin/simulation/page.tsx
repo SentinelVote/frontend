@@ -1,24 +1,44 @@
 "use client";
-import Link from "next/link";
-import { useState } from "react";
-import { useForm } from "react-hook-form";
 import { ClearCookies } from "@/app/globals";
+import Link from "next/link";
+import { useEffect, useState } from "react";
+import { useForm } from "react-hook-form";
 
 export default function SimulationPage() {
-  const [numOfVoters, setNumOfVoters] = useState("1");
+  const [numOfVoters, setNumOfVoters] = useState("3");
   const {
     register,
     handleSubmit,
+    setValue,
     formState: { errors },
   } = useForm();
   const onSubmit = (d: any) => {
     alert(JSON.stringify(d));
+    //TODO: add post request to backend
+
+    // "simulation" "production"
+    let response = fetch(
+      `http://localhost:8080/dev/db/reset/${d.optionType}/${d.numOfVoters}`,
+      {
+        method: "GET",
+        // body: "",
+      }
+    );
+    if (!!response) console.log(response);
+    else console.log("error");
   };
 
-  const MIN_VOTERS = 1;
-  const MAX_VOTERS = 1000000;
+  const MIN_VOTERS = 3;
+  const MAX_VOTERS = 1000;
   const addComma = (num: number) => {
     return num.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+  };
+  useEffect(() => {
+    setValue("numOfVoters", numOfVoters);
+  }, [numOfVoters, setValue]);
+
+  const onChangeNumOfVoters = (e: any) => {
+    setNumOfVoters(e.target.value);
   };
   return (
     <main
@@ -52,7 +72,7 @@ export default function SimulationPage() {
               min={MIN_VOTERS}
               max={MAX_VOTERS}
               value={numOfVoters}
-              onChange={(e) => setNumOfVoters(e.target.value)}
+              onChange={onChangeNumOfVoters}
               style={{ width: "100%", margin: "10px 0" }}
             />
           </label>
@@ -81,9 +101,7 @@ export default function SimulationPage() {
           )}
           <button
             type="submit"
-            onClick={() => {
-              null;
-            }}
+            // onClick={InvokeDatabaseReset}
             className={`focus:outline-none text-white bg-purple-700 hover:bg-purple-800
               focus:ring-4 focus:ring-purple-300 dark:bg-purple-600 dark:hover:bg-purple-700
               dark:focus:ring-purple-900 font-medium rounded-lg text-sm px-5 py-2.5 w-52 mt-24`}

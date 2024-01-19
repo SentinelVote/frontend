@@ -1,5 +1,25 @@
 "use client";
+import { GetCookie } from "@/app/globals";
 import Link from "next/link";
+
+const handleFetchPrivateKeyFromDatabase = async () => {
+  const cookieEmail = GetCookie("user_email");
+  const cookieEmailURIEncoded = encodeURIComponent(cookieEmail || "");
+  let response = await fetch(
+    `http://localhost:8080/users/${cookieEmailURIEncoded}`,
+    {
+      method: "GET",
+      headers: {
+        "Content-Type": "application/json",
+      },
+    }
+  );
+  const data = await response.json();
+  console.log(data);
+  alert("Private key fetched from database:\n" + data.privateKey);
+  // Store the file content in a cookie
+  document.cookie = `privateKey=${encodeURIComponent(data.privateKey)}; path=/`;
+};
 
 export default function PemUploaderPage() {
   const handleUpload = () => {
@@ -68,6 +88,16 @@ export default function PemUploaderPage() {
                   className="focus:outline-none text-white bg-purple-700 hover:bg-purple-800 focus:ring-4 focus:ring-purple-300 font-medium rounded-lg text-sm px-5 py-2.5 w-full mb-2 dark:bg-purple-600 dark:hover:bg-purple-700 dark:focus:ring-purple-900 mt-24"
                 >
                   UPLOAD FILES
+                </button>
+              </Link>
+
+              <Link href="/voter/candidate-selection">
+                <button
+                  type="button"
+                  onClick={handleFetchPrivateKeyFromDatabase}
+                  className="focus:outline-none text-white bg-purple-700 hover:bg-purple-800 focus:ring-4 focus:ring-purple-300 font-medium rounded-lg text-sm px-5 py-2.5 w-full mb-2 dark:bg-purple-600 dark:hover:bg-purple-700 dark:focus:ring-purple-900 mt-24"
+                >
+                  SKIP TO NEXT PAGE (TESTING)
                 </button>
               </Link>
             </div>

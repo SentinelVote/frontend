@@ -1,8 +1,8 @@
 "use client";
-import JSZip from "jszip";
-import { useEffect, useState } from "react";
-import Link from "next/link";
 import { ClearCookies, GetCookie } from "@/app/globals";
+import JSZip from "jszip";
+import Link from "next/link";
+import { useEffect, useState } from "react";
 
 export default function PemGeneratePage() {
   const [publicKey, setPublicKey] = useState("");
@@ -15,14 +15,14 @@ export default function PemGeneratePage() {
     const emailCookie = GetCookie("user_email");
     setUserEmailCookie(emailCookie || "");
     console.log("userEmailCookie", userEmailCookie);
-    // Fetch users and generate key on component mount
-    getUsers();
     handleGenerateKey();
   }, []);
 
   const handleGenerateKey = async () => {
     try {
-      const response = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/lrs/generate-keys`);
+      const response = await fetch(
+        `${process.env.NEXT_PUBLIC_BACKEND_URL}/lrs/generate-keys`
+      );
       const data = await response.json();
       if (!!data) {
         console.log("PEM generated");
@@ -40,29 +40,27 @@ export default function PemGeneratePage() {
     }
   };
 
-  const getUsers = async () => {
-    try {
-      const response = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/users`);
-      const data = await response.json();
-      console.log({ data });
-    } catch (error) {
-      console.error(error);
-    }
-  };
-
   const storeGeneratedPubKey = async () => {
-    console.log("userEmailCookie:")
-    console.log(userEmailCookie)
+    console.log("userEmailCookie:");
+    console.log(userEmailCookie);
     try {
-      const response = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/store`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        // Private Keys are only stored for simulation purposes.
-        body: JSON.stringify({ email: userEmailCookie, publicKey: publicKey, privateKey: privateKey }),
-      });
+      const response = await fetch(
+        `${process.env.NEXT_PUBLIC_BACKEND_URL}/keys/store`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          // Private Keys are only stored for simulation purposes.
+          body: JSON.stringify({
+            email: userEmailCookie,
+            publicKey: publicKey,
+            privateKey: privateKey,
+          }),
+        }
+      );
       const data = await response.json();
+
       if (!!data) {
         console.log(data.message);
       } else {
@@ -92,7 +90,7 @@ export default function PemGeneratePage() {
 
       // Create a blob URL
       const blobUrl = URL.createObjectURL(content);
-      
+
       // Create a temporary anchor element and trigger download
       const anchor = document.createElement("a");
       anchor.href = blobUrl;
@@ -132,7 +130,8 @@ export default function PemGeneratePage() {
                 to generate your private key for the Helios voting platform.
               </p>
               <p className="font-medium text-lg text-gray-500">
-                Not ready to generate your PEM? Click Exit and log in again later.
+                Not ready to generate your PEM? Click Exit and log in again
+                later.
               </p>
             </div>
           </div>
@@ -164,9 +163,9 @@ export default function PemGeneratePage() {
               </button>
               <Link href="/" className="self-center">
                 <button
-                    type="button"
-                    onClick={ClearCookies}
-                    className="text-gray-900 bg-white border border-gray-300 mt-1 w-[150px]
+                  type="button"
+                  onClick={ClearCookies}
+                  className="text-gray-900 bg-white border border-gray-300 mt-1 w-[150px]
       focus:outline-none hover:bg-gray-100 focus:ring-4 focus:ring-gray-200 font-medium rounded-lg
       text-sm px-5 py-2.5 me-2 mb-2 dark:bg-gray-800 dark:text-white dark:border-gray-600
       dark:hover:bg-gray-700 dark:hover:border-gray-600 dark:focus:ring-gray-700"

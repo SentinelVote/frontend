@@ -1,17 +1,19 @@
 "use client";
+import { ClearCookies } from "@/app/globals";
+import { Voter } from "@/types/voter";
+import registeredVoter from "@public/registered_voter.svg";
+import voted from "@public/voted.svg";
 import Image from "next/image";
 import Link from "next/link";
 import { ReactNode, useEffect, useState } from "react";
-import registeredVoter from "@public/registered_voter.svg";
-import voted from "@public/voted.svg";
-import { Voter } from "@/types/voter";
-import { ClearCookies } from "@/app/globals";
 
 const ITEMS_PER_PAGE = 12;
 
 const checkVoteStart = async () => {
   try {
-    const response = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/keys/public/folded/exists`);
+    const response = await fetch(
+      `${process.env.NEXT_PUBLIC_BACKEND_URL}/keys/public/folded/exists`
+    );
     if (!response.ok) {
       throw new Error("Network response was not ok");
     }
@@ -101,8 +103,9 @@ export default function AdminPage() {
     console.log("button was called.");
     try {
       const response = await fetch(
-        `${process.env.NEXT_PUBLIC_BACKEND_URL}/keys/public/folded`, {
-          method: "PUT"
+        `${process.env.NEXT_PUBLIC_BACKEND_URL}/keys/public/folded`,
+        {
+          method: "PUT",
         }
       );
       if (!response.ok) {
@@ -124,7 +127,9 @@ export default function AdminPage() {
   useEffect(() => {
     const fetchUsers = async () => {
       try {
-        const response = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/users`);
+        const response = await fetch(
+          `${process.env.NEXT_PUBLIC_BACKEND_URL}/users`
+        );
         if (!response.ok) {
           throw new Error("Network response was not ok");
         }
@@ -167,7 +172,7 @@ export default function AdminPage() {
                 <div className="flex flex-col">
                   <p className="text-slate-400">Total Eligible Voters</p>
                   <h1 className="text-3xl font-extrabold text-slate-950">
-                    {voters.length}
+                    {voters.length - 1}
                   </h1>
                 </div>
               </div>

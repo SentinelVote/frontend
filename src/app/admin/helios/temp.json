@@ -1,0 +1,24 @@
+{
+  "countCandidate": { "Tan Kin Lian": 1, "Tharman Shanmugaratnam": 1 },
+  "countConstituency": { "BUKIT BATOK": 1, "TOA PAYOH": 1 },
+  "countHour": [
+    0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 0, 0, 0, 0, 0, 0
+  ],
+  "countTotal": 2,
+  "raw": [
+    {
+      "vote": "Tan Kin Lian",
+      "voteSignature": "-----BEGIN RING SIGNATURE-----\nCurveName: prime256v1\nCurveOID: 1.2.840.10045.3.1.7\nHasherName: sha3-256\nHasherOID: 2.16.840.1.101.3.4.2.8\nKeyImage: \n  73:70:da:f3:90:b4:66:11:a4:74:b1:e8:bd:14:63:c9\n  a8:55:d6:7e:f6:c0:a1:18:f4:de:c4:a6:31:5d:4e:3a\n  b0:05:75:76:e3:33:cd:61:e9:fc:01:7e:74:05:4c:29\n  9e:02:18:ef:22:0b:c9:94:62:0b:43:b8:14:ae:69:fa\nNumberOfKeys: 4\nOrigin: github.com/zbohm/lirisi\n\nMIIBLhMhZ2l0aHViLmNvbS96Ym9obS9saXJpc2kgU2lnbmF0dXJlAgEBBggqhkjO\nPQMBBwYJYIZIAWUDBAIIMEQEIHNw2vOQtGYRpHSx6L0UY8moVdZ+9sChGPTexKYx\nXU46BCCwBXV24zPNYen8AX50BUwpngIY7yILyZRiC0O4FK5p+gQgB18OSdu/KSCf\nwEcBl9LylYMVZ27CNr1OjpLo0V4g+tMwgYgEID1fquXDx3APdkEbsLQpM6yX43jk\nWx0GXXKe0JjGbqPfBCDL3NBPxCDhKrtzWUmcvNZUA84MlLlL3rQwKlhGHfSzVAQg\no9DsIX7j6F4jZn3FlV14vRYU8dnuY3xZaAQlgg5A+FgEIKIdBAi3NhA6ktQoUuZv\npxAW/foFi30JcQ+QHa7vTzHf\n-----END RING SIGNATURE-----\n",
+      "constituency": "TOA PAYOH",
+      "hour": 17,
+      "verified": true
+    },
+    {
+      "vote": "Tharman Shanmugaratnam",
+      "voteSignature": "-----BEGIN RING SIGNATURE-----\nCurveName: prime256v1\nCurveOID: 1.2.840.10045.3.1.7\nHasherName: sha3-256\nHasherOID: 2.16.840.1.101.3.4.2.8\nKeyImage: \n  d3:19:d3:a5:05:ed:85:0f:d9:80:9a:b5:28:c3:50:eb\n  37:f3:7a:95:f9:51:ab:c3:3d:fc:e6:fe:37:c1:b9:5c\n  b2:01:d2:22:6f:00:21:e6:8c:54:d4:53:44:8c:5d:37\n  84:91:a8:50:67:68:01:6e:20:04:b1:fd:0e:b4:24:65\nNumberOfKeys: 4\nOrigin: github.com/zbohm/lirisi\n\nMIIBLhMhZ2l0aHViLmNvbS96Ym9obS9saXJpc2kgU2lnbmF0dXJlAgEBBggqhkjO\nPQMBBwYJYIZIAWUDBAIIMEQEINMZ06UF7YUP2YCatSjDUOs383qV+VGrwz385v43\nwblcBCCyAdIibwAh5oxU1FNEjF03hJGoUGdoAW4gBLH9DrQkZQQg0gTolLEAjSJl\nIooJ6demsIDbNPnbu08fZXL0a6zUL9owgYgEINR5vPW5zirqwGPbekYijM/aQN2K\nOk5DhKQGk3djnxIqBCARX0dmR4L1CkMCteLNFMygrvbTrnv3nbzUZga+AP9onAQg\noMJwY3YPF7fo0WoBW5812ZTW872M9k3ri5DuL94D0HAEIDblWLY4v/KuCOJHDfdl\nok9csBKHMjUG2cdKqjqQHWFo\n-----END RING SIGNATURE-----\n",
+      "constituency": "BUKIT BATOK",
+      "hour": 16,
+      "verified": true
+    }
+  ]
+}

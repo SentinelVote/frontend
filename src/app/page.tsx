@@ -1,14 +1,12 @@
 "use client";
+import singpassQrPng from "@public/singpass_qr.png";
 import Image from "next/image";
 import Link from "next/link";
 import { useState } from "react";
-import singpassQrPng from "@public/singpass_qr.png";
-
 enum LoginType {
   email = "email",
   singpass = "singpass",
 }
-
 
 export default function Home() {
   const [loginType, setLoginType] = useState(LoginType.email);
@@ -19,25 +17,28 @@ export default function Home() {
   const handleLogin = async (e: any) => {
     e.preventDefault();
     try {
-      const response = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/login`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ email, password }),
-      });
+      const response = await fetch(
+        `${process.env.NEXT_PUBLIC_BACKEND_URL}/login`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ email, password }),
+        }
+      );
       const data = await response.json();
-      console.log(`Data from login:\n${data}`)
-      
+      console.log(`Data from login:\n${data}`);
+
       const {
-        success, 
-        constituency, 
+        success,
+        constituency,
         isCentralAuthority,
         hasFoldedPublicKeys: electionHasStarted,
-        hasPublicKey: voterHasRegistered
+        hasPublicKey: voterHasRegistered,
       } = data;
 
-      console.log(isCentralAuthority)
+      console.log(isCentralAuthority);
       if (success) {
         console.log(`Login successful: ${email}`);
         document.cookie = `user_email=${email}`;
@@ -45,7 +46,7 @@ export default function Home() {
         document.cookie = `success=${success}`;
         document.cookie = `constituency=${constituency}`;
         console.log(document.cookie);
-        alert(`Cookies: ${document.cookie}`)
+        alert(`Cookies: ${document.cookie}`);
 
         // admin@sentinelvote.tech : Password1!
         // user1@sentinelvote.tech : Password1!
@@ -68,7 +69,6 @@ export default function Home() {
             window.location.href = "/voter/pem-generate";
           }
         }
-
       } else {
         setLoginError("Invalid email or password");
       }
@@ -88,7 +88,9 @@ export default function Home() {
             height={36}
             alt="SentinelVote Logo"
           />
-          <h2 className="text-2xl p-2 md:pl-2 md:pr-5 font-semibold">SentinelVote</h2>
+          <h2 className="text-2xl p-2 md:pl-2 md:pr-5 font-semibold">
+            SentinelVote
+          </h2>
           <h2 className="text-lg pl-2 md:pl-5 border-white">Log In</h2>
         </div>
       </header>
@@ -180,7 +182,10 @@ export default function Home() {
                       width={225}
                       title={"For demonstration only, do not scan."}
                     />
-                    <h1 title={"For demonstration only, do not scan."} className="text-black text-xl text-center pt-5 pb-2">
+                    <h1
+                      title={"For demonstration only, do not scan."}
+                      className="text-black text-xl text-center pt-5 pb-2"
+                    >
                       Scan with Singpass app to log in
                     </h1>
                     <p className="text-center">
