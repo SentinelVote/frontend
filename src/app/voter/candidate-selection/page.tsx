@@ -167,6 +167,7 @@ const ConfirmationModal: React.FC<ConfirmationModalProps> = ({
           </button>
           <Link href="/voter/success">
             <button
+                id={"confirm-vote"}
               onClick={() => {
                 onConfirm();
                 handleConfirm();
@@ -246,10 +247,12 @@ const CandidateSelectionPage: React.FC = () => {
               <div className="flex px-5 gap-2 bg-white z-50">
                 <input
                   type="checkbox"
+                  id={candidate.id}
                   checked={selectedCandidateId === candidate.id}
                   onChange={() => handleCheckboxChange(candidate.id)}
                   className="form-checkbox text-blue-600 rounded focus:ring-blue-500"
                 />
+                <label hidden={true} htmlFor={candidate.id}>{candidate.name}</label>
                 <div className="flex flex-col text-left">
                   <h3 className="text-font-semibold mt-2 text-slate-900">
                     {candidate.name}
@@ -265,6 +268,7 @@ const CandidateSelectionPage: React.FC = () => {
       </div>
       <button
         type="button"
+        id={"submit-vote"}
         onClick={() => setShowConfirmation(true)}
         className="text-gray-900 bg-white border border-gray-300 w-fit self-center
       focus:outline-none hover:bg-gray-100 focus:ring-4 focus:ring-gray-200 font-medium rounded-lg

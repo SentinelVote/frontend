@@ -204,6 +204,7 @@ export default function AdminPage() {
             </p>
             <button
               type="button"
+              id={"fold-keys"}
               disabled={deactivateFoldButton}
               onClick={handleFoldKeys}
               className={`focus:outline-none text-white ${
