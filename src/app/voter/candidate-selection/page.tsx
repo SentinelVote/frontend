@@ -23,17 +23,17 @@ const candidates: Candidate[] = [
     independent: true,
     image: candidateTS,
   },
-  { 
-    id: "2", 
+  {
+    id: "2",
     name: "Ng Kok Song",
-    independent: true, 
-    image: candidateNKS 
+    independent: true,
+    image: candidateNKS
   },
-  { 
-    id: "3", 
-    name: "Tan Kin Lian", 
-    independent: true, 
-    image: candidateTKL 
+  {
+    id: "3",
+    name: "Tan Kin Lian",
+    independent: true,
+    image: candidateTKL
   },
 ];
 
@@ -61,7 +61,7 @@ const ConfirmationModal: React.FC<ConfirmationModalProps> = ({
   } else {
     console.log("User has no private key.");
   }
-  
+
   const constituency = GetCookie("constituency");
 
   const handleConfirm = async () => {
@@ -75,7 +75,7 @@ const ConfirmationModal: React.FC<ConfirmationModalProps> = ({
       });
       const { foldedPublicKeys } = await response.json();
       alert(`Folded Public Keys: ${foldedPublicKeys}`)
-      
+
       let createSignature = JSON.stringify({
         message: candidateName,
         privateKeyContent: privateKey,
@@ -93,15 +93,15 @@ const ConfirmationModal: React.FC<ConfirmationModalProps> = ({
 
       // Production: Get the actual hour, we don't need minutes and seconds.
       const hourProduction = new Date().getHours();
-      
+
       // Simulation: Produce a random hour between voteStartTime and voteEndTime
       const voteStartTime = 8 // the election starts at 8am
       const voteEndTime = 18 // the election ends at 6pm
       const hourSimulation = Math.floor(Math.random() * (voteEndTime - voteStartTime + 1)) + voteStartTime;
-      
-      let voteContent = JSON.stringify({ 
+
+      let voteContent = JSON.stringify({
         vote: candidateName,
-        voteSignature: signature, 
+        voteSignature: signature,
         constituency: constituency,
         hour: hourSimulation.toString()
       });
@@ -114,7 +114,7 @@ const ConfirmationModal: React.FC<ConfirmationModalProps> = ({
         },
         body: voteContent,
       });
-      
+
       // Just for testing purposes
       let overload = () => {
         for (let i = 0; i < 1000000; i++) {
@@ -128,7 +128,7 @@ const ConfirmationModal: React.FC<ConfirmationModalProps> = ({
         }
       }
       // overload();
-      
+
 
     } catch (error) {
       console.error(error);
@@ -184,30 +184,30 @@ const ConfirmationModal: React.FC<ConfirmationModalProps> = ({
 };
 
 const CandidateSelectionPage: React.FC = () => {
-  
+
   const [selectedCandidateId, setSelectedCandidateId] = useState<string | null>(
     null
   );
-  
+
   const [showConfirmation, setShowConfirmation] = useState(false);
 
   const handleCheckboxChange = (id: string) => {
     setSelectedCandidateId(selectedCandidateId === id ? null : id);
   };
-  
+
   const getSelectedCandidateName = () => {
     return (
       candidates.find((candidate) => candidate.id === selectedCandidateId)
         ?.name || ""
     );
   };
-  
+
   const handleConfirmVote = () => {
     console.log("Confirmed vote for:", getSelectedCandidateName());
     // Handle the vote confirmation logic
     setShowConfirmation(false); // Close the modal after confirmation
   };
-  
+
   return (
     <main
       className="max-h-screen bg-gradient-to-r from-slate-900 to-slate-700 flex flex-col justify-center items-center p-4"
