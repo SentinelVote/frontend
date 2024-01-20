@@ -10,6 +10,7 @@ import { ReactNode, useEffect, useState } from "react";
 const ITEMS_PER_PAGE = 12;
 
 const checkVoteStart = async () => {
+  return false; // temporary, so that we can re-click the button.
   try {
     const response = await fetch(
       `${process.env.NEXT_PUBLIC_BACKEND_URL}/keys/public/folded/exists`
