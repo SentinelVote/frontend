@@ -96,7 +96,7 @@ const ConfirmationModal: React.FC<ConfirmationModalProps> = ({
       
       // Simulation: Produce a random hour between voteStartTime and voteEndTime
       const voteStartTime = 8 // the election starts at 8am
-      const voteEndTime = 17 // the election ends at 5pm
+      const voteEndTime = 18 // the election ends at 6pm
       const hourSimulation = Math.floor(Math.random() * (voteEndTime - voteStartTime + 1)) + voteStartTime;
       
       let voteContent = JSON.stringify({ 
