@@ -2,7 +2,7 @@
 import singpassQrPng from "@public/singpass_qr.png";
 import Image from "next/image";
 import Link from "next/link";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 enum LoginType {
   email = "email",
   singpass = "singpass",
@@ -13,6 +13,19 @@ export default function Home() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [loginError, setLoginError] = useState("");
+  const [voteEnded, setVoteEnded] = useState(true);
+  //TODO: handle vote ended logic
+  const checkVoteEnd = async () => {
+    return true;
+  };
+
+  useEffect(() => {
+    const checkAndSetVoteEnd = async () => {
+      const voteEnd = await checkVoteEnd();
+      setVoteEnded(voteEnd);
+    };
+    checkAndSetVoteEnd();
+  }, []);
 
   const handleLogin = async (e: any) => {
     e.preventDefault();
@@ -60,6 +73,9 @@ export default function Home() {
           if (!!voterHasRegistered) {
             window.location.href = "/voter/pem-uploader";
           } else {
+            if (voteEnded) {
+              window.location.href = "/voter/vote-ended";
+            }
             window.location.href = "/"; // TODO: send voter to a failed to register page.
           }
         } else {
