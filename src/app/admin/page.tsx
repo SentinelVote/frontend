@@ -26,6 +26,10 @@ const checkVoteStart = async () => {
   }
 };
 
+const checkVoteEnd = async () => {
+  return true;
+};
+
 const hasVoteStarted = checkVoteStart();
 
 const TableContainer: React.FC<TableProps> = ({ children }) => (
@@ -77,14 +81,23 @@ export default function AdminPage() {
   const [voters, setVoters] = useState<Voter[]>([]);
   const [currentPage, setCurrentPage] = useState(1);
   const [deactivateFoldButton, setDeactivateFoldButton] = useState(false);
-
+  const [deactivatePublishButton, setDeactivatePublishButton] = useState(false);
+  const [voteEnded, setVoteEnded] = useState<Boolean>(false);
   useEffect(() => {
     const checkAndSetVoteStart = async () => {
       const voteStart = await checkVoteStart();
       setDeactivateFoldButton(voteStart);
     };
-
     checkAndSetVoteStart();
+  }, []);
+
+  //TODO: Add function to checkVoteEnd
+  useEffect(() => {
+    const checkAndSetVoteEnd = async () => {
+      const voteEnd = await checkVoteEnd();
+      setVoteEnded(voteEnd);
+    };
+    checkAndSetVoteEnd();
   }, []);
 
   // Calculate the voters to show on the current page
@@ -123,6 +136,31 @@ export default function AdminPage() {
   const handleFoldKeys = () => {
     foldKeys();
     setDeactivateFoldButton(true);
+  };
+  //Initial PublishResults logic
+  const publishResults = async () => {
+    console.log("publish results click was called");
+    try {
+      const response = await fetch(
+        `${process.env.NEXT_PUBLIC_BACKEND_URL}/keys/public/folded`,
+        {
+          method: "PUT",
+        }
+      );
+      if (!response.ok) {
+        throw new Error("Network response was not ok");
+      }
+      const data = await response.json();
+      console.log({ data });
+    } catch (e) {
+      console.error(e);
+    }
+  };
+
+  const handlePublishClick = () => {
+    //TODO: add function to publish results
+    // publishResults()
+    setDeactivatePublishButton(true);
   };
 
   useEffect(() => {
@@ -195,29 +233,52 @@ export default function AdminPage() {
                 </div>
               </div>
             </div>
-
-            <p className="font-normal text-md text-slate-500 mt-4">
-              {`Click on 'Fold Keys' to initiate the folding of public keys, signaling the commencement of the election.
+            {/*TODO: Refine function */}
+            {voteEnded ? (
+              <div>
+                <p className="font-normal text-md text-red-400 mt-2 pb-16">
+                  {`The election has ended. You can no longer fold the keys. Please proceed to the Helios Platform to view the results.`}
+                </p>
+                <button
+                  type="button"
+                  id={"fold-keys"}
+                  disabled={deactivatePublishButton}
+                  onClick={handlePublishClick}
+                  className={`focus:outline-none text-white ${
+                    deactivatePublishButton
+                      ? "bg-neutral-200 shadow-inner cursor-not-allowed"
+                      : "bg-sky-700 hover:bg-sky-800 focus:ring-4 focus:ring-sky-300 dark:bg-sky-600 dark:hover:bg-sky-700 dark:focus:ring-sky-900"
+                  }
+                  font-medium rounded-lg text-sm px-5 py-2.5 w-full`}
+                >
+                  Publish Results
+                </button>
+              </div>
+            ) : (
+              <>
+                <p className="font-normal text-md text-slate-500 mt-2">
+                  {`Click on 'Fold Keys' to initiate the folding of public keys, signaling the commencement of the election.
               `}
-            </p>
-            <p className="font-normal text-md text-red-400 mt-2">
-              {`Be aware that once the election begins, the option to fold the keys will no longer be available.`}
-            </p>
-            <button
-              type="button"
-              id={"fold-keys"}
-              disabled={deactivateFoldButton}
-              onClick={handleFoldKeys}
-              className={`focus:outline-none text-white ${
-                deactivateFoldButton
-                  ? "bg-neutral-200 shadow-inner cursor-not-allowed"
-                  : "bg-purple-700 hover:bg-purple-800 focus:ring-4 focus:ring-purple-300 dark:bg-purple-600 dark:hover:bg-purple-700 dark:focus:ring-purple-900"
-              }
-                  font-medium rounded-lg text-sm px-5 py-2.5 w-full
-                    mt-24`}
-            >
-              Fold Keys
-            </button>
+                </p>
+                <p className="font-normal text-md text-red-400 mt-2">
+                  {`Be aware that once the election begins, the option to fold the keys will no longer be available.`}
+                </p>
+                <button
+                  type="button"
+                  id={"fold-keys"}
+                  disabled={deactivateFoldButton}
+                  onClick={handleFoldKeys}
+                  className={`focus:outline-none text-white ${
+                    deactivateFoldButton
+                      ? "bg-neutral-200 shadow-inner cursor-not-allowed"
+                      : "bg-purple-700 hover:bg-purple-800 focus:ring-4 focus:ring-purple-300 dark:bg-purple-600 dark:hover:bg-purple-700 dark:focus:ring-purple-900"
+                  }
+                  font-medium rounded-lg text-sm px-5 py-2.5 w-full`}
+                >
+                  Fold Keys
+                </button>
+              </>
+            )}
             <Link href="/admin/simulation">
               <button
                 type="button"
