@@ -62,73 +62,83 @@ const ConfirmationModal: React.FC<ConfirmationModalProps> = ({
     console.log("User has no private key.");
   }
 
-  const constituency = GetCookie("constituency");
+  const email = GetCookie("user_email");
+  const constituency = GetCookie("user_constituency");
 
   const handleConfirm = async () => {
+    let response: Response;
     try {
 
-      let response = await fetch (`${process.env.NEXT_PUBLIC_BACKEND_URL}/keys/public/folded`, {
+      response = await fetch (`${process.env.NEXT_PUBLIC_BACKEND_URL}/keys/public/folded`, {
         method: "GET",
         headers: {
           "Content-Type": "application/json",
         },
       });
       const { foldedPublicKeys } = await response.json();
-      alert(`Folded Public Keys: ${foldedPublicKeys}`)
+      alert(`Folded Public Keys: ${foldedPublicKeys}`) // TODO: Remove when finalised.
 
-      let createSignature = JSON.stringify({
-        message: candidateName,
-        privateKeyContent: privateKey,
-        foldedPublicKeys: foldedPublicKeys
-      });
       response = await fetch (`${process.env.NEXT_PUBLIC_BACKEND_URL}/lrs/sign`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
         },
-        body: createSignature
+        body: JSON.stringify({
+            message: candidateName,
+            privateKeyContent: privateKey,
+            foldedPublicKeys: foldedPublicKeys,
+        }),
       });
       const { signature } = await response.json();
-      alert(`Signature: ${signature}`);
+      alert(`Signature: ${signature}`); // TODO: Remove when finalised.
 
-      // Production: Get the actual hour, we don't need minutes and seconds.
-      const hourProduction = new Date().getHours();
-
-      // Simulation: Produce a random hour between voteStartTime and voteEndTime
+      let hour: Number;
       const voteStartTime = 8 // the election starts at 8am
       const voteEndTime = 18 // the election ends at 6pm
-      const hourSimulation = Math.floor(Math.random() * (voteEndTime - voteStartTime + 1)) + voteStartTime;
-
-      let voteContent = JSON.stringify({
-        vote: candidateName,
-        voteSignature: signature,
-        constituency: constituency,
-        hour: hourSimulation.toString()
-      });
-      alert("Vote Content: "+ voteContent);
+      if (process.env.NODE_ENV === 'production') {
+        // Get the actual hour, we don't need minutes and seconds.
+        hour = new Date().getHours();
+      } else if (process.env.NODE_ENV === 'development') {
+        // Produce a random hour between voteStartTime and voteEndTime
+        hour = Math.floor(Math.random() * (voteEndTime - voteStartTime + 1)) + voteStartTime;
+      } else {
+        // Fallback if neither NODE_ENV is defined.
+        console.log("Warning: NODE_ENV is not defined. Defaulting to simulation mode.")
+        hour = Math.floor(Math.random() * (voteEndTime - voteStartTime + 1)) + voteStartTime;
+      }
 
       response = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/fabric/vote`, {
         method: "PUT",
         headers: {
           "Content-Type": "application/json",
         },
-        body: voteContent,
+        body: JSON.stringify({
+            vote: candidateName,
+            voteSignature: signature,
+            constituency: constituency,
+            hour: hour.toString(),
+        }),
       });
+      const { success } = await response.json();
+      alert(`SuccessPutVote: ${success}`); // TODO: Remove when finalised.
 
-      // Just for testing purposes
-      let overload = () => {
-        for (let i = 0; i < 1000000; i++) {
-          let call = fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/fabric/vote`, {
-            method: "PUT",
-            headers: {
-              "Content-Type": "application/json",
-            },
-            body: voteContent,
-          });
-        }
+      if (!success) {
+          // noinspection ExceptionCaughtLocallyJS
+          throw new Error("Vote failed to be submitted.");
       }
-      // overload();
 
+      response = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/voter/has-voted`, {
+          method: "POST",
+          headers: {
+              "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+              email: email,
+              hasVoted: true,
+          }),
+      });
+      let foo = await response.json();
+      alert(`SuccessUpdateHasVoted: ${foo.success}`); // TODO: Remove when finalised.
 
     } catch (error) {
       console.error(error);
