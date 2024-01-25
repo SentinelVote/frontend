@@ -8,6 +8,10 @@ import Link from "next/link";
 import { ReactNode, useEffect, useState } from "react";
 
 const ITEMS_PER_PAGE = 12;
+const handleExit = () => {
+  ClearCookies();
+  window.close();
+};
 
 const checkVoteStart = async () => {
   return false; // temporary, so that we can re-click the button.
@@ -304,7 +308,7 @@ export default function AdminPage() {
             <Link href="/">
               <button
                 type="button"
-                onClick={ClearCookies}
+                onClick={handleExit}
                 className=" bg-white border border-red-300 w-full self-center
       focus:outline-none hover:bg-red-100 focus:ring-4 focus:ring-red-200 font-medium rounded-lg
       text-sm px-5 py-2.5 me-2 mb-2 dark:bg-red-800 dark:text-white dark:border-red-600

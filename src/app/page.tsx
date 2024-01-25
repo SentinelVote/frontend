@@ -54,10 +54,10 @@ export default function Home() {
       console.log(isCentralAuthority);
       if (success) {
         console.log(`Login successful: ${email}`);
-        document.cookie = `user_email=${email}`;
-        document.cookie = `is_central_authority=${isCentralAuthority}`;
-        document.cookie = `success=${success}`;
-        document.cookie = `constituency=${constituency}`;
+        document.cookie = `user_email=${email}; path=/`;
+        document.cookie = `user_is_central_authority=${isCentralAuthority}; path=/`;
+        document.cookie = `user_constituency=${constituency}; path=/`;
+        document.cookie = `success=${success}; path=/`;
         console.log(document.cookie);
         alert(`Cookies: ${document.cookie}`);
 
