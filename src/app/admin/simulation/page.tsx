@@ -29,7 +29,7 @@ export default function SimulationPage() {
   };
 
   const MIN_VOTERS = 3;
-  const MAX_VOTERS = 1000;
+  const MAX_VOTERS = 1000000;
   const addComma = (num: number) => {
     return num.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
   };

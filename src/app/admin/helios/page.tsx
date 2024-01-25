@@ -24,7 +24,7 @@ type votingDetailsType = {
   countTotal: Number;
 };
 
-export default function AdminPage() {
+export default function Page() {
   const initialVotingDetails: votingDetailsType = {
     countCandidate: 0,
     countConstituency: {},
@@ -192,28 +192,32 @@ export default function AdminPage() {
   return (
     <main
       className="flex flex-col items-center justify-between px-6 py-1 bg-white
-        to-slate-700 text-slate-900 h-80vh"
+        to-slate-700 text-slate-900"
       style={{
         overflow: "hidden",
         justifyContent: "center",
       }}
     >
-      <div className="flex flex-col">
+      <div className="flex flex-col min-h-[88vh] justify-center">
         <div className="self-start ">
-          <Link href="/admin">
-            <span className="underline text-blue-600">admin</span>
+          <Link href="/">
+            <span className="underline text-blue-600"></span>
           </Link>
           {" / helios"}
         </div>
         <div className="flex w-full text-white align-middle justify-center">
-          <div className="flex flex-col border border-gray-300 rounded-lg p-4 mr-2">
+          <div className="flex min-w- flex-col border border-gray-300 rounded-lg p-4 mr-2">
             <div className="flex flex-col gap-2">
               <h1 className="font-medium text-5x text-slate-900">
                 Vote Count Per Hour
               </h1>
-              <VoteCountBarChartPerHour data={data} />
+              <div className="min-w-[660px] min-h-[270px]">
+                <VoteCountBarChartPerHour data={data} />
+              </div>
               <h1 className="font-medium text-5x text-slate-900">Map View</h1>
-              <SingaporeMap countsByAreaByHr={countsByAreaByHr} />
+              <div className="min-w[660px] min-h-[270px]">
+                <SingaporeMap countsByAreaByHr={countsByAreaByHr} />
+              </div>
 
               {/* <Link href="/">
               <button
@@ -314,7 +318,10 @@ export default function AdminPage() {
                             <span className="text-xs">{nominee.name}</span>
                           </div>
                           <span className="text-xs ml-2">
-                            {(nominee.voteCount / totalVotes) * 100}%
+                            {nominee.voteCount
+                              ? (nominee.voteCount / totalVotes) * 100
+                              : 0}
+                            %
                           </span>
                         </div>
                       );
@@ -352,7 +359,10 @@ export default function AdminPage() {
                             <span className="text-xs">{nominee.name}</span>
                           </div>
                           <span className="text-xs ml-2">
-                            {(nominee.voteCount / totalVotes) * 100}%
+                            {nominee.voteCount
+                              ? (nominee.voteCount / totalVotes) * 100
+                              : 0}
+                            %
                           </span>
                         </div>
                       );
@@ -441,13 +451,15 @@ const SingaporeMap = ({ countsByAreaByHr }: SingaporeMapParams) => {
   return (
     <div className="flex flex-col relative justify-center w-full">
       <div ref={mapContainerRef} id="map" className="self-center" />
-      <div className="absolute bottom-0 right-0 text-xs text-slate-900">
-        <h1>
-          Highest: {addComma(maxVotesPerArea)}{" "}
-          {maxVotesPerArea === 1 ? "vote" : "votes"}
-        </h1>
-        <h1 className="capitalize">Location: {maxVotesPerAreaName}</h1>
-      </div>
+      {mapContainerRef && (
+        <div className="absolute bottom-0 right-0 text-xs text-slate-900">
+          <h1>
+            Highest: {addComma(maxVotesPerArea)}{" "}
+            {maxVotesPerArea === 1 ? "vote" : "votes"}
+          </h1>
+          <h1 className="capitalize">Location: {maxVotesPerAreaName}</h1>
+        </div>
+      )}
     </div>
   );
 };

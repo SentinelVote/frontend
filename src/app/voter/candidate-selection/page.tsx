@@ -1,13 +1,13 @@
 "use client";
-import Image from "next/image";
-import Link from "next/link";
-import React, { useState } from "react";
+import { GetCookie } from "@/app/globals";
 import candidateNKS from "@public/candidate_nks.jpg";
 import candidateTKL from "@public/candidate_tkl.jpg";
 import candidateTS from "@public/candidate_ts.jpg";
 import exitIconSvg from "@public/exit_icon.svg";
 import warningIconSvg from "@public/warning_icon.svg";
-import { GetCookie } from "@/app/globals";
+import Image from "next/image";
+import Link from "next/link";
+import React, { useState } from "react";
 
 type Candidate = {
   id: string;
@@ -27,13 +27,13 @@ const candidates: Candidate[] = [
     id: "2",
     name: "Ng Kok Song",
     independent: true,
-    image: candidateNKS
+    image: candidateNKS,
   },
   {
     id: "3",
     name: "Tan Kin Lian",
     independent: true,
-    image: candidateTKL
+    image: candidateTKL,
   },
 ];
 
@@ -43,7 +43,6 @@ type ConfirmationModalProps = {
   onClose: () => void;
   onConfirm: () => void;
 };
-
 
 const ConfirmationModal: React.FC<ConfirmationModalProps> = ({
   isOpen,
@@ -55,7 +54,7 @@ const ConfirmationModal: React.FC<ConfirmationModalProps> = ({
 
   const privateKeyURI = GetCookie("privateKey");
   console.log("privateKeyURI:\n", privateKeyURI);
-  let privateKey = '';
+  let privateKey = "";
   if (!!privateKeyURI) {
     privateKey = decodeURIComponent(privateKeyURI);
   } else {
@@ -68,78 +67,89 @@ const ConfirmationModal: React.FC<ConfirmationModalProps> = ({
   const handleConfirm = async () => {
     let response: Response;
     try {
-
-      response = await fetch (`${process.env.NEXT_PUBLIC_BACKEND_URL}/keys/public/folded`, {
-        method: "GET",
-        headers: {
-          "Content-Type": "application/json",
-        },
-      });
+      response = await fetch(
+        `${process.env.NEXT_PUBLIC_BACKEND_URL}/keys/public/folded`,
+        {
+          method: "GET",
+          headers: {
+            "Content-Type": "application/json",
+          },
+        }
+      );
       const { foldedPublicKeys } = await response.json();
-      alert(`Folded Public Keys: ${foldedPublicKeys}`) // TODO: Remove when finalised.
+      alert(`Folded Public Keys: ${foldedPublicKeys}`); // TODO: Remove when finalised.
 
-      response = await fetch (`${process.env.NEXT_PUBLIC_BACKEND_URL}/lrs/sign`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
+      response = await fetch(
+        `${process.env.NEXT_PUBLIC_BACKEND_URL}/lrs/sign`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
             message: candidateName,
             privateKeyContent: privateKey,
             foldedPublicKeys: foldedPublicKeys,
-        }),
-      });
+          }),
+        }
+      );
       const { signature } = await response.json();
       alert(`Signature: ${signature}`); // TODO: Remove when finalised.
 
       let hour: Number;
-      const voteStartTime = 8 // the election starts at 8am
-      const voteEndTime = 18 // the election ends at 6pm
-      if (process.env.NODE_ENV === 'production') {
+      const voteStartTime = 8; // the election starts at 8am
+      const voteEndTime = 18; // the election ends at 6pm
+      if (process.env.NODE_ENV === "production") {
         // Get the actual hour, we don't need minutes and seconds.
         hour = new Date().getHours();
-      } else if (process.env.NODE_ENV === 'development') {
+      } else if (process.env.NODE_ENV === "development") {
         // Produce a random hour between voteStartTime and voteEndTime
-        hour = Math.floor(Math.random() * (voteEndTime - voteStartTime + 1)) + voteStartTime;
+        hour =
+          Math.floor(Math.random() * (voteEndTime - voteStartTime + 1)) +
+          voteStartTime;
       } else {
         // Fallback if neither NODE_ENV is defined.
-        console.log("Warning: NODE_ENV is not defined. Defaulting to simulation mode.")
-        hour = Math.floor(Math.random() * (voteEndTime - voteStartTime + 1)) + voteStartTime;
+        console.log(
+          "Warning: NODE_ENV is not defined. Defaulting to simulation mode."
+        );
+        hour =
+          Math.floor(Math.random() * (voteEndTime - voteStartTime + 1)) +
+          voteStartTime;
       }
 
-      response = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/fabric/vote`, {
-        method: "PUT",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
+      response = await fetch(
+        `${process.env.NEXT_PUBLIC_BACKEND_URL}/fabric/vote`,
+        {
+          method: "PUT",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
             vote: candidateName,
             voteSignature: signature,
             constituency: constituency,
             hour: hour.toString(),
-        }),
-      });
+          }),
+        }
+      );
       const { success } = await response.json();
       alert(`SuccessPutVote: ${success}`); // TODO: Remove when finalised.
 
-      if (!success) {
-          // noinspection ExceptionCaughtLocallyJS
-          throw new Error("Vote failed to be submitted.");
-      }
-
-      response = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/voter/has-voted`, {
+      let foo = await fetch(
+        `${process.env.NEXT_PUBLIC_BACKEND_URL}/voter/has-voted`,
+        {
           method: "POST",
           headers: {
-              "Content-Type": "application/json",
+            "Content-Type": "application/json",
           },
           body: JSON.stringify({
-              email: email,
-              hasVoted: true,
+            email: email,
+            hasVoted: true,
           }),
-      });
-      let foo = await response.json();
-      alert(`SuccessUpdateHasVoted: ${foo.success}`); // TODO: Remove when finalised.
-
+        }
+      );
+      let bar = await foo.json();
+      alert(`SuccessUpdateHasVoted: ${bar.success}`); // TODO: Remove when finalised.
     } catch (error) {
       console.error(error);
     }
@@ -177,7 +187,7 @@ const ConfirmationModal: React.FC<ConfirmationModalProps> = ({
           </button>
           <Link href="/voter/success">
             <button
-                id={"confirm-vote"}
+              id={"confirm-vote"}
               onClick={() => {
                 onConfirm();
                 handleConfirm();
@@ -194,7 +204,6 @@ const ConfirmationModal: React.FC<ConfirmationModalProps> = ({
 };
 
 const CandidateSelectionPage: React.FC = () => {
-
   const [selectedCandidateId, setSelectedCandidateId] = useState<string | null>(
     null
   );
@@ -262,7 +271,9 @@ const CandidateSelectionPage: React.FC = () => {
                   onChange={() => handleCheckboxChange(candidate.id)}
                   className="form-checkbox text-blue-600 rounded focus:ring-blue-500"
                 />
-                <label hidden={true} htmlFor={candidate.id}>{candidate.name}</label>
+                <label hidden={true} htmlFor={candidate.id}>
+                  {candidate.name}
+                </label>
                 <div className="flex flex-col text-left">
                   <h3 className="text-font-semibold mt-2 text-slate-900">
                     {candidate.name}

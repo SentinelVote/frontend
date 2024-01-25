@@ -107,7 +107,6 @@ export default function Home() {
           <h2 className="text-2xl p-2 md:pl-2 md:pr-5 font-semibold">
             SentinelVote
           </h2>
-          <h2 className="text-lg pl-2 md:pl-5 border-white">Log In</h2>
         </div>
       </header>
       <main
