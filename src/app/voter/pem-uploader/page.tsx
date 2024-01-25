@@ -85,7 +85,7 @@ export default function PemUploaderPage() {
                 <button
                   type="button"
                   onClick={handleUpload}
-                  className="focus:outline-none text-white bg-purple-700 hover:bg-purple-800 focus:ring-4 focus:ring-purple-300 font-medium rounded-lg text-sm px-5 py-2.5 w-full mb-2 dark:bg-purple-600 dark:hover:bg-purple-700 dark:focus:ring-purple-900 mt-24"
+                  className="focus:outline-none text-white bg-purple-700 hover:bg-purple-800 focus:ring-4 focus:ring-purple-300 font-medium rounded-lg text-sm px-5 py-2.5 w-full mb-2 dark:bg-purple-600 dark:hover:bg-purple-700 dark:focus:ring-purple-900 mt-12"
                 >
                   UPLOAD FILES
                 </button>
@@ -96,7 +96,7 @@ export default function PemUploaderPage() {
                   type="button"
                   id="playwright-skip"
                   onClick={handleFetchPrivateKeyFromDatabase}
-                  className="focus:outline-none text-white bg-purple-700 hover:bg-purple-800 focus:ring-4 focus:ring-purple-300 font-medium rounded-lg text-sm px-5 py-2.5 w-full mb-2 dark:bg-purple-600 dark:hover:bg-purple-700 dark:focus:ring-purple-900 mt-24"
+                  className="focus:outline-none text-white bg-red-700 hover:bg-red-800 focus:ring-4 focus:ring-red-300 font-medium rounded-lg text-sm px-5 py-2.5 w-full mb-2 dark:bg-red-600 dark:hover:bg-red-700 dark:focus:ring-red-900 mt-1"
                 >
                   SKIP TO NEXT PAGE (TESTING)
                 </button>
