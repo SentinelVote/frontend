@@ -12,6 +12,12 @@ export const userCount: number = process.env.PLAYWRIGHT_USER_COUNT
   : 2;
 
 export async function testUser(page: Page, userNumber: number) {
+
+  // Listen for console events and print the messages
+  page.on('console', msg => {
+    console.log(`Browser \`console.log()\`: ${msg.text()}`);
+  });
+
   console.log(`\nSimulating user ${userNumber}...\n`)
   const email = `user${userNumber}@sentinelvote.tech`;
   let password = "password";
