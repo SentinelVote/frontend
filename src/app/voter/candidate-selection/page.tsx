@@ -181,22 +181,20 @@ const ConfirmationModal: React.FC<ConfirmationModalProps> = ({
         <div className="mt-4 flex justify-end space-x-2">
           <button
             onClick={onClose}
-            className="px-4 py-2 bg-gray-300 rounded hover:bg-gray-400"
+            className="px-4 py-2 bg-gray-300 hover:bg-gray-400 rounded"
           >
             Cancel
           </button>
-          <Link href="/voter/success">
-            <button
-              id={"confirm-vote"}
-              onClick={() => {
-                onConfirm();
-                handleConfirm();
-              }}
-              className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700"
-            >
-              Confirm
-            </button>
-          </Link>
+          <button
+            id={"confirm-vote"}
+            onClick={() => {
+              onConfirm();
+              handleConfirm().then(() => window.location.href = "/voter/success");
+            }}
+            className="px-4 py-2 bg-blue-600 hover:bg-blue-700 rounded text-white"
+          >
+            Confirm
+          </button>
         </div>
       </div>
     </div>
