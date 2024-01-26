@@ -57,11 +57,10 @@ export default function SimulationPage() {
           {" / simulation"}
         </div>
         <h1 className="font-bold text-3xl text-slate-950">Welcome Admin!</h1>
-        <p className="font-normal text-md text-slate-500 mt-4">
+        <p className="font-normal text-md text-slate-500 mt-4 mb-4" style={{textWrap: "balance"}}>
           This page is designed for the administration of the voting simulation.
-          Here, you can control the simulation parameters for a range of 3 to
-          1,000,000 users. Adjust the settings below to tailor the simulation to
-          your specific requirements.
+          Here, you can control the simulation parameters for a range of 3 to 1,000,000 users.
+          Adjust the settings below to tailor the simulation to your specific requirements.
         </p>
         <form onSubmit={handleSubmit(onSubmit)}>
           <label style={{ display: "block", marginBottom: "10px" }}>
@@ -76,28 +75,37 @@ export default function SimulationPage() {
               style={{ width: "100%", margin: "10px 0" }}
             />
           </label>
-          <div style={{ marginBottom: "10px" }}>
-            <label style={{ marginRight: "20px" }}>
-              Production
-              <input
-                type="radio"
-                value="production"
-                {...register("optionType", { required: true })}
-                style={{ marginLeft: "5px" }}
-              ></input>
-            </label>
-            <label>
-              Simulation
-              <input
-                type="radio"
-                value="simulation"
-                {...register("optionType", { required: true })}
-                style={{ marginLeft: "5px" }}
-              ></input>
-            </label>
+          <div style={{ marginBlockEnd: "10px" }} className="flex flex-col flex-wrap gap-2">
+              <label>
+                <input
+                  type="radio"
+                  value="production"
+                  {...register("optionType", {required: true})}
+                  className="me-2"
+                />
+                <span>Initialize without public keys</span>
+              </label>
+              <label>
+                <input
+                  type="radio"
+                  value="simulation"
+                  {...register("optionType", {required: true})}
+                  className="me-2"
+                />
+                <span>Initialize with public keys and folded public keys (database)</span>
+              </label>
+              <label>
+                <input
+                  type="radio"
+                  value="simulation-full"
+                  {...register("optionType", {required: true})}
+                  className="me-2"
+                />
+                <span>Initialize with public keys and folded public keys (database and blockchain)</span>
+              </label>
           </div>
-          {errors.optionType && (
-            <p style={{ color: "red" }}>Please select an option.</p>
+            {errors.optionType && (
+                <p style={{ color: "red" }}>Please select an option.</p>
           )}
           <button
             type="submit"
