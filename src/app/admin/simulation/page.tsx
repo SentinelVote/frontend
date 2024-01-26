@@ -14,14 +14,13 @@ export default function SimulationPage() {
   } = useForm();
   const onSubmit = (d: any) => {
     alert(JSON.stringify(d));
-    //TODO: add post request to backend
 
-    // "simulation" "production"
+    // "production" || "simulation" || "simulation-full"
+    // 3 <= numOfVoters <= 1000000
     let response = fetch(
-      `http://localhost:8080/dev/db/reset/${d.optionType}/${d.numOfVoters}`,
+      `${process.env.NEXT_PUBLIC_BACKEND_URL}/dev/db/reset/${d.optionType}/${d.numOfVoters}`,
       {
-        method: "GET",
-        // body: "",
+        method: "GET"
       }
     );
     if (!!response) console.log(response);

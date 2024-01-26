@@ -1,14 +1,8 @@
 import {NextRequest, NextResponse} from "next/server";
 
-interface Vote {
-    constituency: string;
-    signature: string;
-    vote: string;
-}
-
 export const revalidate = 0;
 export async function GET(request: NextRequest) {
-    
+
     let response = await fetch(`${process.env.NEXT_PUBLIC_FABRIC_URL}/user/enroll`, {
         method: "POST",
         headers: {
@@ -24,7 +18,7 @@ export async function GET(request: NextRequest) {
         }),
     });
     const { token: authorizationToken } = await response.json();
-    
+
     let fabricBody = JSON.stringify({
         "method": "KVContractGo:GetVotes",
         "args":   [],
@@ -42,7 +36,7 @@ export async function GET(request: NextRequest) {
     });
 
     const { response: votes } = await response.json();
-    
+
     const res = new NextResponse(JSON.stringify(votes));
     res.headers.set('Content-Type', 'application/json');
     return res;
