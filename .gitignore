@@ -18,6 +18,12 @@ yarn-error.log*
 *.tsbuildinfo
 next-env.d.ts
 
+# Defaults from playwright, do not modify.
+/test-results/
+/playwright-report/
+/blob-report/
+/playwright/.cache/
+
 # Non-defaults.
 .idea
 !.idea/frontend.iml
@@ -27,7 +33,3 @@ next-env.d.ts
 !.idea/codeStyles/codeStyleConfig.xml
 !.idea/codeStyles/Project.xml
 .vscode
-/test-results/
-/playwright-report/
-/blob-report/
-/playwright/.cache/
