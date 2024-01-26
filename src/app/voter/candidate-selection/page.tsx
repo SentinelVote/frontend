@@ -67,6 +67,7 @@ const ConfirmationModal: React.FC<ConfirmationModalProps> = ({
   const handleConfirm = async () => {
     let response: Response;
     try {
+
       response = await fetch(
         `${process.env.NEXT_PUBLIC_BACKEND_URL}/keys/public/folded`,
         {
@@ -77,7 +78,6 @@ const ConfirmationModal: React.FC<ConfirmationModalProps> = ({
         }
       );
       const { foldedPublicKeys } = await response.json();
-      alert(`Folded Public Keys: ${foldedPublicKeys}`); // TODO: Remove when finalised.
 
       response = await fetch(
         `${process.env.NEXT_PUBLIC_BACKEND_URL}/lrs/sign`,
@@ -94,7 +94,6 @@ const ConfirmationModal: React.FC<ConfirmationModalProps> = ({
         }
       );
       const { signature } = await response.json();
-      alert(`Signature: ${signature}`); // TODO: Remove when finalised.
 
       let hour: Number;
       const voteStartTime = 8; // the election starts at 8am
@@ -117,7 +116,7 @@ const ConfirmationModal: React.FC<ConfirmationModalProps> = ({
           voteStartTime;
       }
 
-      response = await fetch(
+      await fetch(
         `${process.env.NEXT_PUBLIC_BACKEND_URL}/fabric/vote`,
         {
           method: "PUT",
@@ -132,10 +131,8 @@ const ConfirmationModal: React.FC<ConfirmationModalProps> = ({
           }),
         }
       );
-      const { success } = await response.json();
-      alert(`SuccessPutVote: ${success}`); // TODO: Remove when finalised.
 
-      let foo = await fetch(
+      await fetch(
         `${process.env.NEXT_PUBLIC_BACKEND_URL}/voter/has-voted`,
         {
           method: "POST",
@@ -148,8 +145,7 @@ const ConfirmationModal: React.FC<ConfirmationModalProps> = ({
           }),
         }
       );
-      let bar = await foo.json();
-      alert(`SuccessUpdateHasVoted: ${bar.success}`); // TODO: Remove when finalised.
+
     } catch (error) {
       console.error(error);
     }
