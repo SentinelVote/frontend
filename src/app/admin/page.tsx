@@ -15,28 +15,29 @@ const handleExit = () => {
   window.close();
 };
 
-const checkVoteStart = async () => {
-  return false; // temporary, so that we can re-click the button.
+/** @returns {Promise<boolean>} true if the blockchain has folded public keys, false otherwise */
+const blockchainHasFoldedPublicKeys = async () => {
   try {
     const response = await fetch(
-      `${process.env.NEXT_PUBLIC_BACKEND_URL}/keys/public/folded/exists`
+      `${process.env.NEXT_PUBLIC_FRONTEND_URL}/api/fabric/folded-public-keys`
     );
     if (!response.ok) {
-      throw new Error("Network response was not ok");
+      return false
+    } else if (await response.text() === "Missing/Unset") {
+      return false;
     }
-    const { exists } = await response.json();
-    return exists;
-  } catch (error) {
-    console.error(error);
+  } catch (err) {
+    console.error(err);
     return false;
   }
+  return true;
 };
+const hasVoteStarted = blockchainHasFoldedPublicKeys();
 
 const checkVoteEnd = async () => {
   return false;
 };
 
-const hasVoteStarted = checkVoteStart();
 
 const TableContainer: React.FC<TableProps> = ({ children }) => (
   <div className="overflow-x-auto">
@@ -89,9 +90,10 @@ export default function AdminPage() {
   const [deactivateFoldButton, setDeactivateFoldButton] = useState(false);
   const [deactivatePublishButton, setDeactivatePublishButton] = useState(false);
   const [voteEnded, setVoteEnded] = useState<Boolean>(false);
+
   useEffect(() => {
     const checkAndSetVoteStart = async () => {
-      const voteStart = await checkVoteStart();
+      const voteStart = await blockchainHasFoldedPublicKeys();
       setDeactivateFoldButton(voteStart);
     };
     checkAndSetVoteStart();
