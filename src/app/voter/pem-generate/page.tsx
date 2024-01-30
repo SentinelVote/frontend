@@ -40,14 +40,14 @@ export default function PemGeneratePage() {
     }
   };
 
-  const storeGeneratedPubKey = async () => {
+  const storeGeneratedKey = async () => {
     console.log("userEmailCookie:");
     console.log(userEmailCookie);
     try {
       const response = await fetch(
-        `${process.env.NEXT_PUBLIC_BACKEND_URL}/keys/store`,
+        `${process.env.NEXT_PUBLIC_BACKEND_URL}/voter/keys`,
         {
-          method: "POST",
+          method: "PATCH",
           headers: {
             "Content-Type": "application/json",
           },
@@ -102,8 +102,8 @@ export default function PemGeneratePage() {
       document.body.removeChild(anchor);
       URL.revokeObjectURL(blobUrl);
 
-      // After download success, store the public key in the database
-      storeGeneratedPubKey();
+      // After download success, store the public key in the database.
+      storeGeneratedKey();
     } catch (error) {
       console.error(
         `Error from /pem-generate : Fail to store into the database the new fold-public-keys`,
