@@ -8,6 +8,7 @@ import warningIconSvg from "@public/warning_icon.svg";
 import Image from "next/image";
 import Link from "next/link";
 import React, { useState } from "react";
+import { AuthorizationToken } from "@/app/api/fabric/route";
 
 type Candidate = {
   id: string;
@@ -69,15 +70,16 @@ const ConfirmationModal: React.FC<ConfirmationModalProps> = ({
     try {
 
       response = await fetch(
-        `${process.env.NEXT_PUBLIC_BACKEND_URL}/keys/public/folded`,
+        `${process.env.NEXT_PUBLIC_FRONTEND_URL}/api/fabric/folded-public-keys`,
         {
           method: "GET",
           headers: {
-            "Content-Type": "application/json",
+            "Content-Type": "text/plain",
           },
         }
       );
-      const { foldedPublicKeys } = await response.json();
+      if (!response.ok) throw new Error("Failed to fetch folded public keys.");
+      const foldedPublicKeys = await response.text();
 
       response = await fetch(
         `${process.env.NEXT_PUBLIC_BACKEND_URL}/lrs/sign`,
@@ -93,49 +95,42 @@ const ConfirmationModal: React.FC<ConfirmationModalProps> = ({
           }),
         }
       );
+      if (!response.ok) throw new Error("Failed to generate linkable ring signature.");
       const { signature } = await response.json();
 
-      let hour: Number;
       const voteStartTime = 8; // the election starts at 8am
       const voteEndTime = 18; // the election ends at 6pm
-      if (process.env.NODE_ENV === "production") {
-        // Get the actual hour, we don't need minutes and seconds.
-        hour = new Date().getHours();
-      } else if (process.env.NODE_ENV === "development") {
-        // Produce a random hour between voteStartTime and voteEndTime
-        hour =
-          Math.floor(Math.random() * (voteEndTime - voteStartTime + 1)) +
-          voteStartTime;
-      } else {
-        // Fallback if neither NODE_ENV is defined.
-        console.log(
-          "Warning: NODE_ENV is not defined. Defaulting to simulation mode."
-        );
-        hour =
-          Math.floor(Math.random() * (voteEndTime - voteStartTime + 1)) +
-          voteStartTime;
-      }
+      const hour = process.env.NODE_ENV === "production"
+          ? new Date().getHours()
+          : Math.floor(Math.random() * (voteEndTime - voteStartTime + 1)) + voteStartTime;
 
-      await fetch(
-        `${process.env.NEXT_PUBLIC_BACKEND_URL}/fabric/vote`,
+      response = await fetch(
+        `${process.env.NEXT_PUBLIC_FABRIC_URL}/invoke/vote-channel/SentinelVote`,
         {
-          method: "PUT",
+          method: "POST",
           headers: {
             "Content-Type": "application/json",
+            "Authorization": `Bearer ${await AuthorizationToken()}`,
           },
           body: JSON.stringify({
-            vote: candidateName,
-            voteSignature: signature,
-            constituency: constituency,
-            hour: hour.toString(),
+            "method": "KVContractGo:PutVote",
+            "args":   [
+              JSON.stringify({
+                vote: candidateName,
+                voteSignature: signature,
+                constituency: constituency,
+                hour: hour,
+              }),
+            ],
           }),
         }
       );
+      if (!response.ok) throw new Error("Failed to submit vote.");
 
-      await fetch(
+      response = await fetch(
         `${process.env.NEXT_PUBLIC_BACKEND_URL}/voter/has-voted`,
         {
-          method: "POST",
+          method: "PATCH",
           headers: {
             "Content-Type": "application/json",
           },
@@ -145,9 +140,11 @@ const ConfirmationModal: React.FC<ConfirmationModalProps> = ({
           }),
         }
       );
+      if (!response.ok) throw new Error("Failed to update hasVoted status.");
 
-    } catch (error) {
-      console.error(error);
+    } catch (err) {
+      console.error(err);
+      alert(`${err}`);
     }
   };
 
