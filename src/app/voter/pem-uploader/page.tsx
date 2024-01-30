@@ -3,22 +3,21 @@ import { GetCookie } from "@/app/globals";
 import Link from "next/link";
 
 const handleFetchPrivateKeyFromDatabase = async () => {
-  const cookieEmail = GetCookie("user_email");
-  const cookieEmailURIEncoded = encodeURIComponent(cookieEmail || "");
-  let response = await fetch(
-    `http://localhost:8080/users/${cookieEmailURIEncoded}`,
-    {
-      method: "GET",
-      headers: {
-        "Content-Type": "application/json",
-      },
-    }
-  );
+    let response: Response = await fetch(
+        `${process.env.NEXT_PUBLIC_BACKEND_URL}/voter/private-key`,
+        {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+            },
+            body: JSON.stringify({
+                email: GetCookie("user_email") || ""
+            }),
+        }
+    );
   const data = await response.json();
-  console.log(data);
-  alert("Private key fetched from database:\n" + data.privateKey);
-  // Store the file content in a cookie
-  document.cookie = `privateKey=${encodeURIComponent(data.privateKey)}; path=/`;
+  const { privateKey } = data;
+  document.cookie = `privateKey=${encodeURIComponent(privateKey)}; path=/`;
 };
 
 export default function PemUploaderPage() {
