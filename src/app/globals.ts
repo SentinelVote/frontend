@@ -3,8 +3,6 @@
  * @see https://stackoverflow.com/a/33366171
  */
 export function ClearCookies() {
-  //TODO: refactor this function
-
   let cookies = document.cookie.split("; ");
   for (let c = 0; c < cookies.length; c++) {
     let d = window.location.hostname.split(".");
