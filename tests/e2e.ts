@@ -1,17 +1,14 @@
 import { Page, expect } from "@playwright/test";
 
-/**
- * The number of users to simulate in the Playwright tests.
- * This value is retrieved from the PLAYWRIGHT_USER_COUNT environment variable.
- * If PLAYWRIGHT_USER_COUNT is not set, the default value is 2.
- *
- * @type {number}
- */
-export const userCount: number = process.env.PLAYWRIGHT_USER_COUNT
-  ? parseInt(process.env.PLAYWRIGHT_USER_COUNT, 10)
+export const UserNumberStartFrom: number = process.env.PLAYWRIGHT_USER_START_FROM
+  ? parseInt(process.env.PLAYWRIGHT_USER_START_FROM, 10)
+  : 1;
+
+export const UserNumberEndAt: number = process.env.PLAYWRIGHT_USER_END_AT
+  ? parseInt(process.env.PLAYWRIGHT_USER_END_AT, 10)
   : 2;
 
-export async function testUser(page: Page, userNumber: number) {
+export async function TestUser(page: Page, userNumber: number) {
 
   // Listen for console events and print the messages
   page.on('console', msg => {
@@ -60,12 +57,13 @@ export async function testUser(page: Page, userNumber: number) {
         await page.getByLabel("Tan Kin Lian").check();
         break
     }
-
     await page.click('button[id="submit-vote"]')
     await page.click('button[id="confirm-vote"]')
     await page.waitForURL("http://localhost:3000/voter/success");
+    expect(page.url()).toBe(`http://localhost:3000/voter/success`);
     await page.click('button');
-    await page.goto("http://localhost:3000");
+    await page.waitForURL("http://localhost:3000/");
+    expect(page.url()).toBe(`http://localhost:3000/`);
   }
 }
 

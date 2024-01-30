@@ -1,5 +1,5 @@
 import { test } from "@playwright/test";
-import { testUser, userCount } from "./e2e";
+import { TestUser, UserNumberStartFrom, UserNumberEndAt } from "./e2e";
 
 let totalStartTime: number;
 test.beforeAll(async () => {
@@ -7,10 +7,10 @@ test.beforeAll(async () => {
 });
 
 test.describe.serial(`E2E Test for Users`, () => {
-    for (let i = 1; i <= userCount; i++) {
+    for (let i = UserNumberStartFrom; i <= UserNumberEndAt; i++) {
       test(`User ${i} Test`, async ({page}) => {
         const now = Date.now();
-        await testUser(page, i);
+        await TestUser(page, i);
         const timeTaken = Date.now() - now;
         console.log(`\nTime taken for User ${i}: ${timeTaken}ms\n`);
       });

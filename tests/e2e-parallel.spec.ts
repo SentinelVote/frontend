@@ -1,21 +1,23 @@
 import { test } from "@playwright/test";
-import { testUser, userCount } from "./e2e";
+import { TestUser, UserNumberStartFrom, UserNumberEndAt } from "./e2e";
 
 let totalStartTime: number;
 test.beforeAll(async () => {
   totalStartTime = Date.now();
 });
 
-for (let i = 1; i <= userCount; i++) {
+let count = 0;
+for (let i = UserNumberStartFrom; i <= UserNumberEndAt; i++) {
     test(`User ${i} Test`, async ({ browser }) => {
       const now = Date.now();
       const context = await browser.newContext();
       const page = await context.newPage();
-      await testUser(page, i);
+      await TestUser(page, i);
       await context.close();
       const timeTaken = Date.now() - now;
       console.log(`\nTime taken for User ${i}: ${timeTaken}ms\n`);
-      if (i === userCount) {
+      count++;
+      if (count === UserNumberEndAt) {
         const totalEndTime = Date.now();
         const totalTimeTaken = totalEndTime - totalStartTime;
         console.log(`Total time taken for all tests: ${totalTimeTaken}ms`);
