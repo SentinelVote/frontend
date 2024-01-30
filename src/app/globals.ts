@@ -39,3 +39,32 @@ export function GetCookie(name: string): string | null {
     return cookie ? decodeURIComponent(cookie.split("=")[1]) : null;
   }
 }
+
+export async function ElectionHasStarted(): Promise<boolean> {
+  try {
+    const response = await fetch(
+      `${process.env.NEXT_PUBLIC_FRONTEND_URL}/api/fabric/folded-public-keys`,
+      {
+        method: "GET",
+        headers: {
+          "Content-Type": "text/plain",
+        }
+      }
+    );
+
+    if (!response.ok) {
+      console.error(`HTTP error! Status: ${response.status}`);
+      return false;
+    }
+
+    return (await response.text()).startsWith('-----BEGIN FOLDED PUBLIC KEYS-----')
+  } catch (err) {
+    console.error('Error from ElectionHasStarted():', err);
+    return false;
+  }
+}
+
+// TODO
+export async function ElectionHasEnded(): Promise<boolean> {
+  return false;
+}

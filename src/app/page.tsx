@@ -3,6 +3,7 @@ import singpassQrPng from "@public/singpass_qr.png";
 import Image from "next/image";
 import Link from "next/link";
 import { useEffect, useState } from "react";
+import { ElectionHasStarted } from "@/app/globals";
 enum LoginType {
   email = "email",
   singpass = "singpass",
@@ -69,7 +70,7 @@ export default function Home() {
 
         if (!!isCentralAuthority) {
           window.location.href = "/admin";
-        } else if (electionHasStarted) {
+        } else if (await ElectionHasStarted()) {
           if (!!voterHasRegistered) {
             window.location.href = "/voter/pem-uploader";
           } else {
