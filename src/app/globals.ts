@@ -85,3 +85,27 @@ export async function ElectionHasEnded(): Promise<boolean> {
     return false;
   }
 }
+
+export async function FabricAuthorizationToken() {
+  try {
+    let response = await fetch(`${process.env.NEXT_PUBLIC_FABRIC_URL}/user/enroll`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        "Authorization": "Bearer",
+        "Cache-Control": "no-cache, no-store, must-revalidate", // Prevent caching
+        "Pragma": "no-cache", // For compatibility with HTTP/1.0
+        "Expires": "0" // Proxies
+      },
+      body: JSON.stringify({
+        id: "admin",
+        secret: "adminpw",
+      }),
+    });
+    const responseJSON = await response.json();
+    return responseJSON.token;
+  } catch (e) {
+    console.log(e);
+    return "00000000-0000-0000-0000-000000000000-admin";
+  }
+}

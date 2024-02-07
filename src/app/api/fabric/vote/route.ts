@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import { AuthorizationToken } from "@/app/api/fabric/route";
+import { FabricAuthorizationToken } from "@/app/globals";
 
 export const revalidate = 0;
 export async function GET(request: NextRequest) {
@@ -8,7 +8,7 @@ export async function GET(request: NextRequest) {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
-        "Authorization": `Bearer ${await AuthorizationToken()}`,
+        "Authorization": `Bearer ${await FabricAuthorizationToken()}`,
         "Cache-Control": "no-cache, no-store, must-revalidate", // Prevent caching
         "Pragma": "no-cache", // For compatibility with HTTP/1.0
         "Expires": "0" // Proxies

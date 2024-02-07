@@ -8,7 +8,7 @@ import warningIconSvg from "@public/warning_icon.svg";
 import Image from "next/image";
 import Link from "next/link";
 import React, { useState } from "react";
-import { AuthorizationToken } from "@/app/api/fabric/route";
+import { FabricAuthorizationToken } from "@/app/globals";
 
 type Candidate = {
   id: string;
@@ -110,7 +110,7 @@ const ConfirmationModal: React.FC<ConfirmationModalProps> = ({
           method: "POST",
           headers: {
             "Content-Type": "application/json",
-            "Authorization": `Bearer ${await AuthorizationToken()}`,
+            "Authorization": `Bearer ${await FabricAuthorizationToken()}`,
           },
           body: JSON.stringify({
             "method": "KVContractGo:PutVote",
