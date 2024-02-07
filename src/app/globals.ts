@@ -62,7 +62,26 @@ export async function ElectionHasStarted(): Promise<boolean> {
   }
 }
 
-// TODO
 export async function ElectionHasEnded(): Promise<boolean> {
-  return false;
+  try {
+    const response = await fetch(
+      `${process.env.NEXT_PUBLIC_BACKEND_URL}/is-end-of-election`,
+      {
+        method: "GET",
+        headers: {
+          "Content-Type": "text/plain",
+        }
+      }
+    );
+
+    if (!response.ok) {
+      console.error(`HTTP error! Status: ${response.status}`);
+      return false;
+    }
+
+    return (await response.text()) === "true";
+  } catch (err) {
+    console.error('Error from ElectionHasStarted():', err);
+    return false;
+  }
 }

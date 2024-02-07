@@ -3,7 +3,7 @@ import singpassQrPng from "@public/singpass_qr.png";
 import Image from "next/image";
 import Link from "next/link";
 import { useEffect, useState } from "react";
-import { ElectionHasStarted } from "@/app/globals";
+import { ElectionHasEnded, ElectionHasStarted } from "@/app/globals";
 enum LoginType {
   email = "email",
   singpass = "singpass",
@@ -14,10 +14,9 @@ export default function Home() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [loginError, setLoginError] = useState("");
-  const [voteEnded, setVoteEnded] = useState(true);
-  //TODO: handle vote ended logic
+  const [voteEnded, setVoteEnded] = useState(false);
   const checkVoteEnd = async () => {
-    return true;
+    return await ElectionHasEnded();
   };
 
   useEffect(() => {
