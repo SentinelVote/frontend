@@ -15,9 +15,13 @@ export default function Home() {
   const [password, setPassword] = useState("");
   const [loginError, setLoginError] = useState("");
   const [voteEnded, setVoteEnded] = useState(false);
+  const [voteStarted, setVoteStarted] = useState(false);
   const checkVoteEnd = async () => {
     return await ElectionHasEnded();
   };
+  const checkVoteStart = async () => {
+    return await ElectionHasStarted();
+  }
 
   useEffect(() => {
     const checkAndSetVoteEnd = async () => {
@@ -25,6 +29,14 @@ export default function Home() {
       setVoteEnded(voteEnd);
     };
     checkAndSetVoteEnd();
+  }, []);
+
+  useEffect(() => {
+    const checkAndSetVoteStart = async () => {
+    const voteStart = await checkVoteStart();
+    setVoteStarted(voteStart);
+    };
+    checkAndSetVoteStart();
   }, []);
 
   const handleLogin = async (e: any) => {
@@ -41,43 +53,72 @@ export default function Home() {
         }
       );
       const data = await response.json();
-      const success = response.ok;
       console.log(`Data from login:\n${data}`);
+
+      if (!response.ok) {
+        setLoginError("Invalid email or password");
+        return
+      }
 
       const {
         constituency,
         isCentralAuthority,
         hasPublicKey: voterHasRegistered,
+        hasVoted,
+        hasDefaultPassword,
       } = data;
 
-      if (success) {
-        document.cookie = `user_email=${email}; path=/`;
-        document.cookie = `user_is_central_authority=${isCentralAuthority}; path=/`;
-        document.cookie = `user_constituency=${constituency}; path=/`;
+      document.cookie = `user_email=${email}; path=/`;
+      document.cookie = `user_is_central_authority=${isCentralAuthority}; path=/`;
+      document.cookie = `user_constituency=${constituency}; path=/`;
 
-        // The password is 'password' for all accounts.
+      // The password is 'password' for all accounts.
 
-        if (!!isCentralAuthority) {
-          window.location.href = "/admin";
-        } else if (await ElectionHasStarted()) {
-          if (!!voterHasRegistered) {
-            window.location.href = "/voter/pem-uploader";
+        const paths = {
+          admin: "/admin",
+          voteEnded: "/voter/vote-ended",
+          voteSuccess: "/voter/success",
+          pemUploader: "/voter/pem-uploader",
+          pendingElection: "/voter/pending-election",
+          pemGenerate: "/voter/pem-generate",
+
+          // TODO: Add the actual paths for the following:
+          setPassword: "/api/ping",
+          registrationClosed: "/api/ping",
+        };
+
+        // Handle page routing for admin.
+        if (isCentralAuthority) {
+          window.location.href = paths.admin;
+          return;
+        }
+
+        // Handle page routing for voter.
+        if (hasDefaultPassword) {
+          // TODO: send voter to page: "you have not set your password, please set your password".
+          window.location.href = paths.setPassword;
+        } else if (voteEnded) {
+          // Voting has ended, show the results.
+          window.location.href = paths.voteEnded;
+        } else if (voteStarted) {
+          // Voting is ongoing.
+          if (hasVoted) {
+            window.location.href = paths.voteSuccess;
+          } else if (voterHasRegistered) {
+            window.location.href = paths.pemUploader;
           } else {
-            if (voteEnded) {
-              window.location.href = "/voter/vote-ended";
-            }
-            window.location.href = "/"; // TODO: send voter to a failed to register page.
+            // TODO: send voter to page: "you did not register for election before the deadline, you cannot participate".
+            window.location.href = paths.registrationClosed;
           }
         } else {
-          if (!!voterHasRegistered) {
-            window.location.href = "/voter/pending-election";
+          // Voting has not started.
+          if (voterHasRegistered) {
+              window.location.href = paths.pendingElection;
           } else {
-            window.location.href = "/voter/pem-generate";
+              window.location.href = paths.pemGenerate;
           }
         }
-      } else {
-        setLoginError("Invalid email or password");
-      }
+
     } catch (error) {
       console.error("Login error:", error);
       setLoginError("An error occurred during login");
