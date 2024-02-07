@@ -56,11 +56,7 @@ export default function Home() {
         document.cookie = `user_is_central_authority=${isCentralAuthority}; path=/`;
         document.cookie = `user_constituency=${constituency}; path=/`;
 
-        // admin@sentinelvote.tech : Password1!
-        // user1@sentinelvote.tech : Password1!
-        // user2@sentinelvote.tech : Password1!
-        // user3@sentinelvote.tech : password
-        // ...                     : password
+        // The password is 'password' for all accounts.
 
         if (!!isCentralAuthority) {
           window.location.href = "/admin";
