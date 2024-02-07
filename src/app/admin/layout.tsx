@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { Inter } from "next/font/google";
 // import "./globals.css";
 import Image from "next/image";
+import Link from "next/link";
 const inter = Inter({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
@@ -18,15 +19,32 @@ export default function RootLayout({
     <html lang="en">
       <body className={inter.className}>
         <header className="text-white h-[10vh]">
-          <div className="flex justify-center md:justify-normal items-center h-full px-10 md:px-24 bg-navbar-bg">
-            <Image
-              src="/SentinelVote.ico"
-              width={36}
-              height={36}
-              alt="SentinelVote Logo"
-            />
-            <h2 className="text-2xl p-2 md:pl-2 md:pr-5 font-semibold">SentinelVote</h2>
-            <h2 className="text-lg pl-2 md:pl-5 border-l-[3px] md:border-l-[3px] border-white">Admin</h2>
+          <div
+            className="flex md:justify-normal items-center h-full w-full px-10 md:px-24 bg-navbar-bg"
+            style={{
+              justifyContent: "space-between",
+            }}
+          >
+            <div className="flex justify-center">
+              <Image
+                src="/SentinelVote.ico"
+                width={36}
+                height={36}
+                alt="SentinelVote Logo"
+              />
+              <h2 className="text-2xl p-2 md:pl-2 md:pr-5 font-semibold">
+                SentinelVote
+              </h2>
+              <h2 className="text-lg self-center pl-2 md:pl-5 border-l-[3px] md:border-l-[3px] border-white">
+                Admin
+              </h2>
+            </div>
+            <Link
+              href={process.env.NEXT_PUBLIC_DOCUMENTATION_URL || ""}
+              target="_blank"
+            >
+              <p className="text-blue-500 text-center">Learn More</p>
+            </Link>
           </div>
         </header>
         {children}

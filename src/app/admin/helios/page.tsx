@@ -200,8 +200,8 @@ export default function Page() {
     >
       <div className="flex flex-col min-h-[88vh] justify-center">
         <div className="self-start ">
-          <Link href="/">
-            <span className="underline text-blue-600"></span>
+          <Link href="/admin">
+            <span className="underline text-blue-600">admin</span>
           </Link>
           {" / helios"}
         </div>
@@ -319,7 +319,10 @@ export default function Page() {
                           </div>
                           <span className="text-xs ml-2">
                             {nominee.voteCount
-                              ? (nominee.voteCount / totalVotes) * 100
+                              ? (
+                                  (nominee.voteCount / totalVotes) *
+                                  100
+                                ).toFixed(2)
                               : 0}
                             %
                           </span>
@@ -360,7 +363,10 @@ export default function Page() {
                           </div>
                           <span className="text-xs ml-2">
                             {nominee.voteCount
-                              ? (nominee.voteCount / totalVotes) * 100
+                              ? (
+                                  (nominee.voteCount / totalVotes) *
+                                  100
+                                ).toFixed(2)
                               : 0}
                             %
                           </span>

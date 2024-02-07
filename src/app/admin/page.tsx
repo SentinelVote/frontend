@@ -22,8 +22,8 @@ const blockchainHasFoldedPublicKeys = async () => {
       `${process.env.NEXT_PUBLIC_FRONTEND_URL}/api/fabric/folded-public-keys`
     );
     if (!response.ok) {
-      return false
-    } else if (await response.text() === "Missing/Unset") {
+      return false;
+    } else if ((await response.text()) === "Missing/Unset") {
       return false;
     }
   } catch (err) {
@@ -35,9 +35,8 @@ const blockchainHasFoldedPublicKeys = async () => {
 const hasVoteStarted = blockchainHasFoldedPublicKeys();
 
 const checkVoteEnd = async () => {
-  return false;
+  return true;
 };
-
 
 const TableContainer: React.FC<TableProps> = ({ children }) => (
   <div className="overflow-x-auto">
@@ -183,7 +182,7 @@ export default function AdminPage() {
     console.log("publish results click was called");
     try {
       const response = await fetch(
-        `${process.env.NEXT_PUBLIC_BACKEND_URL}/keys/public/folded`,
+        `${process.env.NEXT_PUBLIC_BACKEND_URL}/admin/announce`,
         {
           method: "PUT",
         }
@@ -192,6 +191,7 @@ export default function AdminPage() {
         throw new Error("Network response was not ok");
       }
       const data = await response.json();
+      window.alert("Results have been published");
       console.log({ data });
     } catch (e) {
       console.error(e);
@@ -199,8 +199,7 @@ export default function AdminPage() {
   };
 
   const handlePublishClick = () => {
-    //TODO: add function to publish results
-    // publishResults()
+    publishResults();
     setDeactivatePublishButton(true);
   };
 
