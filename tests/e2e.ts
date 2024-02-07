@@ -10,6 +10,8 @@ export const UserNumberEndAt: number = process.env.PLAYWRIGHT_USER_END_AT
 
 export async function TestUser(page: Page, userNumber: number) {
 
+  let url: string;
+  let basename: string | undefined;
   // Listen for console events and print the messages
   page.on('console', msg => {
     console.log(`Browser \`console.log()\`: ${msg.text()}`);
@@ -18,33 +20,35 @@ export async function TestUser(page: Page, userNumber: number) {
   console.log(`\nSimulating user ${userNumber}...\n`)
   const email = `user${userNumber}@sentinelvote.tech`;
   let password = "password";
-  if (userNumber === 1 || userNumber === 2) {
-    password = "Password1!";
-  }
 
   // Login page.
   console.log(`User${userNumber}: Login Page`);
-  await page.goto("http://localhost:3000");
+  await page.goto("/");
   await page.fill('input[name="email"]', email);
   await page.fill('input[name="password"]', password);
   await page.click('button[type="submit"]');
-  await page.waitForURL("http://localhost:3000/voter/*")
-  const url = page.url();
+  await page.waitForURL("/voter/*")
 
-  if (url === "http://localhost:3000/voter/pending-election") {
-    console.log(`User${userNumber}: Login Successful`);
-  } else if (url === "http://localhost:3000/voter/pem-generate") {
-    console.log(`User${userNumber}: Login Successful`);
-  } else if (url !== "http://localhost:3000/voter/pem-uploader") {
+  url = page.url();
+  basename = url.split("/").pop();
+  console.log(`User${userNumber}: URL: ${url} Basename: ${basename}`);
+
+  if (basename === "pending-election") {
+    console.log(`User${userNumber}: Login Successful (Pending Election)`);
+  } else if (basename === "pem-generate") {
+    console.log(`User${userNumber}: Login Successful (PEM Generate)`);
+  } else if (basename !== "pem-uploader") {
     console.log(`User${userNumber}: Login Failed`);
   } else {
-    console.log(`User${userNumber}: Login Successful`);
-    console.log(`User${userNumber}: PEM Uploader Page`);
+    console.log(`User${userNumber}: Login Successful (PEM Uploader)`);
     // Our actual test continues here.
     // Click the login button
     await page.click('button[id="playwright-skip"]')
-    await page.waitForURL("http://localhost:3000/voter/candidate-selection");
-    expect(page.url()).toBe(`http://localhost:3000/voter/candidate-selection`);
+    await page.waitForURL("/voter/candidate-selection");
+    url = page.url();
+    basename = url.split("/").pop();
+
+    expect(basename).toBe(`candidate-selection`);
     console.log("Candidate Selection Page");
     switch (Math.floor(Math.random()*3) + 1) {
       case 1:
@@ -59,13 +63,16 @@ export async function TestUser(page: Page, userNumber: number) {
     }
     await page.click('button[id="submit-vote"]')
     await page.click('button[id="confirm-vote"]')
-    await page.waitForURL("http://localhost:3000/voter/success");
-    expect(page.url()).toBe(`http://localhost:3000/voter/success`);
+
+    await page.waitForURL("/voter/success");
+    url = page.url();
+    basename = url.split("/").pop();
+    expect(basename).toBe(`success`);
     await page.click('button');
-    await page.waitForURL("http://localhost:3000/");
-    expect(page.url()).toBe(`http://localhost:3000/`);
+
+    await page.waitForURL("/");
+    url = page.url();
+    expect(url.slice(-1)).toBe("/");
+    console.log(`User${userNumber}: Vote Successful`);
   }
 }
-
-
-
