@@ -67,8 +67,10 @@ const ConfirmationModal: React.FC<ConfirmationModalProps> = ({
 
   const handleConfirm = async () => {
     let response: Response;
+    const DEBUG = process.env.NODE_ENV === "development";
     try {
 
+      console.log("Fetching folded public keys...")
       response = await fetch(
         `${process.env.NEXT_PUBLIC_FRONTEND_URL}/api/fabric/folded-public-keys`,
         {
@@ -80,7 +82,9 @@ const ConfirmationModal: React.FC<ConfirmationModalProps> = ({
       );
       if (!response.ok) throw new Error("Failed to fetch folded public keys.");
       const foldedPublicKeys = await response.text();
+      DEBUG && console.log("Folded public keys:\n", foldedPublicKeys);
 
+      console.log("Generating linkable ring signature...")
       response = await fetch(
         `${process.env.NEXT_PUBLIC_BACKEND_URL}/lrs/sign`,
         {
@@ -97,6 +101,7 @@ const ConfirmationModal: React.FC<ConfirmationModalProps> = ({
       );
       if (!response.ok) throw new Error("Failed to generate linkable ring signature.");
       const { signature } = await response.json();
+      DEBUG && console.log("Linkable ring signature:\n", signature);
 
       const voteStartTime = 8; // the election starts at 8am
       const voteEndTime = 18; // the election ends at 6pm
