@@ -97,10 +97,10 @@ export default function Home() {
         if (hasDefaultPassword) {
           // TODO: send voter to page: "you have not set your password, please set your password".
           window.location.href = paths.setPassword;
-        } else if (voteEnded) {
+        } else if (await ElectionHasEnded()) {
           // Voting has ended, show the results.
           window.location.href = paths.voteEnded;
-        } else if (voteStarted) {
+        } else if (await ElectionHasStarted()) {
           // Voting is ongoing.
           if (hasVoted) {
             window.location.href = paths.voteSuccess;
