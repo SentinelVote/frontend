@@ -50,7 +50,7 @@ export default function PemUploaderPage() {
           <div className="flex flex-col flex-1 justify-center">
             <div className="flex flex-col">
               <h1 className="font-bold text-5xl">Upload your private key</h1>
-              <p className="font-medium text-lg">
+              <p className="font-medium text-slate-200 text-lg mt-2">
                 to continue to the SecureVote Platform
               </p>
             </div>
@@ -86,11 +86,18 @@ export default function PemUploaderPage() {
                   onClick={handleUpload}
                   className="focus:outline-none text-white bg-purple-700 hover:bg-purple-800 focus:ring-4 focus:ring-purple-300 font-medium rounded-lg text-sm px-5 py-2.5 w-full mb-2 dark:bg-purple-600 dark:hover:bg-purple-700 dark:focus:ring-purple-900 mt-12"
                 >
-                  UPLOAD FILES
+                  UPLOAD FILE
                 </button>
               </Link>
 
-              <Link href="/voter/candidate-selection" className={process.env.NEXT_PUBLIC_SHOW_DEV_PROPS === "true" ? "sr-only focus:not-sr-only focus-visible:not-sr-only focus-within:not-sr-only" : "" }>
+              <Link
+                href="/voter/candidate-selection"
+                className={
+                  process.env.NEXT_PUBLIC_SHOW_DEV_PROPS === "true"
+                    ? "sr-only focus:not-sr-only focus-visible:not-sr-only focus-within:not-sr-only"
+                    : ""
+                }
+              >
                 <button
                   type="button"
                   id="playwright-skip"

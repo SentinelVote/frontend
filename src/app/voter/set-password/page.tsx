@@ -1,8 +1,13 @@
 "use client";
-import { ClearCookies, GetCookie } from "@/app/globals";
-import { useState } from "react";
+import { GetCookie } from "@/app/globals";
+import { useEffect, useState } from "react";
 export default function SetPassword() {
-  const email = GetCookie("user_email");
+  useEffect(() => {
+    const email = GetCookie("user_email");
+    setEmailCookie(email || "");
+  }, []);
+
+  const [emailCookie, setEmailCookie] = useState("");
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
   const [resetPwError, setResetPwError] = useState("");
@@ -22,7 +27,7 @@ export default function SetPassword() {
           headers: {
             "Content-Type": "application/json",
           },
-          body: JSON.stringify({ email, password }),
+          body: JSON.stringify({ emailCookie, password }),
         }
       );
       const data = await response.json();
@@ -32,7 +37,7 @@ export default function SetPassword() {
         return;
       }
       window.alert("Password reset successfully!");
-      ClearCookies();
+      // ClearCookies();
       window.location.href = "/";
     } catch (error) {
       setResetPwError("Error in forgot-password");
@@ -54,7 +59,7 @@ export default function SetPassword() {
             <div className="flex flex-col align-center">
               <h1 className="font-bold text-5xl">Create New Password</h1>
               <p
-                className="font-medium text-md mt-1"
+                className="font-medium text-slate-200 text-lg mt-2"
                 style={{ textWrap: "balance" }}
               >
                 Ensure your new password is different from any of your previous
@@ -88,7 +93,7 @@ export default function SetPassword() {
                 type="submit"
                 className="focus:outline-none text-white bg-slate-700 hover:bg-slate-800 focus:ring-4
               focus:ring-slate-300 font-medium rounded-lg text-sm px-5 py-2.5 w-full self-baseline
-              me-2 mb-2 dark:bg-slate-600 dark:hover:bg-slate-700 dark:focus:ring-slate-900 mt-4 "
+              me-2 mb-2 dark:bg-slate-600 dark:hover:bg-slate-700 dark:focus:ring-slate-900 mt-1 "
               >
                 Continue
               </button>

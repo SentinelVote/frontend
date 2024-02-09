@@ -44,7 +44,7 @@ export default function ForgotPassword() {
             <div className="flex flex-col align-center">
               <h1 className="font-bold text-5xl">Forgot Password Page</h1>
               <p
-                className="font-medium text-md mt-1"
+                className="font-medium text-slate-200 text-lg mt-2"
                 style={{ textWrap: "balance" }}
               >
                 {`Enter the email address associated with your account and we'll send you a link to reset your password.`}
@@ -68,7 +68,7 @@ export default function ForgotPassword() {
                 type="submit"
                 className="focus:outline-none text-white bg-slate-700 hover:bg-slate-800 focus:ring-4
               focus:ring-slate-300 font-medium rounded-lg text-sm px-5 py-2.5 w-full self-baseline
-              me-2 mb-2 dark:bg-slate-600 dark:hover:bg-slate-700 dark:focus:ring-slate-900 mt-4 "
+              me-2 mb-2 dark:bg-slate-600 dark:hover:bg-slate-700 dark:focus:ring-slate-900 mt-1 "
               >
                 Continue
               </button>

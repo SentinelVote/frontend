@@ -24,7 +24,7 @@ export default function SuccessPage() {
             <div className="flex flex-col align-center">
               <Image src={successPng} alt="success" height={90} width={90} />
               <h1 className="font-bold text-5xl">Thank you for voting!</h1>
-              <p className="font-medium text-lg">
+              <p className="font-medium text-slate-200 text-lg mt-2">
                 Your vote has been successfully submitted.
               </p>
             </div>

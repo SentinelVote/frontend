@@ -24,13 +24,13 @@ export default function PendingElectionPage() {
                 All Set for the Upcoming Election - Just Hang Tight!
               </h1>
               <p
-                className="font-medium text-2xl mt-5"
+                className="font-medium text-slate-200 text-lg mt-5"
                 style={{ textWrap: "balance" }}
               >
                 {`Thank you for completing your setup for the upcoming election. You're all ready to go!`}
               </p>
               <p
-                className="font-medium text-2xl mt-2"
+                className="font-medium text-slate-200 text-lg mt-2"
                 style={{ textWrap: "balance" }}
               >
                 {`While we're counting down to the big day, please sit tight.

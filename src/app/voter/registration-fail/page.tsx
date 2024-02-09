@@ -21,7 +21,7 @@ export default function RegistrationFail() {
           <div className="flex flex-col">
             <div className="flex flex-col align-center">
               <h1 className="font-bold text-5xl"> Registration Failed</h1>
-              <p className="font-medium text-lg">
+              <p className="font-medium text-slate-200 text-lg mt-2">
                 You did not register for election before the deadline, you
                 cannot participate. Stay tuned for election updates!
               </p>

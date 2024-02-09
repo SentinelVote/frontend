@@ -126,10 +126,10 @@ export default function PemGeneratePage() {
           <div className="flex flex-col flex-1 justify-center">
             <div className="flex flex-col">
               <h1 className="font-bold text-5xl">Generate your PEM</h1>
-              <p className="font-medium text-lg">
-                to generate your private key for the Helios voting platform.
+              <p className="font-medium text-slate-200 text-lg mt-2">
+                Generate your private key for the Helios voting platform.
               </p>
-              <p className="font-medium text-lg text-gray-500">
+              <p className="font-normal text-md text-gray-400">
                 Not ready to generate your PEM? Click Exit and log in again
                 later.
               </p>
