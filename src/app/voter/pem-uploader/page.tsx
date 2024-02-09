@@ -90,7 +90,7 @@ export default function PemUploaderPage() {
                 </button>
               </Link>
 
-              <Link href="/voter/candidate-selection" className={process.env.NEXT_PUBLIC_SHOW_DEV_PROPS === "true" ? "sr-only" : "" }>
+              <Link href="/voter/candidate-selection" className={process.env.NEXT_PUBLIC_SHOW_DEV_PROPS === "true" ? "sr-only focus:not-sr-only focus-visible:not-sr-only focus-within:not-sr-only" : "" }>
                 <button
                   type="button"
                   id="playwright-skip"
