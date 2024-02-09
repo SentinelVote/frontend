@@ -4,4 +4,6 @@ export interface Voter {
   email: string;
   constituency: string;
   publicKey: string;
+  privateKey: string;
+  hasVoted: boolean;
 }
