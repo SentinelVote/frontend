@@ -18,7 +18,7 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body className={inter.className}>
-        <header className="text-white h-[10vh]">
+        <header className="text-white h-[8vh]">
           <div
             className="flex md:justify-normal items-center h-full w-full px-10 md:px-24 bg-navbar-bg"
             style={{
@@ -26,13 +26,15 @@ export default function RootLayout({
             }}
           >
             <div className="flex justify-center">
-              <Image
-                src="/SentinelVote.ico"
-                width={36}
-                height={36}
-                alt="SentinelVote Logo"
-              />
-              <h2 className="text-2xl p-2 md:pl-2 md:pr-5 font-semibold">
+              <div className="self-center">
+                <Image
+                  src="/SentinelVote.ico"
+                  width={36}
+                  height={36}
+                  alt="SentinelVote Logo"
+                />
+              </div>
+              <h2 className="text-xl p-2 md:pl-2 md:pr-5 font-semibold">
                 SentinelVote
               </h2>
               <h2 className="text-lg self-center pl-2 md:pl-5 border-l-[3px] md:border-l-[3px] border-white">

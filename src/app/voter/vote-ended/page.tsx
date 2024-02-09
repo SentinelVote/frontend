@@ -56,7 +56,7 @@ export default function SuccessPage() {
       <main
         className="flex flex-col items-center justify-between p-24 bg-gradient-to-r from-slate-900 to-slate-700 text-slate-900"
         style={{
-          minHeight: "90vh",
+          minHeight: "92vh",
           overflow: "hidden",
           justifyContent: "center",
         }}

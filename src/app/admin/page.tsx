@@ -226,7 +226,7 @@ export default function AdminPage() {
       className="flex flex-col items-center justify-between px-24 py-6 bg-white
         to-slate-700 text-slate-900"
       style={{
-        minHeight: "90vh",
+        minHeight: "92vh",
         overflow: "hidden",
         justifyContent: "center",
       }}

@@ -1,9 +1,9 @@
 "use client";
+import { ElectionHasEnded, ElectionHasStarted } from "@/app/globals";
 import singpassQrPng from "@public/singpass_qr.png";
 import Image from "next/image";
 import Link from "next/link";
 import { useEffect, useState } from "react";
-import { ElectionHasEnded, ElectionHasStarted } from "@/app/globals";
 enum LoginType {
   email = "email",
   singpass = "singpass",
@@ -21,7 +21,7 @@ export default function Home() {
   };
   const checkVoteStart = async () => {
     return await ElectionHasStarted();
-  }
+  };
 
   useEffect(() => {
     const checkAndSetVoteEnd = async () => {
@@ -33,8 +33,8 @@ export default function Home() {
 
   useEffect(() => {
     const checkAndSetVoteStart = async () => {
-    const voteStart = await checkVoteStart();
-    setVoteStarted(voteStart);
+      const voteStart = await checkVoteStart();
+      setVoteStarted(voteStart);
     };
     checkAndSetVoteStart();
   }, []);
@@ -57,7 +57,7 @@ export default function Home() {
 
       if (!response.ok) {
         setLoginError("Invalid email or password");
-        return
+        return;
       }
 
       const {
@@ -74,51 +74,50 @@ export default function Home() {
 
       // The password is 'password' for all accounts.
 
-        const paths = {
-          admin: "/admin",
-          voteEnded: "/voter/vote-ended",
-          voteSuccess: "/voter/success",
-          pemUploader: "/voter/pem-uploader",
-          pendingElection: "/voter/pending-election",
-          pemGenerate: "/voter/pem-generate",
+      const paths = {
+        admin: "/admin",
+        voteEnded: "/voter/vote-ended",
+        voteSuccess: "/voter/success",
+        pemUploader: "/voter/pem-uploader",
+        pendingElection: "/voter/pending-election",
+        pemGenerate: "/voter/pem-generate",
 
-          // TODO: Add the actual paths for the following:
-          setPassword: "/api/ping",
-          registrationClosed: "/api/ping",
-        };
+        // TODO: Add the actual paths for the following:
+        setPassword: "/api/ping",
+        registrationClosed: "/api/ping",
+      };
 
-        // Handle page routing for admin.
-        if (isCentralAuthority) {
-          window.location.href = paths.admin;
-          return;
-        }
+      // Handle page routing for admin.
+      if (isCentralAuthority) {
+        window.location.href = paths.admin;
+        return;
+      }
 
-        // Handle page routing for voter.
-        if (hasDefaultPassword) {
-          // TODO: send voter to page: "you have not set your password, please set your password".
-          window.location.href = paths.setPassword;
-        } else if (await ElectionHasEnded()) {
-          // Voting has ended, show the results.
-          window.location.href = paths.voteEnded;
-        } else if (await ElectionHasStarted()) {
-          // Voting is ongoing.
-          if (hasVoted) {
-            window.location.href = paths.voteSuccess;
-          } else if (voterHasRegistered) {
-            window.location.href = paths.pemUploader;
-          } else {
-            // TODO: send voter to page: "you did not register for election before the deadline, you cannot participate".
-            window.location.href = paths.registrationClosed;
-          }
+      // Handle page routing for voter.
+      if (hasDefaultPassword) {
+        // TODO: send voter to page: "you have not set your password, please set your password".
+        window.location.href = paths.setPassword;
+      } else if (await ElectionHasEnded()) {
+        // Voting has ended, show the results.
+        window.location.href = paths.voteEnded;
+      } else if (await ElectionHasStarted()) {
+        // Voting is ongoing.
+        if (hasVoted) {
+          window.location.href = paths.voteSuccess;
+        } else if (voterHasRegistered) {
+          window.location.href = paths.pemUploader;
         } else {
-          // Voting has not started.
-          if (voterHasRegistered) {
-              window.location.href = paths.pendingElection;
-          } else {
-              window.location.href = paths.pemGenerate;
-          }
+          // TODO: send voter to page: "you did not register for election before the deadline, you cannot participate".
+          window.location.href = paths.registrationClosed;
         }
-
+      } else {
+        // Voting has not started.
+        if (voterHasRegistered) {
+          window.location.href = paths.pendingElection;
+        } else {
+          window.location.href = paths.pemGenerate;
+        }
+      }
     } catch (error) {
       console.error("Login error:", error);
       setLoginError("An error occurred during login");
@@ -127,23 +126,38 @@ export default function Home() {
 
   return (
     <>
-      <header className="text-white h-[10vh]">
-        <div className="flex justify-center md:justify-normal items-center h-full px-10 md:px-24 bg-navbar-bg">
-          <Image
-            src="/SentinelVote.ico"
-            width={36}
-            height={36}
-            alt="SentinelVote Logo"
-          />
-          <h2 className="text-2xl p-2 md:pl-2 md:pr-5 font-semibold">
-            SentinelVote
-          </h2>
+      <header className="text-white h-[8vh]">
+        <div
+          className="flex md:justify-normal items-center h-full w-full px-10 md:px-24 bg-navbar-bg"
+          style={{
+            justifyContent: "space-between",
+          }}
+        >
+          <div className="flex justify-center">
+            <div className="self-center">
+              <Image
+                src="/SentinelVote.ico"
+                width={36}
+                height={36}
+                alt="SentinelVote Logo"
+              />
+            </div>
+            <h2 className="text-xl p-2 md:pl-2 md:pr-5 font-semibold">
+              SentinelVote
+            </h2>
+          </div>
+          <Link
+            href={process.env.NEXT_PUBLIC_DOCUMENTATION_URL || ""}
+            target="_blank"
+          >
+            <p className="text-blue-400 text-center">Learn More</p>
+          </Link>
         </div>
       </header>
       <main
-        className="flex flex-col items-center justify-between p-8 lg:p-24 bg-gradient-to-r from-slate-900 to-slate-700 text-slate-900"
+        className="animate-gradient flex flex-col items-center justify-between p-8 lg:p-24 text-slate-900"
         style={{
-          minHeight: "90vh",
+          minHeight: "92vh",
           overflow: "hidden",
           justifyContent: "center",
         }}

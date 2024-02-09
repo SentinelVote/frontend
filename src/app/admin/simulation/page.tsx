@@ -20,7 +20,7 @@ export default function SimulationPage() {
     let response = fetch(
       `${process.env.NEXT_PUBLIC_BACKEND_URL}/dev/db/reset/${d.optionType}/${d.numOfVoters}`,
       {
-        method: "GET"
+        method: "GET",
       }
     );
     if (!!response) console.log(response);
@@ -44,7 +44,7 @@ export default function SimulationPage() {
       className="flex flex-col items-center justify-between px-24 py-6 bg-white
         to-slate-700 text-slate-900"
       style={{
-        minHeight: "90vh",
+        minHeight: "92vh",
         overflow: "hidden",
       }}
     >
@@ -56,10 +56,14 @@ export default function SimulationPage() {
           {" / simulation"}
         </div>
         <h1 className="font-bold text-3xl text-slate-950">Welcome Admin!</h1>
-        <p className="font-normal text-md text-slate-500 mt-4 mb-4" style={{textWrap: "balance"}}>
+        <p
+          className="font-normal text-md text-slate-500 mt-4 mb-4"
+          style={{ textWrap: "balance" }}
+        >
           This page is designed for the administration of the voting simulation.
-          Here, you can control the simulation parameters for a range of 3 to 1,000,000 users.
-          Adjust the settings below to tailor the simulation to your specific requirements.
+          Here, you can control the simulation parameters for a range of 3 to
+          1,000,000 users. Adjust the settings below to tailor the simulation to
+          your specific requirements.
         </p>
         <form onSubmit={handleSubmit(onSubmit)}>
           <label style={{ display: "block", marginBottom: "10px" }}>
@@ -74,37 +78,45 @@ export default function SimulationPage() {
               style={{ width: "100%", margin: "10px 0" }}
             />
           </label>
-          <div style={{ marginBlockEnd: "10px" }} className="flex flex-col flex-wrap gap-2">
-              <label>
-                <input
-                  type="radio"
-                  value="production"
-                  {...register("optionType", {required: true})}
-                  className="me-2"
-                />
-                <span>Initialize without public keys</span>
-              </label>
-              <label>
-                <input
-                  type="radio"
-                  value="simulation"
-                  {...register("optionType", {required: true})}
-                  className="me-2"
-                />
-                <span>Initialize with public keys and folded public keys (database)</span>
-              </label>
-              <label>
-                <input
-                  type="radio"
-                  value="simulation-full"
-                  {...register("optionType", {required: true})}
-                  className="me-2"
-                />
-                <span>Initialize with public keys and folded public keys (database and blockchain)</span>
-              </label>
+          <div
+            style={{ marginBlockEnd: "10px" }}
+            className="flex flex-col flex-wrap gap-2"
+          >
+            <label>
+              <input
+                type="radio"
+                value="production"
+                {...register("optionType", { required: true })}
+                className="me-2"
+              />
+              <span>Initialize without public keys</span>
+            </label>
+            <label>
+              <input
+                type="radio"
+                value="simulation"
+                {...register("optionType", { required: true })}
+                className="me-2"
+              />
+              <span>
+                Initialize with public keys and folded public keys (database)
+              </span>
+            </label>
+            <label>
+              <input
+                type="radio"
+                value="simulation-full"
+                {...register("optionType", { required: true })}
+                className="me-2"
+              />
+              <span>
+                Initialize with public keys and folded public keys (database and
+                blockchain)
+              </span>
+            </label>
           </div>
-            {errors.optionType && (
-                <p style={{ color: "red" }}>Please select an option.</p>
+          {errors.optionType && (
+            <p style={{ color: "red" }}>Please select an option.</p>
           )}
           <button
             type="submit"

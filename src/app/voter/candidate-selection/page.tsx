@@ -1,14 +1,12 @@
 "use client";
-import { GetCookie } from "@/app/globals";
+import { FabricAuthorizationToken, GetCookie } from "@/app/globals";
 import candidateNKS from "@public/candidate_nks.jpg";
 import candidateTKL from "@public/candidate_tkl.jpg";
 import candidateTS from "@public/candidate_ts.jpg";
 import exitIconSvg from "@public/exit_icon.svg";
 import warningIconSvg from "@public/warning_icon.svg";
 import Image from "next/image";
-import Link from "next/link";
 import React, { useState } from "react";
-import { FabricAuthorizationToken } from "@/app/globals";
 
 type Candidate = {
   id: string;
@@ -69,8 +67,7 @@ const ConfirmationModal: React.FC<ConfirmationModalProps> = ({
     let response: Response;
     const DEBUG = process.env.NODE_ENV === "development";
     try {
-
-      console.log("Fetching folded public keys...")
+      console.log("Fetching folded public keys...");
       response = await fetch(
         `${process.env.NEXT_PUBLIC_FRONTEND_URL}/api/fabric/folded-public-keys`,
         {
@@ -84,7 +81,7 @@ const ConfirmationModal: React.FC<ConfirmationModalProps> = ({
       const foldedPublicKeys = await response.text();
       DEBUG && console.log("Folded public keys:\n", foldedPublicKeys);
 
-      console.log("Generating linkable ring signature...")
+      console.log("Generating linkable ring signature...");
       response = await fetch(
         `${process.env.NEXT_PUBLIC_BACKEND_URL}/lrs/sign`,
         {
@@ -99,15 +96,18 @@ const ConfirmationModal: React.FC<ConfirmationModalProps> = ({
           }),
         }
       );
-      if (!response.ok) throw new Error("Failed to generate linkable ring signature.");
+      if (!response.ok)
+        throw new Error("Failed to generate linkable ring signature.");
       const { signature } = await response.json();
       DEBUG && console.log("Linkable ring signature:\n", signature);
 
       const voteStartTime = 8; // the election starts at 8am
       const voteEndTime = 18; // the election ends at 6pm
-      const hour = process.env.NODE_ENV === "production"
+      const hour =
+        process.env.NODE_ENV === "production"
           ? new Date().getHours()
-          : Math.floor(Math.random() * (voteEndTime - voteStartTime + 1)) + voteStartTime;
+          : Math.floor(Math.random() * (voteEndTime - voteStartTime + 1)) +
+            voteStartTime;
 
       response = await fetch(
         `${process.env.NEXT_PUBLIC_FABRIC_URL}/invoke/vote-channel/SentinelVote`,
@@ -115,11 +115,11 @@ const ConfirmationModal: React.FC<ConfirmationModalProps> = ({
           method: "POST",
           headers: {
             "Content-Type": "application/json",
-            "Authorization": `Bearer ${await FabricAuthorizationToken()}`,
+            Authorization: `Bearer ${await FabricAuthorizationToken()}`,
           },
           body: JSON.stringify({
-            "method": "KVContractGo:PutVote",
-            "args":   [
+            method: "KVContractGo:PutVote",
+            args: [
               JSON.stringify({
                 vote: candidateName,
                 voteSignature: signature,
@@ -146,7 +146,6 @@ const ConfirmationModal: React.FC<ConfirmationModalProps> = ({
         }
       );
       if (!response.ok) throw new Error("Failed to update hasVoted status.");
-
     } catch (err) {
       console.error(err);
       alert(`${err}`);
@@ -187,7 +186,9 @@ const ConfirmationModal: React.FC<ConfirmationModalProps> = ({
             id={"confirm-vote"}
             onClick={() => {
               onConfirm();
-              handleConfirm().then(() => window.location.href = "/voter/success");
+              handleConfirm().then(
+                () => (window.location.href = "/voter/success")
+              );
             }}
             className="px-4 py-2 bg-blue-600 hover:bg-blue-700 rounded text-white"
           >
@@ -227,7 +228,7 @@ const CandidateSelectionPage: React.FC = () => {
     <main
       className="max-h-screen bg-gradient-to-r from-slate-900 to-slate-700 flex flex-col justify-center items-center p-4"
       style={{
-        minHeight: "90vh",
+        minHeight: "92vh",
         overflow: "hidden",
         justifyContent: "center",
       }}
