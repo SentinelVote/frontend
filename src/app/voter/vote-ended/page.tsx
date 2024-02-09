@@ -3,7 +3,7 @@ import { ClearCookies } from "@/app/globals";
 import { Nominee } from "@/types/nominee";
 import Image from "next/image";
 import Link from "next/link";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 type votingDetailsType = {
   countCandidate: any;
   countConstituency: any;
@@ -22,32 +22,49 @@ export default function SuccessPage() {
     countHour: [],
     countTotal: 0,
   };
+
   const [votingDetails, setVotingDetails] =
     useState<votingDetailsType>(initialVotingDetails);
 
+  const getVotingDetails = async () => {
+    try {
+      const response = await fetch(
+        `${process.env.NEXT_PUBLIC_FRONTEND_URL}/api/fabric/vote`
+      );
+      const data = await response.json();
+      setVotingDetails(data);
+    } catch (error) {
+      return error;
+    }
+  };
+
+  useEffect(() => {
+    getVotingDetails();
+  }, []);
   const nominees: Nominee[] = [
     {
-      id: 1,
       name: "Tharman Shanmugaratnam",
       party: "Independent",
       voteCount: votingDetails?.countCandidate["Tharman Shanmugaratnam"] || 0,
       color: "#2563EB",
     },
     {
-      id: 2,
       name: "Tan Kin Lian",
       party: "Independent",
       voteCount: votingDetails?.countCandidate["Tan Kin Lian"] || 0,
       color: "#FB923C",
     },
     {
-      id: 3,
       name: "Ng Kok Song",
       party: "Independent",
       voteCount: votingDetails?.countCandidate["Ng Kok Song"] || 0,
       color: "#C084FC",
     },
   ];
+  const sortedNominees = [...nominees].sort(
+    (a, b) => b.voteCount - a.voteCount
+  );
+
   const totalVotes = nominees.reduce((acc, nominee) => {
     return acc + nominee.voteCount;
   }, 0);
@@ -85,13 +102,13 @@ export default function SuccessPage() {
                     <span className="text-sm ml-16">Party</span>
                     <span className="text-sm">Total Count</span>
                   </div>
-                  {nominees.map((nominee) => (
+                  {sortedNominees.map((nominee, idx) => (
                     <div
-                      key={nominee.id}
+                      key={idx}
                       className="flex items-center justify-between my-2 p-2 border rounded-md text-slate-900 shadow-md"
                     >
                       <span className="text-md text-gray-500 ml-2">
-                        {nominee.id}
+                        {idx + 1}
                       </span>
 
                       <div className="flex items-center w-[180px] font-normal">
