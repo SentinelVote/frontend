@@ -93,7 +93,7 @@ export default function PemUploaderPage() {
               <Link
                 href="/voter/candidate-selection"
                 className={
-                  process.env.NEXT_PUBLIC_SHOW_DEV_PROPS === "true"
+                  process.env.NEXT_PUBLIC_SHOW_DEV_PROPS === "false"
                     ? "sr-only focus:not-sr-only focus-visible:not-sr-only focus-within:not-sr-only"
                     : ""
                 }
