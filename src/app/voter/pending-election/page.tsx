@@ -1,6 +1,6 @@
 "use client";
-import Link from "next/link";
 import { ClearCookies } from "@/app/globals";
+import Link from "next/link";
 
 export default function PendingElectionPage() {
   const handleExit = () => {
@@ -12,7 +12,7 @@ export default function PendingElectionPage() {
       <main
         className="flex flex-col items-center justify-between p-24 bg-gradient-to-r from-slate-900 to-slate-700 text-slate-900"
         style={{
-          minHeight: "90vh",
+          minHeight: "92vh",
           overflow: "hidden",
           justifyContent: "center",
         }}
@@ -23,10 +23,16 @@ export default function PendingElectionPage() {
               <h1 className="font-bold text-5xl">
                 All Set for the Upcoming Election - Just Hang Tight!
               </h1>
-              <p className="font-medium text-2xl mt-5" style={{textWrap: "balance"}}>
+              <p
+                className="font-medium text-2xl mt-5"
+                style={{ textWrap: "balance" }}
+              >
                 {`Thank you for completing your setup for the upcoming election. You're all ready to go!`}
               </p>
-              <p className="font-medium text-2xl mt-2" style={{textWrap: "balance"}}>
+              <p
+                className="font-medium text-2xl mt-2"
+                style={{ textWrap: "balance" }}
+              >
                 {`While we're counting down to the big day, please sit tight.
                 We will notify you the moment the election kicks off. `}
               </p>
