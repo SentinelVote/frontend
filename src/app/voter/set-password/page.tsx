@@ -27,7 +27,7 @@ export default function SetPassword() {
           headers: {
             "Content-Type": "application/json",
           },
-          body: JSON.stringify({ emailCookie, password }),
+          body: JSON.stringify({ email: emailCookie, password }),
         }
       );
       const data = await response.json();
