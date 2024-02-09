@@ -81,10 +81,8 @@ export default function Home() {
         pemUploader: "/voter/pem-uploader",
         pendingElection: "/voter/pending-election",
         pemGenerate: "/voter/pem-generate",
-
-        // TODO: Add the actual paths for the following:
-        setPassword: "/api/ping",
-        registrationClosed: "/api/ping",
+        setPassword: "/voter/set-password",
+        registrationClosed: "/voter/registration-fail",
       };
 
       // Handle page routing for admin.
@@ -95,7 +93,6 @@ export default function Home() {
 
       // Handle page routing for voter.
       if (hasDefaultPassword) {
-        // TODO: send voter to page: "you have not set your password, please set your password".
         window.location.href = paths.setPassword;
       } else if (await ElectionHasEnded()) {
         // Voting has ended, show the results.
@@ -219,7 +216,9 @@ export default function Home() {
                       value={password}
                       onChange={(e) => setPassword(e.target.value)}
                     />
-                    <p className="self-end">Forgot password?</p>
+                    <Link href="/voter/forgot-password">
+                      <p className="self-end">Forgot password?</p>
+                    </Link>
                     {loginError && <p className="text-red-500">{loginError}</p>}
                     <button
                       type="submit"
