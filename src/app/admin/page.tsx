@@ -32,10 +32,23 @@ const blockchainHasFoldedPublicKeys = async () => {
   }
   return true;
 };
-const hasVoteStarted = blockchainHasFoldedPublicKeys();
 
 const checkVoteEnd = async () => {
-  return true;
+  try {
+    const response = await fetch(
+        `${process.env.NEXT_PUBLIC_BACKEND_URL}/is-end-of-election`
+    );
+    if (!response.ok) {
+        return false;
+    } else {
+        let responseText = await response.text();
+        console.log(`responseText: '${responseText}'`);
+        return responseText === "true";
+    }
+  } catch (err) {
+      console.error(err);
+      return false;
+  }
 };
 
 const TableContainer: React.FC<TableProps> = ({ children }) => (
@@ -83,28 +96,35 @@ const TableCell: React.FC<TableCellProps> = ({
 };
 
 export default function AdminPage() {
-  console.log(hasVoteStarted);
   const [voters, setVoters] = useState<Voter[]>([]);
   const [currentPage, setCurrentPage] = useState(1);
-  const [deactivateFoldButton, setDeactivateFoldButton] = useState(false);
-  const [deactivatePublishButton, setDeactivatePublishButton] = useState(false);
+
+  // Handle behavior of the purple button i.e. "Fold Keys".
+  const [voteStarted, setVoteStarted] = useState(false);
+
+  // Only display after the purple button is greyed out, i.e. blue botton "Publish Results".
   const [voteEnded, setVoteEnded] = useState<Boolean>(false);
+
+  // Gray out the "Publish Results" button after it has been clicked.
+  const [deactivatePublishButton, setDeactivatePublishButton] = useState(false);
+
 
   useEffect(() => {
     const checkAndSetVoteStart = async () => {
       const voteStart = await blockchainHasFoldedPublicKeys();
-      setDeactivateFoldButton(voteStart);
+      setVoteStarted(voteStart);
+      console.log("voteStart: ", voteStart);
     };
-    checkAndSetVoteStart();
+    checkAndSetVoteStart().then(r => console.log(r));
   }, []);
 
-  //TODO: Add function to checkVoteEnd
   useEffect(() => {
     const checkAndSetVoteEnd = async () => {
       const voteEnd = await checkVoteEnd();
+      console.log("voteEnd: ", voteEnd);
       setVoteEnded(voteEnd);
     };
-    checkAndSetVoteEnd();
+    checkAndSetVoteEnd().then(r => console.log(r));
   }, []);
 
   // Calculate the voters to show on the current page
@@ -157,9 +177,9 @@ export default function AdminPage() {
     console.log("button was called.");
     try {
       const response = await fetch(
-        `${process.env.NEXT_PUBLIC_BACKEND_URL}/keys/public/folded`,
+        `${process.env.NEXT_PUBLIC_BACKEND_URL}/admin/folded-public-keys`,
         {
-          method: "PUT",
+          method: "GET",
         }
       );
       if (!response.ok) {
@@ -175,7 +195,7 @@ export default function AdminPage() {
 
   const handleFoldKeys = () => {
     foldKeys();
-    setDeactivateFoldButton(true);
+    setVoteStarted(true);
   };
   //Initial PublishResults logic
   const publishResults = async () => {
@@ -184,7 +204,7 @@ export default function AdminPage() {
       const response = await fetch(
         `${process.env.NEXT_PUBLIC_BACKEND_URL}/admin/announce`,
         {
-          method: "PUT",
+          method: "GET",
         }
       );
       if (!response.ok) {
@@ -253,10 +273,10 @@ export default function AdminPage() {
                 <Link href="/admin/helios" className="flex-1">
                   <button
                     type="button"
-                    disabled={!deactivateFoldButton}
+                    disabled={!voteStarted}
                     className={`bg-white border border-stone-600 w-full self-center font-medium rounded-r-lg
                   text-sm px-5 py-2.5 me-2 ${
-                    deactivateFoldButton
+                    voteStarted
                       ? `focus:outline-none focus:ring-1 hover:bg-gray-100  focus:ring-gray-200  dark:bg-gray-800 dark:text-white
                   dark:border-gray-600 dark:hover:bg-gray-700 dark:hover:border-gray-600 dark:focus:ring-gray-700`
                       : `focus:outline-none dark:bg-gray-800 dark:text-white
@@ -305,114 +325,112 @@ export default function AdminPage() {
               </div>
             </div>
             {/*TODO: Refine function */}
-            {voteEnded ? (
-              <div className="flex flex-col gap-2">
-                <p className="font-normal text-md text-red-400 mt-2 pb-16">
-                  {`The election has ended. You can no longer fold the keys. Please proceed to the Helios Platform to view the results.`}
-                </p>
-                <button
-                  type="button"
-                  id={"fold-keys"}
-                  disabled={deactivatePublishButton}
-                  onClick={handlePublishClick}
-                  className={`focus:outline-none text-white ${
-                    deactivatePublishButton
-                      ? "bg-neutral-200 shadow-inner cursor-not-allowed"
-                      : "bg-sky-700 hover:bg-sky-800 focus:ring-4 focus:ring-sky-300 dark:bg-sky-600 dark:hover:bg-sky-700 dark:focus:ring-sky-900"
-                  }
-                  font-medium rounded-lg text-sm px-5 py-2.5 w-full`}
-                >
-                  Publish Results
-                </button>
-                <Link href="/">
-                  <button
-                    type="button"
-                    onClick={handleExit}
-                    className=" bg-white border border-red-300 w-full self-center
-      focus:outline-none hover:bg-red-100 focus:ring-4 focus:ring-red-200 font-medium rounded-lg
-      text-sm px-5 py-2.5 me-2 mb-2 dark:bg-red-800 dark:text-white dark:border-red-600
-      dark:hover:bg-red-700 dark:hover:border-red-600 dark:focus:ring-red-700"
-                  >
-                    Log out
-                  </button>
-                </Link>
-              </div>
-            ) : (
-              <div className="flex flex-col gap-2">
-                <p className="font-normal text-md text-slate-500 mt-2">
-                  {`Click on 'Fold Keys' to initiate the folding of public keys, signaling the commencement of the election.
+            {!voteStarted ? (
+
+                    <div className="flex flex-col gap-2">
+                        <p className="font-normal text-md text-slate-500 mt-2">
+                            {`Click on 'Fold Keys' to initiate the folding of public keys, signaling the commencement of the election.
               `}
-                </p>
-                <p className="font-normal text-md text-red-400 mt-2">
-                  {`Be aware that once the election begins, the option to fold the keys will no longer be available.`}
-                </p>
-                <button
-                  type="button"
-                  id={"fold-keys"}
-                  disabled={deactivateFoldButton}
-                  onClick={handleFoldKeys}
-                  className={`focus:outline-none text-white ${
-                    deactivateFoldButton
-                      ? "bg-neutral-200 shadow-inner cursor-not-allowed"
-                      : "bg-purple-700 hover:bg-purple-800 focus:ring-4 focus:ring-purple-300 dark:bg-purple-600 dark:hover:bg-purple-700 dark:focus:ring-purple-900"
-                  }
+                        </p>
+                        <p className="font-normal text-md text-red-400 mt-2">
+                            {`Be aware that once the election begins, the option to fold the keys will no longer be available.`}
+                        </p>
+                        <button
+                            type="button"
+                            id={"fold-keys"}
+                            disabled={voteStarted}
+                            onClick={handleFoldKeys}
+                            className={`focus:outline-none text-white ${voteStarted ? "bg-neutral-200 shadow-inner cursor-not-allowed" : "bg-purple-700 hover:bg-purple-800 focus:ring-4 focus:ring-purple-300 dark:bg-purple-600 dark:hover:bg-purple-700 dark:focus:ring-purple-900"} font-medium rounded-lg text-sm px-5 py-2.5 w-full`}
+                        >
+                            Fold Keys
+                        </button>
+                        <Link href="/">
+                            <button
+                                type="button"
+                                onClick={handleExit}
+                                className=" bg-white border border-red-300 w-full self-center focus:outline-none hover:bg-red-100 focus:ring-4 focus:ring-red-200 font-medium rounded-lg text-sm px-5 py-2.5 me-2 mb-2 dark:bg-red-800 dark:text-white dark:border-red-600 dark:hover:bg-red-700 dark:hover:border-red-600 dark:focus:ring-red-700"
+                            >
+                                Log out
+                            </button>
+                        </Link>
+                    </div>
+
+
+                ) : (
+
+                <div className="flex flex-col gap-2">
+                    <p className="font-normal text-md text-red-400 mt-2 pb-16">
+                        {`The election has ended. You can no longer fold the keys. Please proceed to the Helios Platform to view the results.`}
+                    </p>
+                    <button
+                        type="button"
+                        id={"fold-keys"}
+                        disabled={!!voteEnded}
+                        onClick={handlePublishClick}
+                        className={`focus:outline-none text-white ${
+                            !!voteEnded
+                                ? "bg-neutral-200 shadow-inner cursor-not-allowed"
+                                : "bg-sky-700 hover:bg-sky-800 focus:ring-4 focus:ring-sky-300 dark:bg-sky-600 dark:hover:bg-sky-700 dark:focus:ring-sky-900"
+                        }
                   font-medium rounded-lg text-sm px-5 py-2.5 w-full`}
-                >
-                  Fold Keys
-                </button>
-                <Link href="/">
-                  <button
-                    type="button"
-                    onClick={handleExit}
-                    className=" bg-white border border-red-300 w-full self-center
-      focus:outline-none hover:bg-red-100 focus:ring-4 focus:ring-red-200 font-medium rounded-lg
-      text-sm px-5 py-2.5 me-2 mb-2 dark:bg-red-800 dark:text-white dark:border-red-600
-      dark:hover:bg-red-700 dark:hover:border-red-600 dark:focus:ring-red-700"
-                  >
-                    Log out
-                  </button>
-                </Link>
-              </div>
-            )}
-          </div>
-        </div>
-        <div className="flex flex-col flex-1 justify-center">
-          <div className="flex flex-col justify-between bg-white shadow-2xl border-[0.1px] border-slate-400 text-slate-900 min-h-[650px] min-w-[600px] rounded-lg">
-            <div
-              className="container mx-auto p-4 justify-between min-h-full"
-              style={{
-                display: "flex",
-                flexDirection: "column",
-              }}
-            >
-              <div>
-                <div className="flex justify-between">
-                  <h1 className="text-2xl font-bold mb-4">All Voters</h1>
-                  <div className="mb-4">
-                    <input
-                      className="p-2 border rounded"
-                      placeholder="Search"
-                    />
-                    {/* ... additional controls ... */}
-                  </div>
+                    >
+                        Publish Results
+                    </button>
+                    <Link href="/">
+                        <button
+                            type="button"
+                            onClick={handleExit}
+                            className=" bg-white border border-red-300 w-full self-center focus:outline-none hover:bg-red-100 focus:ring-4 focus:ring-red-200 font-medium rounded-lg text-sm px-5 py-2.5 me-2 mb-2 dark:bg-red-800 dark:text-white dark:border-red-600 dark:hover:bg-red-700 dark:hover:border-red-600 dark:focus:ring-red-700"
+                        >
+                            Log out
+                        </button>
+                    </Link>
                 </div>
 
-                <TableContainer>
-                  <thead>
-                    <TableRow isHeader>
-                      <TableCell isHeader>First Name</TableCell>
-                      <TableCell isHeader>Last Name</TableCell>
-                      <TableCell isHeader>Email</TableCell>
-                      <TableCell isHeader>Constituency</TableCell>
-                      <TableCell isHeader>Has Public Key?</TableCell>
-                    </TableRow>
-                  </thead>
-                  <tbody>
-                    {currentVoters.map((voter) => (
-                      <TableRow key={voter.email}>
-                        <TableCell>{voter.firstName}</TableCell>
-                        <TableCell>{voter.lastName}</TableCell>
-                        <TableCell>{voter.email}</TableCell>
+
+            )}
+          </div>
+
+
+        </div>
+          <div className="flex flex-col flex-1 justify-center">
+              <div
+                  className="flex flex-col justify-between bg-white shadow-2xl border-[0.1px] border-slate-400 text-slate-900 min-h-[650px] min-w-[600px] rounded-lg">
+                  <div
+                      className="container mx-auto p-4 justify-between min-h-full"
+                      style={{
+                          display: "flex",
+                          flexDirection: "column",
+                      }}
+                  >
+                      <div>
+                          <div className="flex justify-between">
+                              <h1 className="text-2xl font-bold mb-4">All Voters</h1>
+                              <div className="mb-4">
+                                  <input
+                                      className="p-2 border rounded"
+                                      placeholder="Search"
+                                  />
+                                  {/* ... additional controls ... */}
+                              </div>
+                          </div>
+
+                          <TableContainer>
+                              <thead>
+                              <TableRow isHeader>
+                                  <TableCell isHeader>First Name</TableCell>
+                                  <TableCell isHeader>Last Name</TableCell>
+                                  <TableCell isHeader>Email</TableCell>
+                                  <TableCell isHeader>Constituency</TableCell>
+                                  <TableCell isHeader>Has Public Key?</TableCell>
+                              </TableRow>
+                              </thead>
+                              <tbody>
+                              {currentVoters.map((voter) => (
+                                  <TableRow key={voter.email}>
+                                      <TableCell>{voter.firstName}</TableCell>
+                                      <TableCell>{voter.lastName}</TableCell>
+                                      <TableCell>{voter.email}</TableCell>
                         <TableCell>{voter.constituency}</TableCell>
                         <TableCell>
                           <span
