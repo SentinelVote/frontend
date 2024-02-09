@@ -37,7 +37,7 @@ export default function SuccessPage() {
       text-sm px-5 py-2.5 me-2 mb-2 dark:bg-gray-800 dark:text-white dark:border-gray-600
       dark:hover:bg-gray-700 dark:hover:border-gray-600 dark:focus:ring-gray-700"
               >
-                Exit
+                Log out
               </button>
             </Link>
           </div>
