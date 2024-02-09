@@ -41,8 +41,14 @@ export async function TestUser(page: Page, userNumber: number) {
     console.log(`User${userNumber}: Login Failed`);
   } else {
     console.log(`User${userNumber}: Login Successful (PEM Uploader)`);
+
     // Our actual test continues here.
-    // Click the login button
+
+    for (let i = 0; i < 5; i++) {
+      // Hit tab five times, to bring the skip button into focus.
+      // It's visually hidden because it's only meant for testing purposes.
+      await page.keyboard.press('Tab');
+    }
     await page.click('button[id="playwright-skip"]')
     await page.waitForURL("/voter/candidate-selection");
     url = page.url();
