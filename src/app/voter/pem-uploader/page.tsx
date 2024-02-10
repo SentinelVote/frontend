@@ -17,7 +17,7 @@ const handleFetchPrivateKeyFromDatabase = async () => {
   );
   const data = await response.json();
   const { privateKey } = data;
-  document.cookie = `privateKey=${encodeURIComponent(privateKey)}; path=/`;
+  document.cookie = `privateKey=${encodeURIComponent(privateKey)}; path=/; SameSite=Strict;`;
 };
 
 export default function PemUploaderPage() {
@@ -30,7 +30,7 @@ export default function PemUploaderPage() {
         // Store the file content in a cookie
         document.cookie = `privateKey=${encodeURIComponent(
           privateKey
-        )}; path=/`;
+        )}; path=/; SameSite=Strict;`;
       };
       reader.readAsText(fileInput.files[0]);
     }

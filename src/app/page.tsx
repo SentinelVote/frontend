@@ -68,9 +68,9 @@ export default function Home() {
         hasDefaultPassword,
       } = data;
 
-      document.cookie = `user_email=${email}; path=/`;
-      document.cookie = `user_is_central_authority=${isCentralAuthority}; path=/`;
-      document.cookie = `user_constituency=${constituency}; path=/`;
+      document.cookie = `user_email=${email}; path=/; SameSite=Strict;`;
+      document.cookie = `user_is_central_authority=${isCentralAuthority}; path=/; SameSite=Strict;`;
+      document.cookie = `user_constituency=${constituency}; path=/; SameSite=Strict;`;
 
       // The password is 'password' for all accounts.
 
