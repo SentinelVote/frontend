@@ -89,7 +89,7 @@ export default function SimulationPage() {
                 {...register("optionType", { required: true })}
                 className="me-2"
               />
-              <span>Initialize without public keys</span>
+              <span>Initialize all users without public keys</span>
             </label>
             <label>
               <input
@@ -99,7 +99,7 @@ export default function SimulationPage() {
                 className="me-2"
               />
               <span>
-                Initialize with public keys and folded public keys (database)
+                Initialize all users with public keys
               </span>
             </label>
             <label>
@@ -110,8 +110,7 @@ export default function SimulationPage() {
                 className="me-2"
               />
               <span>
-                Initialize with public keys and folded public keys (database and
-                blockchain)
+                Initialize all users with public keys, and store folded public keys in the blockchain
               </span>
             </label>
           </div>
