@@ -63,7 +63,7 @@ const ConfirmationModal: React.FC<ConfirmationModalProps> = ({
   const email = GetCookie("user_email");
   const constituency = GetCookie("user_constituency");
 
-  const handleConfirm = async () => {
+  const handleConfirm = async (): Promise<string> => {
     let response: Response;
     const DEBUG = process.env.NODE_ENV === "development";
     try {
@@ -146,9 +146,11 @@ const ConfirmationModal: React.FC<ConfirmationModalProps> = ({
         }
       );
       if (!response.ok) throw new Error("Failed to update hasVoted status.");
+      return "/voter/success";
     } catch (err) {
       console.error(err);
       alert(`${err}`);
+      return "/voter/candidate-selection-fail";
     }
   };
 
@@ -187,7 +189,7 @@ const ConfirmationModal: React.FC<ConfirmationModalProps> = ({
             onClick={() => {
               onConfirm();
               handleConfirm().then(
-                () => (window.location.href = "/voter/success")
+                (page: string) => (window.location.href = page)
               );
             }}
             className="px-4 py-2 bg-blue-600 hover:bg-blue-700 rounded text-white"
