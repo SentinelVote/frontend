@@ -1,5 +1,5 @@
 "use client";
-import { GetCookie } from "@/app/globals";
+import { ClearCookies, GetCookie } from "@/app/globals";
 import { useEffect, useState } from "react";
 export default function SetPassword() {
   useEffect(() => {
@@ -36,8 +36,8 @@ export default function SetPassword() {
         setResetPwError("Invalid password");
         return;
       }
-      window.alert("Password reset successfully!");
-      // ClearCookies();
+      window.alert("Password updated successfully!");
+      ClearCookies();
       window.location.href = "/";
     } catch (error) {
       setResetPwError("Error in forgot-password");
