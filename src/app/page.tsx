@@ -81,7 +81,7 @@ export default function Home() {
         pemUploader: "/voter/pem-uploader",
         pendingElection: "/voter/pending-election",
         pemGenerate: "/voter/pem-generate",
-        setPassword: "/voter/set-password",
+        // setPassword: "/voter/set-password",
         registrationClosed: "/voter/registration-fail",
       };
 
@@ -92,9 +92,10 @@ export default function Home() {
       }
 
       // Handle page routing for voter.
-      if (hasDefaultPassword) {
-        window.location.href = paths.setPassword;
-      } else if (await ElectionHasEnded()) {
+      // if (hasDefaultPassword) {
+      //   window.location.href = paths.setPassword;
+      // } else
+      if (await ElectionHasEnded()) {
         // Voting has ended, show the results.
         window.location.href = paths.voteEnded;
       } else if (await ElectionHasStarted()) {
