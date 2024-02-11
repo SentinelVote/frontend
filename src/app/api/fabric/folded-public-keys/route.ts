@@ -20,11 +20,13 @@ export async function GET(request: NextRequest) {
     });
     const responseJSON = await response.json();
     const res = new NextResponse(responseJSON.response);
+    res.headers.set('Access-Control-Allow-Origin', '*'); // Or specify domains instead of '*'
     res.headers.set('Content-Type', 'text/plain');
     return res;
   } catch (e) {
     console.log(e);
     const res = new NextResponse("Missing/Unset");
+    res.headers.set('Access-Control-Allow-Origin', '*'); // Or specify domains instead of '*'
     res.headers.set('Content-Type', 'text/plain');
     return res;
   }
