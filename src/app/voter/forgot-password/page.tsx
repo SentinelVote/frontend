@@ -1,5 +1,6 @@
 "use client";
 import { useState } from "react";
+import { ClearCookies } from "@/app/globals";
 export default function ForgotPassword() {
   const [email, setEmail] = useState("");
   const [emailError, setEmailError] = useState("");
@@ -27,6 +28,10 @@ export default function ForgotPassword() {
       //   setEmailError("Error in forgot-password");
     }
     window.alert("Email sent to reset password!");
+  };
+  const handleReturn = () => {
+    ClearCookies();
+    window.location.href = "/";
   };
 
   return (
@@ -64,13 +69,11 @@ export default function ForgotPassword() {
                 onChange={(e) => setEmail(e.target.value)}
               />
               {emailError && <p className="text-slate-500">{emailError}</p>}
-              <button
-                type="submit"
-                className="focus:outline-none text-white bg-slate-700 hover:bg-slate-800 focus:ring-4
-              focus:ring-slate-300 font-medium rounded-lg text-sm px-5 py-2.5 w-full self-baseline
-              me-2 mb-2 dark:bg-slate-600 dark:hover:bg-slate-700 dark:focus:ring-slate-900 mt-1 "
-              >
-                Continue
+              <button type="submit" className="focus:outline-none text-white bg-slate-700 hover:bg-slate-800 focus:ring-4 focus:ring-slate-300 font-medium rounded-lg text-sm px-5 py-2.5 w-full self-baseline me-2 mb-0.5 dark:bg-slate-600 dark:hover:bg-slate-700 dark:focus:ring-slate-900 mt-1">
+                Reset Password
+              </button>
+              <button type="button" onClick={handleReturn} className="focus:outline-none text-white bg-slate-700 hover:bg-slate-800 focus:ring-4 focus:ring-slate-300 font-medium rounded-lg text-sm px-5 py-2.5 w-full self-baseline me-2 mb-2 dark:bg-slate-600 dark:hover:bg-slate-700 dark:focus:ring-slate-900">
+                Back to Login
               </button>
             </form>
           </div>
