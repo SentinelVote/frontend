@@ -41,7 +41,7 @@ export function GetCookie(name: string): string | null {
 export async function ElectionHasStarted(): Promise<boolean> {
   try {
     const response = await fetch(
-      `${process.env.NEXT_PUBLIC_FRONTEND_URL}/api/fabric/folded-public-keys`,
+      `${process.env.NEXT_PUBLIC_FRONTEND_URL}/fabric/folded-public-keys`,
       {
         method: "GET",
         headers: {

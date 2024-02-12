@@ -29,7 +29,7 @@ export default function SuccessPage() {
   const getVotingDetails = async () => {
     try {
       const response = await fetch(
-        `${process.env.NEXT_PUBLIC_FRONTEND_URL}/api/fabric/vote`
+        `${process.env.NEXT_PUBLIC_FRONTEND_URL}/fabric/vote`
       );
       const data = await response.json();
       setVotingDetails(data);

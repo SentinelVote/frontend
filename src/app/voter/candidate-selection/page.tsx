@@ -69,7 +69,7 @@ const ConfirmationModal: React.FC<ConfirmationModalProps> = ({
     try {
       console.log("Fetching folded public keys...");
       response = await fetch(
-        `${process.env.NEXT_PUBLIC_FRONTEND_URL}/api/fabric/folded-public-keys`,
+        `${process.env.NEXT_PUBLIC_FRONTEND_URL}/fabric/folded-public-keys`,
         {
           method: "GET",
           headers: {

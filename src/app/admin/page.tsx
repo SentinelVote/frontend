@@ -19,7 +19,7 @@ const handleExit = () => {
 const blockchainHasFoldedPublicKeys = async () => {
   try {
     const response = await fetch(
-      `${process.env.NEXT_PUBLIC_FRONTEND_URL}/api/fabric/folded-public-keys`
+      `${process.env.NEXT_PUBLIC_FRONTEND_URL}/fabric/folded-public-keys`
     );
     if (!response.ok) {
       return false;
