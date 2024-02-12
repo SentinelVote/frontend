@@ -1,4 +1,4 @@
-# Voter Application
+# SentinelVote Frontend (Voter/Admin)
 
 ## How to start the application?
 
@@ -40,7 +40,7 @@ Use Chromium-based browsers, i.e. Chrome, Edge, Opera, Brave, etc.
 
 ### `nvm`
 
-This project uses [nvm](https://github.com/nvm-sh/nvm) to manage node versions.  
+This project uses [nvm](https://github.com/nvm-sh/nvm) to manage node versions.
 If you have nvm installed,
 you can run `nvm use` to use the correct node version:
 - node v18.17.0 (needed for Next.js v14)
