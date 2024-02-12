@@ -218,7 +218,9 @@ export default function Home() {
                       onChange={(e) => setPassword(e.target.value)}
                     />
                     <Link href="/voter/forgot-password">
-                      <p className="self-end">Forgot password?</p>
+                      <p className="self-end text-blue-500 hover:cursor-pointer hover:text-blue-700 active:text-red-500">
+                        Forgot password?
+                      </p>
                     </Link>
                     {loginError && <p className="text-red-500">{loginError}</p>}
                     <button
