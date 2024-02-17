@@ -44,7 +44,7 @@ export async function TestUser(page: Page, userNumber: number) {
 
     // Our actual test continues here.
 
-    for (let i = 0; i < 5; i++) {
+    for (let i = 0; i < 6; i++) {
       // Hit tab five times, to bring the skip button into focus.
       // It's visually hidden because it's only meant for testing purposes.
       await page.keyboard.press('Tab');

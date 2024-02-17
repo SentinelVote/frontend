@@ -30,7 +30,7 @@ export default defineConfig({
     /* Collect trace when retrying the failed test. See https://playwright.dev/docs/trace-viewer */
     trace: 'on-first-retry',
   },
-  timeout: 60000,
+  timeout: 180000,
 
   /* Configure projects for major browsers */
   // projects: [
@@ -70,3 +70,10 @@ export default defineConfig({
     // },
   // ],
 });
+/*
+PLAYWRIGHT_USER_START_FROM=1 PLAYWRIGHT_USER_END_AT=100 npx playwright test --headed --browser=chromium tests/e2e-parallel.spec.ts
+PLAYWRIGHT_USER_START_FROM=101 PLAYWRIGHT_USER_END_AT=200 npx playwright test --headed --browser=chromium tests/e2e-parallel.spec.ts
+PLAYWRIGHT_USER_START_FROM=201 PLAYWRIGHT_USER_END_AT=300 npx playwright test --headed --browser=chromium tests/e2e-parallel.spec.ts
+PLAYWRIGHT_USER_START_FROM=301 PLAYWRIGHT_USER_END_AT=400 npx playwright test --headed --browser=chromium tests/e2e-parallel.spec.ts
+PLAYWRIGHT_USER_START_FROM=401 PLAYWRIGHT_USER_END_AT=500 npx playwright test --headed --browser=chromium tests/e2e-parallel.spec.ts
+*/
